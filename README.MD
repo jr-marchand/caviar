@@ -1,6 +1,5 @@
 # CAVIAR-GUI
-CAVIAR PROJECT
-================
+
 CAVity Identification And Rationalization GUI
 
 ## General information
