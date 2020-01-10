@@ -17,13 +17,16 @@ This project aims at creating a python plateform to:
 ## How to install
 
 This package is hosted on anaconda.org
+
 To install it, simply run:
 conda -c jr-marchand caviar_gui
 
 To install it in a brand new environment:
-conda create -n myenv -c conda-forge -c jr-marchand python=3.7 caviar_gui
+
+conda create -n myenv -c jr-marchand python=3.7 caviar_gui
 
 To install it locally from the git repository:
+
 python setup.py install
 /!\ Check that you have the correct dependencies/libraries
 cf conda.recipe/meta.yaml, requirements/run section
@@ -32,7 +35,9 @@ cf conda.recipe/meta.yaml, requirements/run section
 ## How to use
 
 Run "caviar_gui" from the command line 
+
 The first window that will open is to give the PDB file / PDB code to download from the RCSB PDB. You can also select one or more chains to work on, and decide whether to open pymol with the results and the coloring scheme.
+
 Once you click the run button, a second window will open, for subcavity decomposition. You can either decompose all cavities detected earlier, or choose one. Same remark for pymol.
 
 
@@ -41,6 +46,7 @@ Once you click the run button, a second window will open, for subcavity decompos
 Project by Jean-Rémy Marchand, initiated by Joakim Deheuvels (proof of concept)
 
 Mentoring from Finton Sirockin
+
 Weekly discussions with Peter Ertl and Bernard Pirard
 
 
