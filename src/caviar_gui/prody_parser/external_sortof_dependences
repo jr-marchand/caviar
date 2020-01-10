@@ -1,0 +1,46 @@
+	utilities
+		openFile
+		isListLike
+		makePath
+		gunzip
+		relpath
+		copyFile
+		isWritable
+		sympath
+		openURL
+		openData (Atomic)
+		checkCoords (Atomic)
+		rangeString (Atomic)
+		wrapText (Atomic)
+		joinLinks (Atomic)
+		joinTerms (Atomic)
+		getDistance (Atomic)
+		fastin (Atomic)
+		misctools.count (Atomic)
+
+
+doctools.py:def joinLinks(links, sep=', ', last=None, sort=False):
+doctools.py:def joinTerms(terms, sep=', ', last=None, sort=False):
+doctools.py:def wrapText(text, width=70, join='\n', **kwargs):
+misctools.py:def rangeString(lint, sep=' ', rng=' to ', exc=False, pos=True):
+misctools.py:def countBytes(arrays, base=False):
+misctools.py:def count(L, a=None):
+misctools.py:def openData(filename, mode='r'):
+misctools.py:def isListLike(a):
+misctools.py:def getDistance(coords1, coords2, unitcell=None):
+misctools.py:def fastin(a, B):
+pathtools.py:def openFile(filename, *args, **kwargs):
+pathtools.py:def gunzip(filename, outname=None):
+pathtools.py:def isWritable(path):
+pathtools.py:def relpath(path):
+pathtools.py:def sympath(path, beg=2, end=1, ellipsis='...'):
+pathtools.py:def makePath(path):
+pathtools.py:def openURL(url, timeout=5, **kwargs):
+pathtools.py:def copyFile(src, dst):
+
+
+	measure
+		Transformation
+
+
+../utilities/misctools.py:def importLA():

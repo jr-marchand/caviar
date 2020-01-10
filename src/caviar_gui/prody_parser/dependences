@@ -1,0 +1,315 @@
+1- Proteins
+
+header.py
+__all__ = ['Chemical', 'Polymer', 'DBRef', 'parsePDBHeader',
+           'assignSecstr', 'buildBiomolecules']
+
+	atomic
+		ATOMIC_FIELDS
+		Atomic
+		AtomGroup
+		getSequence
+
+	measure
+		Transformation
+
+	utilities
+		openFile
+
+	proteins
+		localpdb
+			fetchPDB
+
+
+pdbfile.py
+__all__ = ['parsePDBStream', 'parsePDB', 'parseChainsList',
+           'writePDBStream', 'writePDB', 'writeChainsList']
+
+	atomic
+		ATOMIC_FIELDS
+		flags
+		AtomGroup
+	
+	utilities
+		openFile
+		isListLike
+
+	LOGGER
+	SETTINGS
+
+	proteins
+		header
+			getHeaderDict
+			biuldBiomolecules
+			assignSecstr
+			isHelix
+			isSheet
+		localpdb
+			fetchPDB
+
+
+localpdb.py
+__all__ = ['pathPDBFolder', 'pathPDBMirror',
+           'fetchPDB', 'fetchPDBfromMirror',
+           'iterPDBFilenames', 'findPDBFiles']
+
+	LOGGER
+	SETTINGS
+
+	utilities
+		makePath
+		gunzip
+		relpath
+		copyFile
+		isWritable
+		sympath
+
+	proteins
+		wwpdb
+			checkIdentifiers
+			fetchPDBviaFTP
+			fetchPDBviaHTTP
+
+
+pdbligands.py
+__all__ = ['fetchPDBLigand']
+
+	LOGGER
+	SETTINGS
+	getPackagePath
+
+	atomic
+		AtomGroup
+		ATOMIC_FIELDS
+
+	utilities
+		openFile
+		makePath
+		openURL
+
+
+wwpdb.py
+__all__ = ['wwPDBServer', 'fetchPDBviaFTP', 'fetchPDBviaHTTP']
+
+	LOGGER
+	SETTINGS
+
+	utilities
+		makePath
+		gunzip
+		relpath
+		copyFile
+		openURL
+		sympath
+
+2- Atomic
+
+atomic.py
+__all__ = ['Atomic', 'AAMAP']
+
+	LOGGER
+	__path__
+
+	utilities
+		openData
+
+atom.py
+__all__ = ['Atom']
+
+	flags
+
+	atomic
+		fields
+			ATOMIC_FIELDS
+			READONLY
+			wrapGetMethod
+			wrapSetMethod
+		pointer.AtomPointer
+		bond.bond
+
+atomgroup.py
+__all__ = ['AtomGroup']
+
+	LOGGER
+
+	utilities
+		checkCoords
+		rangeString
+
+	atomic
+		Atomic
+		fields
+			ATOMIC_FIELDS
+			READONLY
+			wrapGetMethod
+			wrapSetMethod
+		flags
+			PLANTERS
+			ALIASES
+			FIELDS
+		atom.Atom
+		bond
+			Bond
+			evalBonds
+		selection
+			Selection
+
+bond.py
+__all__ = ['Bond']
+
+
+atommap.py
+__all__ = ['AtomMap']
+
+	utilities
+		rangeString
+
+	atomic
+		atom.Atom
+		fields
+			ATOMIC_FIELDS
+			wrapGetMethod
+		pointer.AtomPointer
+
+
+chain.py
+__all__ = ['AtomMap']
+
+	atomic
+		subset.AtomSubset
+		atomic.AAMAP
+
+
+fields.py
+__all__ = ['Field']
+
+	utilities
+		wrapText
+
+	atomic
+		flags
+			FIELDS
+			FLAG_FIELDS
+
+
+flags.py
+__all__ = ['flagDefinition', 'listNonstdAAProps', 'getNonstdProperties', 'addNonstdAminoacid', 'delNonstdAminoacid']
+
+	SETTINGS
+	LOGGER
+
+	utilities
+		joinLinks
+		joinTerms
+		wrapText
+
+
+functions.py
+__all__ = ['iterFragments', 'findFragments', 'loadAtoms', 'saveAtoms',
+           'isReserved', 'listReservedWords', 'sortAtoms', 'sliceAtoms', 
+           'extendAtoms', 'sliceAtomicData', 'extendAtomicData']
+
+
+	utilities
+		openFile
+		rangeString
+		getDistance
+		fastin
+
+	LOGGER
+
+	atomic
+		atomic.Atomic
+		atomgroup.AtomGroup
+		atommap.AtomMap
+		bond
+			trimBonds
+			evalBonds
+		fields.ATOMIC_FIELDS
+		selection.Selection
+		hierview.HierView
+
+
+hierview.py
+__all__ = ['HierView']
+
+	utilities
+		misctools.count
+
+	atomic
+		atomgroup.AtomGroup
+		selection.Selection
+		chain.Chain
+		atommap.AtomMap
+		residue.Residue
+		segment.Segment
+
+
+pointer.py
+__all__ = ['AtomPointer']
+
+	LOGGER
+
+	atomic
+		atomic.Atomic
+		bond.Bond
+
+
+residue.py
+__all__ = ['Residue']
+
+	atomic
+		subset.AtomSubset
+		atom.Atom
+
+
+segment.py
+__all__ = ['Segment']
+
+	atomic
+		subset.AtomSubset
+
+
+selection.py
+__all__ = ['Selection']
+
+	atomic
+		subset.AtomSubset
+
+subset.py
+__all__ = ['AtomSubset']
+
+	LOGGER
+
+	atomic
+		flags
+		atom.Atom
+		fields
+			ATOMIC_FIELDS
+			READONLY
+			wrapGetMethod
+			wrapSetMethod
+		pointer.AtomPointer
+
+
+select.py
+__all__ = ['Select', 'SelectionError', 'SelectionWarning',
+           'defSelectionMacro', 'delSelectionMacro', 'getSelectionMacro',
+           'isSelectionMacro']
+
+
+    LOGGER
+    SETTINGS
+
+    utilities.rangeString
+
+    atomic
+    	atomic.Atomic, AAMAP
+    	fields.ATOMIC_FIELDS
+    	flags.PLANTERS
+    	atomgroup.AtomGroup
+    	chain.Chain, getSequence
+    	pointer.AtomPointer
+    	selection.Selection
+    	segment.Segment
+    	atommap.AtomMap

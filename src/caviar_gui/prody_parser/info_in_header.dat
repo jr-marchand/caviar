@@ -1,0 +1,59 @@
+RECORD TYPE             EXISTENCE           Presence
+--------------------------------------------------------------------------------------
+HEADER                  Mandatory           ProDy, Joakim: mandatory
+OBSLTE                  Optional            None, could be interesting as flag
+TITLE                   Mandatory           ProDy, Joakim: mandatory
+SPLIT                   Optional            ProDy, useless? 
+CAVEAT                  Optional            None, could be interesting as flag
+COMPND                  Mandatory           ProDy, Joakim
+SOURCE                  Mandatory           Joakim
+KEYWDS                  Mandatory           None, doesn't seem interesting
+EXPDTA                  Mandatory           ProDy, Joakim
+NUMMDL                  Optional            ProDy, NMR related
+MDLTYP                  Optional            ProDy, NMR related
+AUTHOR                  Mandatory           ProDy, 
+REVDAT                  Mandatory           None, interesting: last revision (from pdb)
+SPRSDE                  Optional            None, useless
+JRNL                    Optional            ProDy, Joakim
+REMARK 0                Optional            Mandatory for a re-refined structure
+REMARK 1                Optional            None, ?
+REMARK 2                Mandatory           ProDy, Joakim
+REMARK 3                Mandatory           Partially Joakim, contains R values
+REMARK 4                                    ProDy, contains PDB format version
+REMARK 350                                  ProDy, wtf?
+DBREF                   Optional            ProDy, Joakim
+DBREF1/DBREF2           Optional            Not sure what this is
+SEQADV                  Optional            ProDy, conflicts PDB-uniprot and Y
+SEQRES                  Mandatory           ProDy, Joakim
+MODRES                  Optional            ProDy, Crucial! Contains the ori too
+HET                     Optional            ProDy, adds info on top of prev
+HETNAM                  Optional            ProDy, adds info on top of prev
+HETSYN                  Optional            ProDy, adds (useless) info
+FORMUL                  Optional            ProDy, seems useless
+HELIX                   Optional            ProDy
+SHEET                   Optional            ProDy
+SSBOND                  Optional            , could be useful
+LINK                    Optional            None, may be useful with MODRES
+CISPEP                  Optional            None, for quality?
+SITE                    Optional            None, BINDING SITE with REMARK 800
+CRYST1                  Mandatory           None, Space Group
+ORIGX1 ORIGX2 ORIGX3    Mandatory           None,
+SCALE1 SCALE2 SCALE3    Mandatory           None,
+MTRIX1 MTRIX2 MTRIX3    Optional            None,
+
+
+
+
+
+
+MODEL                   Optional            Mandatory if more than one model
+                                            is  present in the entry.
+ATOM                    Optional            Mandatory if standard residues exist.
+ANISOU                  Optional
+TER                     Optional            Mandatory if ATOM records exist.
+HETATM                  Optional            Mandatory if non-standard group exists.
+ENDMDL                  Optional            Mandatory if MODEL appears.
+CONECT                  Optional            Mandatory if non-standard group appears
+                                            and  if LINK or SSBOND records exist.
+MASTER                  Mandatory
+END                     Mandatory

@@ -1,0 +1,75 @@
+Proteins; Atomic
+
+	LOGGER
+	SETTINGS
+	getPackagePath
+	__path__ (Atomic)
+
+	atomic
+		ATOMIC_FIELDS
+		Atomic
+		AtomGroup
+		flags
+		getSequence
+
+	measure
+		Transformation
+
+	utilities
+		openFile
+		isListLike
+		makePath
+		gunzip
+		relpath
+		copyFile
+		isWritable
+		sympath
+		openURL
+		openData (Atomic)
+		checkCoords (Atomic)
+		rangeString (Atomic)
+		wrapText (Atomic)
+		joinLinks (Atomic)
+		joinTerms (Atomic)
+		getDistance (Atomic)
+		fastin (Atomic)
+		misctools.count (Atomic)
+
+(self, protein)
+	proteins
+		localpdb
+			fetchPDB
+		header
+			getHeaderDict
+			biuldBiomolecules
+			assignSecstr
+			isHelix
+			isSheet
+		wwpdb
+		checkIdentifiers
+		fetchPDBviaFTP
+		fetchPDBviaHTTP
+
+
+(self, atomic, discontinued)
+	atomic
+		Atomic
+		fields
+			ATOMIC_FIELDS
+			READONLY
+			wrapGetMethod
+			wrapSetMethod
+		pointer.AtomPointer
+		bond
+			Bond
+			evalBonds
+		flags
+			PLANTERS
+			ALIASES
+			FIELDS
+			FLAG_FIELDS
+		atom.Atom
+		selection
+			Selection
+		subset.AtomSubset
+		atomic.AAMAP

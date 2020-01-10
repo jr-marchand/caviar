@@ -1,0 +1,41 @@
+package:
+  name: cavitome_gui
+  version: "1.0"
+
+source:
+  git_url: ../
+  git_rev: master
+
+build:
+  noarch: python
+  number: 0
+  #script: python setup.py install
+
+requirements:
+  #build:
+  #  - git
+  host:
+    - python >=3.6,<3.8 # conflict for networkx 2.3 and python 3.8
+    - pyparsing >=2.4,<=2.5
+    - numpy >=1.17,<=1.18
+    - scipy >=1.3.1,<=1.4
+    - networkx >=2.0,<=2.4
+    - scikit-image >=0.16,<=0.16.3
+    - pyqt ==5.9.2
+    - setuptools
+  run:
+    - python >=3.6,<3.8
+    - pyparsing >=2.4,<=2.5
+    - numpy >=1.17,<=1.18
+    - scipy >=1.3.1,<=1.4
+    - networkx >=2.0,<=2.4
+    - scikit-image >=0.16,<=0.16.3
+    - pyqt ==5.9.2
+
+test:
+  commands:
+    - python -c "from cavitome_gui.gui import main ;  main()"
+
+about:
+  home: https://github.com/jr-marchand/cavitome
+  license: MIT 
