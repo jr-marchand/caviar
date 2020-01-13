@@ -46,12 +46,12 @@ buriedness, 7th quantile of buriedness, score)
 
 """
 
-from cavitome_gui.prody_parser.atomic.atomgroup import AtomGroup
+from caviar_gui.prody_parser.atomic.atomgroup import AtomGroup
 from .geometry import SetOfPoints
 import numpy as np
 import networkx as nx
 from .gridtools import get_index_of_coor_list, list_transform_indices, get_transformation_vectors
-from cavitome_gui.cavity_characterization.gridpoint_properties import trim_cavity_bylocalweight
+from caviar_gui.cavity_characterization.gridpoint_properties import trim_cavity_bylocalweight
 # from bisect import bisect_left
 #import time 
 

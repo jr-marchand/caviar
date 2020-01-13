@@ -138,7 +138,7 @@ def backupFile(filename, backup=None, backup_ext='.BAK', **kwargs):
     except Exception as err:
         raise TypeError('filename must be a string ({0})'.format(str(err)))
 
-    from cavitome_gui.prody_parser import SETTINGS
+    from caviar_gui.prody_parser import SETTINGS
     if exists and (backup or SETTINGS.get('backup', False)):
         if backup_ext == '.BAK':
             backup_ext = SETTINGS.get('backup_ext', '.BAK')
@@ -169,7 +169,7 @@ def openFile(filename, *args, **kwargs):
     :arg backup_ext: extension for backup file, default is :file:`.BAK`
     :type backup_ext: str"""
 
-    from cavitome_gui.prody_parser import SETTINGS
+    from caviar_gui.prody_parser import SETTINGS
     try:
         exists = isfile(filename)
     except Exception as err:

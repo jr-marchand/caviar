@@ -3,8 +3,8 @@
 Defines a class Cavity with its information
 """
 
-from cavitome_gui.cavity_identification.geometry import SetOfPoints, Point
-from cavitome_gui.cavity_identification.gridtools import get_index_of_coor_list, get_index_of_coor
+from caviar_gui.cavity_identification.geometry import SetOfPoints, Point
+from caviar_gui.cavity_identification.gridtools import get_index_of_coor_list, get_index_of_coor
 
 
 __all__ = ['CavGridPoint', 'Cavity', 'fill_cavities_object']

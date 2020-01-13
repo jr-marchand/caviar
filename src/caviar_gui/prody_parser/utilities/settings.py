@@ -3,7 +3,7 @@
 import os
 
 from .pathtools import pickle, unpickle, isWritable, USERHOME
-import cavitome_gui.prody_parser as pkg
+import caviar_gui.prody_parser as pkg
 
 try:
     input = raw_input

@@ -8,7 +8,7 @@ def main():
 		# end of tweak
 		from PyQt5 import QtWidgets, uic
 		from PyQt5.QtWidgets import QFileDialog
-		from cavitome_gui import cavity_detect_gui
+		from caviar_gui import cavity_detect_gui
 	except:
 		print("It looks like we're missing some libraries here!")
 		print("Please install PyQt5, scipy, numpy, pyparse, skimage and networkx:")
@@ -80,7 +80,7 @@ def main():
 				global data4subcav
 				report, cavity_file, data4subcav = cavity_detect_gui.run(args)
 				# Now write the pml file
-				from cavitome_gui.gen_pmlfile import write_pmlfile
+				from caviar_gui.gen_pmlfile import write_pmlfile
 				if self.bypharma.isChecked():
 					what = "pharmacophore"
 				elif self.byburi.isChecked():
@@ -89,7 +89,7 @@ def main():
 					what = "bychain"
 				else:
 					what = None
-				abs_cavfile = local + "/cavitome_out/" + cavity_file
+				abs_cavfile = local + "/caviar_out/" + cavity_file
 				write_pmlfile(cavity_file = abs_cavfile, what = what, outputfile = str(code[:-4]+"_cavities.pml"))
 		
 				# Print output in results and log
@@ -129,8 +129,8 @@ def main():
 	
 			report_subcavs, subcavity_file = cavity_detect_gui.runsubcavities(data4subcav, args, cavid = cavID)
 			# Now write the pml file
-			from cavitome_gui.gen_pmlfile import write_pmlsubcavs
-			abs_subcavfile = local + "/cavitome_out/" + subcavity_file
+			from caviar_gui.gen_pmlfile import write_pmlsubcavs
+			abs_subcavfile = local + "/caviar_out/" + subcavity_file
 			write_pmlsubcavs(cavity_file = abs_subcavfile, outputfile = str(code[:-4]+"_subcavities.pml"))
 		
 			# Print output in results and log

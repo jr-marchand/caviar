@@ -15,7 +15,7 @@ complex structure:
 
 .. ipython:: python
 
-   from cavitome_gui.prody_parser import *
+   from caviar_gui.prody_parser import *
    p = parsePDB('3mht')
 
 :func:`.parsePDB` returns :class:`.AtomGroup` instances, ``p`` in this case,
@@ -455,7 +455,7 @@ except ImportError:
     from pyparsing import ParseException
 
 
-from cavitome_gui.prody_parser import LOGGER, SETTINGS
+from caviar_gui.prody_parser import LOGGER, SETTINGS
 
 from .atomic import Atomic
 from .fields import ATOMIC_FIELDS
@@ -469,7 +469,7 @@ from .selection import Selection
 from .segment import Segment
 from .atommap import AtomMap
 
-from cavitome_gui.prody_parser.utilities import rangeString
+from caviar_gui.prody_parser.utilities import rangeString
 
 DEBUG = 0
 NUMB = 0 # Select instance will not really evaluate string for the atoms

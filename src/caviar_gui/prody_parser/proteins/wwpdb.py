@@ -5,9 +5,9 @@ from os import getcwd
 from glob import glob
 from os.path import join, normpath
 
-from cavitome_gui.prody_parser import LOGGER, SETTINGS
-from cavitome_gui.prody_parser.utilities import makePath, gunzip, relpath, copyFile, openURL
-from cavitome_gui.prody_parser.utilities import sympath
+from caviar_gui.prody_parser import LOGGER, SETTINGS
+from caviar_gui.prody_parser.utilities import makePath, gunzip, relpath, copyFile, openURL
+from caviar_gui.prody_parser.utilities import sympath
 
 __all__ = ['wwPDBServer', 'fetchPDBviaFTP', 'fetchPDBviaHTTP']
 

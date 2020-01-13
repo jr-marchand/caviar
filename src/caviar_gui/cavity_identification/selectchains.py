@@ -7,11 +7,11 @@ water molecules (>= 3 hydrogen bonds with the protein)
 """
 
 import sys
-from cavitome_gui.prody_parser.atomic.atomgroup import AtomGroup
-from cavitome_gui.prody_parser.atomic import select
-from cavitome_gui.prody_parser.proteins.pdbfile import parsePDB
+from caviar_gui.prody_parser.atomic.atomgroup import AtomGroup
+from caviar_gui.prody_parser.atomic import select
+from caviar_gui.prody_parser.proteins.pdbfile import parsePDB
 from .geometry import SetOfPoints, Point
-from cavitome_gui.misc_tools.misc import get_residues_fromsel
+from caviar_gui.misc_tools.misc import get_residues_fromsel
 
 __all__ = ['find_longest_chain', 'find_contacting_chains', 'get_chains_of_interest', 'select_objects', 'get_ligand']
 

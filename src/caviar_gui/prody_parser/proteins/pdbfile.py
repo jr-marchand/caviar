@@ -10,11 +10,11 @@ from numbers import Integral
 
 import numpy as np
 
-from cavitome_gui.prody_parser.atomic import AtomGroup
-from cavitome_gui.prody_parser.atomic import flags
-from cavitome_gui.prody_parser.atomic import ATOMIC_FIELDS
-from cavitome_gui.prody_parser.utilities import openFile, isListLike
-from cavitome_gui.prody_parser import LOGGER, SETTINGS
+from caviar_gui.prody_parser.atomic import AtomGroup
+from caviar_gui.prody_parser.atomic import flags
+from caviar_gui.prody_parser.atomic import ATOMIC_FIELDS
+from caviar_gui.prody_parser.utilities import openFile, isListLike
+from caviar_gui.prody_parser import LOGGER, SETTINGS
 
 from .header import getHeaderDict, buildBiomolecules, assignSecstr, isHelix, isSheet
 from .localpdb import fetchPDB
@@ -609,7 +609,7 @@ def _parsePDBLines(atomgroup, lines, split, model, chain, subset,
                     atomgroup.setOccupancies(occupancies)
                     atomgroup.setSegnames(np.char.strip(segnames))
                     atomgroup.setElements(np.char.strip(elements))
-                    from cavitome_gui.prody_parser.utilities.misctools import getMasses
+                    from caviar_gui.prody_parser.utilities.misctools import getMasses
                     atomgroup.setMasses(getMasses(np.char.strip(elements)))
                     if anisou is not None:
                         anisou.resize((acount, 6), refcheck=False)
@@ -718,7 +718,7 @@ def _parsePDBLines(atomgroup, lines, split, model, chain, subset,
             elements.resize(acount, refcheck=False)
             atomgroup.setSegnames(np.char.strip(segnames))
             atomgroup.setElements(np.char.strip(elements))
-            from cavitome_gui.prody_parser.utilities.misctools import getMasses
+            from caviar_gui.prody_parser.utilities.misctools import getMasses
             atomgroup.setMasses(getMasses(np.char.strip(elements)))
             atomgroup.setBetas(bfactors)
             atomgroup.setOccupancies(occupancies)

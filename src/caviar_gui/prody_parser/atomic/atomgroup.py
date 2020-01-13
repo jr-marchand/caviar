@@ -7,8 +7,8 @@ from numbers import Integral
 
 import numpy as np
 
-from cavitome_gui.prody_parser import LOGGER
-from cavitome_gui.prody_parser.utilities import checkCoords, rangeString
+from caviar_gui.prody_parser import LOGGER
+from caviar_gui.prody_parser.utilities import checkCoords, rangeString
 
 from .atomic import Atomic
 from .fields import ATOMIC_FIELDS, READONLY

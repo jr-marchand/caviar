@@ -3,7 +3,7 @@
 This module contains grid related tools.
 """
 
-from cavitome_gui.prody_parser.atomic.atomgroup import AtomGroup
+from caviar_gui.prody_parser.atomic.atomgroup import AtomGroup
 from .geometry import SetOfPoints
 import numpy as np
 

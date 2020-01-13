@@ -6,7 +6,7 @@ Flag labels can be used in atom selections:
 
 .. ipython:: python
 
-   from cavitome_gui.prody_parser import *
+   from caviar_gui.prody_parser import *
    p = parsePDB('1ubi')
    p.select('protein')
 
@@ -39,8 +39,8 @@ from collections import defaultdict
 
 from numpy import array, ones, zeros
 
-from cavitome_gui.prody_parser import SETTINGS, LOGGER
-from cavitome_gui.prody_parser.utilities import joinLinks, joinTerms, wrapText
+from caviar_gui.prody_parser import SETTINGS, LOGGER
+from caviar_gui.prody_parser.utilities import joinLinks, joinTerms, wrapText
 
 __all__ = ['flagDefinition', 'listNonstdAAProps', 'getNonstdProperties',
            'addNonstdAminoacid', 'delNonstdAminoacid']
@@ -1134,7 +1134,7 @@ def getNonstdProperties(resname):
     """Deprecated for removal in v1.4, use :func:`listNonstdAAProps` instead.
     """
 
-    from cavitome_gui.prody_parser import deprecate
+    from caviar_gui.prody_parser import deprecate
     deprecate('getNonstdProperties', 'listNonstdAAProps')
 
     return listNonstdAAProps(resname)

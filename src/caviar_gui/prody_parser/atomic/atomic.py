@@ -3,8 +3,8 @@
 :mod:`~prody_parser.atomic` classes are derived from."""
 
 from numpy import all, arange
-from cavitome_gui.prody_parser import LOGGER, __path__
-from cavitome_gui.prody_parser.utilities import openData
+from caviar_gui.prody_parser import LOGGER, __path__
+from caviar_gui.prody_parser.utilities import openData
 
 from . import flags
 from .bond import trimBonds

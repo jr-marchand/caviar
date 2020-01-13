@@ -11,7 +11,7 @@ below.  :class:`Atomic` classes, such as :class:`.Selection`, offer ``get`` and
 
 from numpy import array
 
-from cavitome_gui.prody_parser.utilities import wrapText
+from caviar_gui.prody_parser.utilities import wrapText
 
 from .flags import FIELDS as FLAG_FIELDS
 

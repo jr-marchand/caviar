@@ -5,9 +5,9 @@ from os.path import isdir, isfile, join, split, splitext
 
 import numpy as np
 
-from cavitome_gui.prody_parser import LOGGER, SETTINGS, getPackagePath
-from cavitome_gui.prody_parser.atomic import AtomGroup, ATOMIC_FIELDS
-from cavitome_gui.prody_parser.utilities import openFile, makePath, openURL
+from caviar_gui.prody_parser import LOGGER, SETTINGS, getPackagePath
+from caviar_gui.prody_parser.atomic import AtomGroup, ATOMIC_FIELDS
+from caviar_gui.prody_parser.utilities import openFile, makePath, openURL
 
 __all__ = ['fetchPDBLigand']
 
@@ -42,7 +42,7 @@ def fetchPDBLigand(cci, filename=None):
 
     .. ipython:: python
 
-       from cavitome_gui.prody_parser import *
+       from caviar_gui.prody_parser import *
        ligand_data = fetchPDBLigand('STI')
        ligand_data['model_coordinates_db_code']
        ligand_model = ligand_data['model']

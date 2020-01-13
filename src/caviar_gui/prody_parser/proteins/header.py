@@ -6,12 +6,12 @@ import os.path
 
 import numpy as np
 
-from cavitome_gui.prody_parser import LOGGER
-from cavitome_gui.prody_parser.atomic import ATOMIC_FIELDS
-from cavitome_gui.prody_parser.atomic import Atomic, AtomGroup
-from cavitome_gui.prody_parser.atomic import getSequence
-from cavitome_gui.prody_parser.measure import Transformation
-from cavitome_gui.prody_parser.utilities import openFile
+from caviar_gui.prody_parser import LOGGER
+from caviar_gui.prody_parser.atomic import ATOMIC_FIELDS
+from caviar_gui.prody_parser.atomic import Atomic, AtomGroup
+from caviar_gui.prody_parser.atomic import getSequence
+from caviar_gui.prody_parser.measure import Transformation
+from caviar_gui.prody_parser.utilities import openFile
 
 from .localpdb import fetchPDB
 
@@ -44,7 +44,7 @@ class Chemical(object):
 
     .. ipython:: python
 
-       from cavitome_gui.prody_parser import *
+       from caviar_gui.prody_parser import *
        chemical = parsePDBHeader('1zz2', 'chemicals')[0]
        chemical
        chemical.name

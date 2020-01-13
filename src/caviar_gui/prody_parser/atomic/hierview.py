@@ -3,7 +3,7 @@
 views of atom groups."""
 
 from numpy import unique, zeros, arange, concatenate
-from cavitome_gui.prody_parser.utilities.misctools import count
+from caviar_gui.prody_parser.utilities.misctools import count
 
 from .atomgroup import AtomGroup
 from .selection import Selection

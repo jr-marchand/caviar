@@ -15,7 +15,7 @@ Instances of the class can be obtained by parsing a PDB file as follows:
 
 .. ipython:: python
 
-   from cavitome_gui.prody_parser import *
+   from caviar_gui.prody_parser import *
    ag = parsePDB('1aar')
    ag
 
@@ -133,7 +133,7 @@ it is used internally by :mod:`.prody_parser.atomic` classes:
   * :func:`.isReserved`
   * :func:`.listReservedWords`"""
 
-import cavitome_gui.prody_parser as prody_parser
+import caviar_gui.prody_parser as prody_parser
 LOGGER = prody_parser.LOGGER
 SETTINGS = prody_parser.SETTINGS
 

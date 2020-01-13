@@ -41,7 +41,7 @@
       <bool>false</bool>
      </property>
      <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Welcome to the Cavitome Project!&lt;/p&gt;&lt;p&gt;Start by selecting a local PDB file or fetch a PDB code from the RCSB PDB.&lt;/p&gt;&lt;p&gt;You may specify a chain identifier to target a specific chain (A for chain A, AB for chains A and B).&lt;/p&gt;&lt;p&gt;A custom PDB file will be generated and written in ./cavitome_out/, containing the detected cavities.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Welcome to the Cavitome Project!&lt;/p&gt;&lt;p&gt;Start by selecting a local PDB file or fetch a PDB code from the RCSB PDB.&lt;/p&gt;&lt;p&gt;You may specify a chain identifier to target a specific chain (A for chain A, AB for chains A and B).&lt;/p&gt;&lt;p&gt;A custom PDB file will be generated and written in ./caviar_out/, containing the detected cavities.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="textFormat">
       <enum>Qt::RichText</enum>

@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 """
-Main wrapper of the cavitome program
+Main wrapper of the caviar program
 Contains: str2bool(), arguments(), printv(), and run()
 """
 
 import sys, os
-from cavitome_gui.prody_parser import parsePDB
-from cavitome_gui.cavity_identification import *
-from cavitome_gui.cavity_characterization import *
-from cavitome_gui.misc_tools.misc import export_pdb_cavity, export_pdb_subcavities, get_information_header,\
+from caviar_gui.prody_parser import parsePDB
+from caviar_gui.cavity_identification import *
+from caviar_gui.cavity_characterization import *
+from caviar_gui.misc_tools.misc import export_pdb_cavity, export_pdb_subcavities, get_information_header,\
 join_information_cavities, get_final_sorted_cavs, print_scores
 from argparse import ArgumentParser, ArgumentTypeError, RawTextHelpFormatter
 import textwrap
@@ -101,7 +101,7 @@ def arguments():
 
 
 	parser.add_argument("-out", type = str, help = ":  Path/to/outfolder.\n  "
-						"(default: ./cavitome_out/", default="./cavitome_out/")
+						"(default: ./caviar_out/", default="./caviar_out/")
 	parser.add_argument("-export_cavities", type = str2bool, help = ": Export PDB files with cavities (True/False) \n"
 						"  (default: True)", default = True)
 	parser.add_argument("-withprot", type = str2bool, help = ": Export it with the protein (True/False) \n"
@@ -449,7 +449,7 @@ def run(arguments):
 		# ----------------------------------- THIS IS THE END! -------------------------------------- #
 		# ------------------------------------------------------------------------------------------- #
 	
-		#print(f"{args.code[0:-4]}_cavs.pdb written in ./cavitome_out/")
+		#print(f"{args.code[0:-4]}_cavs.pdb written in ./caviar_out/")
 		fn = f"{args.code[0:-4]}_cavs.pdb"
 
 		data_forsubcav_routines = [filtered_cavities, order, grid_min, grid_shape, filtered_pharma,
@@ -473,8 +473,8 @@ def runsubcavities(data_forsubcav_routines, args, cavid = None):
 	pdbobject = data_forsubcav_routines[6]
 	print(args.out)
 	with StringIO() as bufsubcav, redirect_stdout(bufsubcav):
-		from cavitome_gui.prody_parser import writePDB
-		writePDB(f"./cavitome_out/{args.code[0:-4]}_subcavs.pdb", pdbobject)
+		from caviar_gui.prody_parser import writePDB
+		writePDB(f"./caviar_out/{args.code[0:-4]}_subcavs.pdb", pdbobject)
 			# Iterate over liganded cavities only 
 		if len(filtered_cavities) == 1: # Don't go over everything if there's only one cavity!
 			cav_of_interest = 0 # We have cavities from 0 but for comprehension we print from 1

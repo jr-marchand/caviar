@@ -1,5 +1,5 @@
 """
-Module for generating a .pml file from the cavitome GUI.
+Module for generating a .pml file from the caviar GUI.
 """
 
 

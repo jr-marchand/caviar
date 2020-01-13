@@ -344,7 +344,7 @@ def rotate_pdb_via_prody(pdboject, theta = 30):
     """
     Rotates via prody the entire pdb object (with atom types, protein, ligands...)
     """
-    from cavitome_gui.prody_parser.measure import transform
+    from caviar_gui.prody_parser.measure import transform
 
     rot_matrix = getrotationmatrix_Z3D(theta)
     transf_class = transform.Transformation(rot_matrix, np.array([0,0,0])) # here it also wants a translation matrix, which we dont care

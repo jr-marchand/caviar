@@ -5,9 +5,9 @@ from glob import glob, iglob
 from os.path import sep as pathsep
 from os.path import abspath, isdir, isfile, join, split, splitext, normpath
 
-from cavitome_gui.prody_parser import LOGGER, SETTINGS
-from cavitome_gui.prody_parser.utilities import makePath, gunzip, relpath, copyFile, isWritable
-from cavitome_gui.prody_parser.utilities import sympath
+from caviar_gui.prody_parser import LOGGER, SETTINGS
+from caviar_gui.prody_parser.utilities import makePath, gunzip, relpath, copyFile, isWritable
+from caviar_gui.prody_parser.utilities import sympath
 
 from . import wwpdb
 from .wwpdb import checkIdentifiers, fetchPDBviaFTP, fetchPDBviaHTTP

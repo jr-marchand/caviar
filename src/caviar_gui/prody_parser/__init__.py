@@ -46,7 +46,7 @@ from .measure import *
 __all__.extend(measure.__all__)
 __all__.append('measure')
 
-from cavitome_gui import prody_parser
+from caviar_gui import prody_parser
 __all__.append('prody_parser')
 
 # default, acceptable values, setter

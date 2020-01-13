@@ -10,11 +10,11 @@ and exports them in a joined dictionary
 The last function exports cavities as a PDB file for vizualisation
 """
 
-from cavitome_gui.prody_parser.proteins import pdbfile
-from cavitome_gui.prody_parser.proteins.header import parsePDBHeader
-from cavitome_gui.cavity_identification.gridtools import get_index_of_coor_list
+from caviar_gui.prody_parser.proteins import pdbfile
+from caviar_gui.prody_parser.proteins.header import parsePDBHeader
+from caviar_gui.cavity_identification.gridtools import get_index_of_coor_list
 import numpy as np
-from cavitome_gui.cavity_identification.geometry import SetOfPoints
+from caviar_gui.cavity_identification.geometry import SetOfPoints
 
 __all__ = ['get_information_header', 'kill_from_header', 'join_information_cavities', 'get_residues_fromsel', 'export_pdb_cavity',
 			'get_final_sorted_cavs', 'print_scores', 'find_ligand_presence', 'simple_export_pdb_noinfo', 'simple_export_pdb_onecav',
@@ -455,7 +455,7 @@ def export_pdb_cavity(final_cavities, filtered_pharma, pdbcode, grid_min, grid_s
 	"""
 
 	if withprot:
-		from cavitome_gui.prody_parser import writePDB
+		from caviar_gui.prody_parser import writePDB
 		writePDB(outdir + pdbcode + "_cavs.pdb", selection_protein)
 		if listlig:
 			ligs = ""

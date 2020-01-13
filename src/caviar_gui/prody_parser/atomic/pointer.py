@@ -7,7 +7,7 @@ from numpy import all, array, concatenate, ones, unique
 from .atomic import Atomic
 from .bond import Bond
 
-from cavitome_gui.prody_parser import LOGGER
+from caviar_gui.prody_parser import LOGGER
 
 __all__ = ['AtomPointer']
 

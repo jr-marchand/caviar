@@ -10,9 +10,9 @@ a threshold and combine some information
 check_protein_res 
 """
 
-from cavitome_gui.prody_parser.atomic.select import *
-from cavitome_gui.cavity_identification.geometry import SetOfPoints, calc_moments_of_inertia, calc_asphericity
-from cavitome_gui.cavity_identification.gridtools import list_transform_indices2, get_index_of_coor, get_index_of_coor_list
+from caviar_gui.prody_parser.atomic.select import *
+from caviar_gui.cavity_identification.geometry import SetOfPoints, calc_moments_of_inertia, calc_asphericity
+from caviar_gui.cavity_identification.gridtools import list_transform_indices2, get_index_of_coor, get_index_of_coor_list
 import numpy as np
 from scipy.spatial import cKDTree
 from itertools import product

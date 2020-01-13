@@ -6,7 +6,7 @@ from .atom import Atom
 from .fields import ATOMIC_FIELDS, READONLY
 from .fields import wrapGetMethod, wrapSetMethod
 from .pointer import AtomPointer
-from cavitome_gui.prody_parser import LOGGER
+from caviar_gui.prody_parser import LOGGER
 
 __all__ = ['AtomSubset']
 

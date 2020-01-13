@@ -8,7 +8,7 @@ import numpy as np
 from scipy import ndimage
 from skimage.feature import peak_local_max
 from skimage.morphology import watershed
-from cavitome_gui.cavity_identification.gridtools import get_index_of_coor_list
+from caviar_gui.cavity_identification.gridtools import get_index_of_coor_list
 from .cavity import Cavity
 
 __all__ = ['transform_cav2im3d', 'find_subcav_watershed', 'map_subcav_in_cav', 'transform_im3d2cav',

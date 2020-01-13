@@ -3,7 +3,7 @@
 logging, type checking, etc.  Contents of this module are not included in
 ProDy namespace, as it is not safe to import them all due to name conflicts.
 Required or classes should be imported explicitly, e.g.
-``from cavitome_gui.prody_parser.utilities import PackageLogger, openFile``.
+``from caviar_gui.prody_parser.utilities import PackageLogger, openFile``.
 
 Deleted files:
 rm catchall.py drawtools.py legacy.py logger.py settings.py 

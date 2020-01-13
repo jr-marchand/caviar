@@ -5,9 +5,9 @@ and measuring quantities."""
 from numpy import ndarray, power, sqrt, array, zeros, arccos
 from numpy import sign, tile, concatenate, pi, cross, subtract, var
 
-from cavitome_gui.prody_parser.atomic import Atomic, Residue, Atom
-from cavitome_gui.prody_parser.utilities import importLA, checkCoords, getDistance
-from cavitome_gui.prody_parser import LOGGER
+from caviar_gui.prody_parser.atomic import Atomic, Residue, Atom
+from caviar_gui.prody_parser.utilities import importLA, checkCoords, getDistance
+from caviar_gui.prody_parser import LOGGER
 
 __all__ = ['buildDistMatrix', 'calcDistance',
            'calcCenter', 'calcGyradius', 'calcAngle',
@@ -584,7 +584,7 @@ def calcDeformVector(from_atoms, to_atoms):
     if len(name) > 30:
         name = 'Deformation'
     arr = (to_atoms.getCoords() - from_atoms.getCoords()).flatten()
-    from cavitome_gui.prody_parser.dynamics import Vector
+    from caviar_gui.prody_parser.dynamics import Vector
     return Vector(arr, name)
 
 
@@ -632,7 +632,7 @@ def calcADPAxes(atoms, **kwargs):
 
     .. ipython:: python
 
-       from cavitome_gui.prody_parser import *
+       from caviar_gui.prody_parser import *
        protein = parsePDB('1ejg')
        calphas = protein.select('calpha')
        adp_axes = calcADPAxes( calphas )
@@ -752,7 +752,7 @@ def buildADPMatrix(atoms):
 
     .. ipython:: python
 
-       from cavitome_gui.prody_parser import *
+       from caviar_gui.prody_parser import *
        protein = parsePDB('1ejg')
        calphas = protein.select('calpha')
        adp_matrix = buildADPMatrix(calphas)"""

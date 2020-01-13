@@ -3,9 +3,9 @@
 
 import numpy as np
 
-from cavitome_gui.prody_parser import LOGGER
-from cavitome_gui.prody_parser.atomic import AtomPointer
-from cavitome_gui.prody_parser.utilities import importLA
+from caviar_gui.prody_parser import LOGGER
+from caviar_gui.prody_parser.atomic import AtomPointer
+from caviar_gui.prody_parser.utilities import importLA
 
 from .measure import calcCenter
 
@@ -218,7 +218,7 @@ def moveAtoms(atoms, **kwargs):
 
     .. ipython:: python
 
-       from cavitome_gui.prody_parser import *
+       from caviar_gui.prody_parser import *
        from numpy import ones, zeros
        protein = parsePDB('1ubi')
        calcCenter(protein).round(3)

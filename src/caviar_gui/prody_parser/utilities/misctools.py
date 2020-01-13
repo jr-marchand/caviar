@@ -46,7 +46,7 @@ def rangeString(lint, sep=' ', rng=' to ', exc=False, pos=True):
 
     .. ipython:: python
 
-       from cavitome_gui.prody_parser.utilities import rangeString
+       from caviar_gui.prody_parser.utilities import rangeString
        lint = [1, 2, 3, 4, 10, 15, 16, 17]
        rangeString(lint)
        rangeString(lint, sep=',', rng='-')

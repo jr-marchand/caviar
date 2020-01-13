@@ -137,7 +137,7 @@ class Atom(AtomPointer):
 
     def getMasses(self):
         """get the mass atom. """
-        from cavitome_gui.prody_parser.utilities.misctools import getMasses
+        from caviar_gui.prody_parser.utilities.misctools import getMasses
         
         return getMasses(self.getElement())
 

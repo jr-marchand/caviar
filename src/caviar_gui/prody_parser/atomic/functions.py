@@ -6,8 +6,8 @@ from textwrap import wrap
 from numpy import load, savez, ones, zeros, array, argmin, where
 from numpy import ndarray, asarray, isscalar, concatenate, arange, ix_
 
-from cavitome_gui.prody_parser.utilities import openFile, rangeString, getDistance, fastin
-from cavitome_gui.prody_parser import LOGGER
+from caviar_gui.prody_parser.utilities import openFile, rangeString, getDistance, fastin
+from caviar_gui.prody_parser import LOGGER
 
 from . import flags
 from . import select

@@ -72,7 +72,7 @@ i.e. ``""``.
 
 from numpy import arange, array, ones, zeros, dtype
 
-from cavitome_gui.prody_parser.utilities import rangeString
+from caviar_gui.prody_parser.utilities import rangeString
 
 from .atom import Atom
 from .fields import ATOMIC_FIELDS
