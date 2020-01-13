@@ -1,5 +1,5 @@
 package:
-  name: cavitome_gui
+  name: caviar_gui
   version: "1.0"
 
 source:
@@ -34,8 +34,8 @@ requirements:
 
 test:
   commands:
-    - python -c "from cavitome_gui.gui import main ;  main()"
+    - python -c "from caviar_gui.gui import main ;  main()"
 
 about:
-  home: https://github.com/jr-marchand/cavitome
+  home: https://github.com/jr-marchand/caviar
   license: MIT 
