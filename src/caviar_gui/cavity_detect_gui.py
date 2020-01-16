@@ -430,6 +430,16 @@ def run(arguments):
 		# Get information about asphericity of cavity points	
 		#list_asph = get_list_asph(final_cavities = final_cavities, grid = grid, grid_min = grid_min, grid_shape = grid_shape, radius = 3)
 	
+		# Creates cavity object to try to put all of the information together
+		cavities = fill_cavities_object(dict_all_info, order, filtered_cavities, filtered_pharma,
+		grid_decomposition, grid_min, grid_shape, gridspace = args.gridspace) # list_asph
+		
+		#from ligandability import calculate_ligandability
+		#print("mais bite??")
+		for cava in range(0, len(cavities)):
+			ligability = float(calculate_ligandability(cavities, cava))
+			cavities[cava].ligandability = ligability
+
 		# Print formatted information
 		print_scores(dict_all_info, order, pdbcode = args.code[0:-4])
 	
@@ -440,11 +450,7 @@ def run(arguments):
 		gridspace = args.gridspace, outdir = args.out, withprot = args.withprot, #listlig = list_ligands,
 		oridir = str(args.sourcedir))
 
-		# Creates cavity object to try to put all of the information together
-		cavities = fill_cavities_object(dict_all_info, order, filtered_cavities, filtered_pharma,
-		grid_decomposition, grid_min, grid_shape, gridspace = args.gridspace) # list_asph
-	
-		
+
 		# ------------------------------------------------------------------------------------------- #
 		# ----------------------------------- THIS IS THE END! -------------------------------------- #
 		# ------------------------------------------------------------------------------------------- #

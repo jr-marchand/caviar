@@ -418,7 +418,7 @@ def export_clean_cav_ligand_info(dict_coverage, list_ligands, list_lig_coords, c
 			resnb = ligname[5:]
 			# 3 letters code, cavity chain ID, chain ID, residue number, lig size, coverage % 
 			list_covered_ligands.append([resname, value[0], chid, resnb, ligsize, value[1]])
-			cavities[int(value[0])].liganded = True
+			cavities[int(value[0])].liganded = resname
 			dict_cavid_lig_bool[value[0]] = 1
 		else:
 			dict_cavid_lig_bool[value[0]] = 0
@@ -426,14 +426,16 @@ def export_clean_cav_ligand_info(dict_coverage, list_ligands, list_lig_coords, c
 
 	return list_covered_ligands, dict_cavid_lig_bool
 
-def print_scores(dict_all_info, order, pdbcode):
+def print_scores(dict_all_info, order, pdbcode, cavities):
 	"""
 	Returns the information with the order for export (final_cavities)
 	"""
 	idx = 0
-	print(f"PDB_chain  CavID   Score   Size  Hydrophob  Interchain  AltLocs  MissAtoms")
+	print(f"PDB_chain  CavID  Ligab.   Score   Size  Hydrophob  Interchain  AltLocs  MissAtoms")
 	for cav in order:
-		print(f'{pdbcode}_{dict_all_info[cav]["chains"]}\t{idx+1:>8d}   {dict_all_info[cav]["score"]:>4.1f}   '
+		print(f'{pdbcode}_{dict_all_info[cav]["chains"]}\t{idx+1:>8d}   '
+			f'{cavities[cav].ligandability}   '
+			f'{dict_all_info[cav]["score"]:>4.1f}   '
 			f'  {dict_all_info[cav]["size"]:>5d} '
 			f'{dict_all_info[cav]["hydrophobicity"]*100:>8.0f}%            '
 			f'{dict_all_info[cav]["interchain"]:>5d}\t{dict_all_info[cav]["altlocs"]:>5d}'

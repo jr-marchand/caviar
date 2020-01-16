@@ -33,6 +33,7 @@ class Cavity(set):
 		altlocs, metaled, watered, subcavities):
 		self.metaled = metaled
 		self.liganded = None
+		self.ligandability = 0.
 		self.watered = watered
 		self.fp1 = []
 		self.gp = []
@@ -76,7 +77,7 @@ def fill_cavities_object(dict_all_info, order, filtered_cavities, filtered_pharm
 		if list(filter(lambda x: "HOH" in x, dict_all_info[ID]["cavity_residues"])):
 			watered = True
 
-		cav = Cavity(ID = i, residues = dict_all_info[ID]["cavity_residues"], chains = "A",
+		cav = Cavity(ID = ID, residues = dict_all_info[ID]["cavity_residues"], chains = "A",
 					missing = dict_all_info[ID]["missingatoms"] + dict_all_info[ID]["missingres"],
 					score = dict_all_info[ID]["score"], size = dict_all_info[ID]["size"],
 					median_bur = dict_all_info[ID]["median_buriedness"], bur_7thq = dict_all_info[ID]["7thq_buriedness"],
