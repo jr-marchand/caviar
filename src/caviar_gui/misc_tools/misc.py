@@ -16,8 +16,8 @@ from caviar_gui.cavity_identification.gridtools import get_index_of_coor_list
 import numpy as np
 from caviar_gui.cavity_identification.geometry import SetOfPoints
 
-__all__ = ['get_information_header', 'kill_from_header', 'join_information_cavities', 'get_residues_fromsel', 'export_pdb_cavity',
-			'get_final_sorted_cavs', 'print_scores', 'find_ligand_presence', 'simple_export_pdb_noinfo', 'simple_export_pdb_onecav',
+__all__ = ['get_information_header', 'kill_from_header', 'get_residues_fromsel', 'export_pdb_cavity',
+			'print_scores', 'find_ligand_presence', 'simple_export_pdb_noinfo', 'simple_export_pdb_onecav',
 			'export_clean_cav_ligand_info', 'export_pdb_subcavities']
 
 
@@ -210,82 +210,6 @@ def kill_from_header(dict_pdb_info, onlyxr = True, resolution_filter = False, re
 
 	return killswitch
 
-def join_information_cavities(cav_flags, filtered_cavities, info_list, exclude_missing = True, exclude_interchain = True,
-	exclude_altlocs = False):
-	"""
-	This function aims at combining information in cav_flags and info_list in a dictionary
-	that contains everything
-	This dictionary will be filtered according to flags: do we want interchain cavities?
-	Do we want to exclude cavities with missing atoms/residues? With alternative locations?
-
-	The resulting dictionary will have as keys the cavities passing the filters
-	and as values the keys of a dictionary
-	This subdictionary has all the information as keys:
-	interchain (bool)
-	altlocs (bool)
-	cavity_residues (list)
-	missingatoms (bool)
-	missingres (bool)
-	score (float)
-	size (int)
-	median_buriedness (int)
-	7thq_buriedness (int)
-	hydrophobicity (float, is a percentage)
-	"""
-
-	dict_all_info = {}
-
-	for i in range(0,len(filtered_cavities)):
-		cav_flags[i]["score"] = info_list[i][1]
-		cav_flags[i]["size"] = info_list[i][2]
-		cav_flags[i]["median_buriedness"] = info_list[i][3]
-		cav_flags[i]["7thq_buriedness"] = info_list[i][4]
-		cav_flags[i]["hydrophobicity"] = round(info_list[i][5], 2)
-	
-		if exclude_missing == True and exclude_interchain == False and exclude_altlocs == False:
-			if cav_flags[i]["missingres"] == 0 and cav_flags[i]["missingatoms"] == 0:
-				dict_all_info[i] = cav_flags[i]
-		elif exclude_missing == True and exclude_interchain == True and exclude_altlocs == False:
-			if cav_flags[i]["missingres"] == 0 and cav_flags[i]["missingatoms"] == 0 and cav_flags[i]["interchain"] == 0:
-				dict_all_info[i] = cav_flags[i]
-		elif exclude_missing == True and exclude_interchain == True and exclude_altlocs == True:
-			if cav_flags[i]["missingres"] == 0 and cav_flags[i]["missingatoms"] == 0 and cav_flags[i]["interchain"] == 0 and cav_flags[i]["altlocs"] == 0:
-				dict_all_info[i] = cav_flags[i]
-		elif exclude_missing == False and exclude_interchain == True and exclude_altlocs == False:
-			if cav_flags[i]["interchain"] == 0:
-				dict_all_info[i] = cav_flags[i]
-		elif exclude_missing == False and exclude_interchain == True and exclude_altlocs == True:
-			if cav_flags[i]["interchain"] == 0 and cav_flags[i]["altlocs"] == 0:
-				dict_all_info[i] = cav_flags[i]
-		elif exclude_missing == False and exclude_interchain == False and exclude_altlocs == True:
-			if cav_flags[i]["altlocs"] == 0:
-				dict_all_info[i] = cav_flags[i]
-		elif exclude_missing == True and exclude_interchain == False and exclude_altlocs == True:
-			if cav_flags[i]["missingres"] == 0 and cav_flags[i]["missingatoms"] == 0 and cav_flags[i]["altlocs"] == 0:
-				dict_all_info[i] = cav_flags[i]
-	if exclude_missing == False and exclude_interchain == False and exclude_altlocs == False:
-		dict_all_info = cav_flags
-
-	return dict_all_info
-
-
-def get_final_sorted_cavs(dict_all_info, filtered_cavities):
-	"""
-	Uses dict_all_info to rank cavities for further exploitation (FP, export as PDB...)
-	and exclude few more cavities
-	"""
-	# scores will contain the scores of filtered cavities
-	scores = []
-	# ori_order will contain the original indices of the cavities 
-	# in filtered_cavities
-	ori_order = []
-	for keys, items in dict_all_info.items():
-		scores.append(dict_all_info[keys]["score"])
-		ori_order.append(keys)
-	order = sorted(range(len(scores)), key=lambda k: scores[k], reverse = True)
-	final_cavities = filtered_cavities[ori_order][order]
-
-	return final_cavities, [ori_order[x] for x in order]
 
 def get_residues_fromsel(selection):
 	"""
@@ -325,6 +249,7 @@ def find_ligand_presence(final_cavities, list_ligands, list_lig_coords, pdbcode,
 				covered = len(np.unique(setofpoints_lig.in_range_settoset(cav, dist_range = 1, asbool = False)[0]))
 				cav_covered_by_lig = len(np.unique(setofpoints_lig.in_range_settoset(cav, dist_range = 3., asbool = False)[1]))
 				size_cav = len(cav) # not really proof for any use, watch out!
+				break
 			idx_cavity+=1
 		try:
 			coverage = covered / size_lig
@@ -426,26 +351,26 @@ def export_clean_cav_ligand_info(dict_coverage, list_ligands, list_lig_coords, c
 
 	return list_covered_ligands, dict_cavid_lig_bool
 
-def print_scores(dict_all_info, order, pdbcode, cavities):
+def print_scores(dict_all_info, pdbcode, cavities):
 	"""
 	Returns the information with the order for export (final_cavities)
 	"""
 	idx = 0
 	print(f"PDB_chain  CavID  Ligab.   Score   Size  Hydrophob  Interchain  AltLocs  MissAtoms")
-	for cav in order:
+	for cav in range(len(cavities)):
 		print(f'{pdbcode}_{dict_all_info[cav]["chains"]}\t{idx+1:>8d}   '
-			f'{cavities[cav].ligandability}   '
-			f'{dict_all_info[cav]["score"]:>4.1f}   '
+			f'{cavities[idx].ligandability}     '
+			f'{dict_all_info[cav]["score"]:>4.1f} '
 			f'  {dict_all_info[cav]["size"]:>5d} '
-			f'{dict_all_info[cav]["hydrophobicity"]*100:>8.0f}%            '
+			f'{dict_all_info[cav]["hydrophobicity"]*100:>8.0f}%      '
 			f'{dict_all_info[cav]["interchain"]:>5d}\t{dict_all_info[cav]["altlocs"]:>5d}'
 			f' {dict_all_info[cav]["missingatoms"]+dict_all_info[cav]["missingres"]:>10d}')
 		idx += 1
-
+		
 	return None
 
-def export_pdb_cavity(final_cavities, filtered_pharma, pdbcode, grid_min, grid_shape,
-	grid_decomposition, order, selection_protein, gridspace = 1.0, outdir = "./", withprot = True,
+def export_pdb_cavity(final_cavities, final_pharma, pdbcode, grid_min, grid_shape,
+	grid_decomposition, selection_protein, gridspace = 1.0, outdir = "./", withprot = True,
 	listlig = None, oridir = "/db/pdb/"):
 	"""
 	For visualization purposes: exports a pdb containing 
@@ -480,7 +405,7 @@ def export_pdb_cavity(final_cavities, filtered_pharma, pdbcode, grid_min, grid_s
 		idx_ = 0
 		for coordinates in cavity:
 			pdbdummy.append(f"HETATM    1  S   GRI A {cavid:>3}    {coordinates[0]:8.3f}{coordinates[1]:8.3f}{coordinates[2]:8.3f}"
-				f"  {filtered_pharma[order[cavid-1]][idx_][0]:>3.2f} {grid_decomposition[cav_indices[idx]]:>5.2f}           S\n")
+				f"  {final_pharma[cavid-1][idx_][0]:>3.2f} {grid_decomposition[cav_indices[idx]]:>5.2f}           S\n")
 			idx += 1
 			idx_ += 1
 	a = open(outdir + pdbcode + "_cavs.pdb", "a")

@@ -8,8 +8,7 @@ import sys, os
 from caviar_gui.prody_parser import parsePDB
 from caviar_gui.cavity_identification import *
 from caviar_gui.cavity_characterization import *
-from caviar_gui.misc_tools.misc import export_pdb_cavity, export_pdb_subcavities, get_information_header,\
-join_information_cavities, get_final_sorted_cavs, print_scores
+from caviar_gui.misc_tools import *
 from argparse import ArgumentParser, ArgumentTypeError, RawTextHelpFormatter
 import textwrap
 
@@ -407,19 +406,14 @@ def run(arguments):
 
 	
 		# Combine information, exclude the cavities that were filtered before + cavities that are too
-		# hydrophobic (max_hydrophobicity)
+		# hydrophobic (max_hydrophobicity), find residues lining the cavities, and lots of information
+		# And ranks cavities
+		final_cavities, final_pharma, dict_all_info = cavity_cleansing(cavities_info, cavities,
+			pharmacophore_types, args.max_hydrophobicity,
+			selection_coords, selection_protein, dict_pdb_info,
+			args.exclude_missing, args.exclude_interchain, args.exclude_altlocs)
+	
 
-		filtered_cavities, filtered_pharma, info_list = combine_filterhydro(cavities_info, cavities, pharmacophore_types,
-			max_hydrophobicity = args.max_hydrophobicity)
-	
-		# Check if cavities are interchain cavities, miss residues/atoms, contain altloc atoms
-		cav_flags = check_protein_res(filtered_cavities, selection_coords, selection_protein, dict_pdb_info)
-		# Join this information with the scores previously calculated in a dictionary containing everything
-		dict_all_info = join_information_cavities(cav_flags, filtered_cavities, info_list, exclude_missing = args.exclude_missing,
-									exclude_interchain = args.exclude_interchain, exclude_altlocs = args.exclude_altlocs)
-	
-		# Rank cavities for futher exploitation, exclude if flags (defined in the previous function)
-		final_cavities, order = get_final_sorted_cavs(dict_all_info, filtered_cavities)
 		try:
 			if not final_cavities.any():
 				print(f"{args.code[0:-4]} does not have a cavity")
@@ -431,24 +425,24 @@ def run(arguments):
 		#list_asph = get_list_asph(final_cavities = final_cavities, grid = grid, grid_min = grid_min, grid_shape = grid_shape, radius = 3)
 	
 		# Creates cavity object to try to put all of the information together
-		cavities = fill_cavities_object(dict_all_info, order, filtered_cavities, filtered_pharma,
-		grid_decomposition, grid_min, grid_shape, gridspace = args.gridspace) # list_asph
-		
+		cavities = fill_cavities_object(dict_all_info, final_cavities, final_pharma,
+			grid_decomposition, grid_min, grid_shape, gridspace = args.gridspace) # list_asph
+
 		#from ligandability import calculate_ligandability
 		#print("mais bite??")
-		for cava in range(0, len(cavities)):
+		for cava in range(len(cavities)):
 			ligability = float(calculate_ligandability(cavities, cava))
 			cavities[cava].ligandability = ligability
 
 		# Print formatted information
-		print_scores(dict_all_info, order, pdbcode = args.code[0:-4])
+		print_scores(dict_all_info, args.code[0:-4], cavities)
 	
 		# Export a dummy pdb containing the filtered, ranked cavities with buriedness data (in B factor column)
 		# and pharmacophore types (in occupancy column)
-		export_pdb_cavity(final_cavities, filtered_pharma, args.code[0:-4], grid_min, grid_shape,
-			grid_decomposition, order, selection_protein = pdbobject,
-		gridspace = args.gridspace, outdir = args.out, withprot = args.withprot, #listlig = list_ligands,
-		oridir = str(args.sourcedir))
+		export_pdb_cavity(final_cavities, final_pharma, args.code[0:-4], grid_min, grid_shape,
+			grid_decomposition, selection_protein = pdbobject,
+		gridspace = args.gridspace, outdir = args.out, withprot = args.withprot, 
+		oridir = args.sourcedir)
 
 
 		# ------------------------------------------------------------------------------------------- #
@@ -458,7 +452,7 @@ def run(arguments):
 		#print(f"{args.code[0:-4]}_cavs.pdb written in ./caviar_out/")
 		fn = f"{args.code[0:-4]}_cavs.pdb"
 
-		data_forsubcav_routines = [filtered_cavities, order, grid_min, grid_shape, filtered_pharma,
+		data_forsubcav_routines = [final_cavities, grid_min, grid_shape, final_pharma,
 		cavities, pdbobject]
 		
 		return buf.getvalue(), fn, data_forsubcav_routines
@@ -470,21 +464,20 @@ def runsubcavities(data_forsubcav_routines, args, cavid = None):
 	# -------------------------------- SUBCAVITIES ROUTINES ------------------------------------- #
 	# ------------------------------------------------------------------------------------------- #
 	# Read the input data
-	filtered_cavities = data_forsubcav_routines[0]
-	order = data_forsubcav_routines[1]
-	grid_min = data_forsubcav_routines[2]
-	grid_shape = data_forsubcav_routines[3]
-	filtered_pharma = data_forsubcav_routines[4]
-	cavities = data_forsubcav_routines[5]
-	pdbobject = data_forsubcav_routines[6]
+	final_cavities = data_forsubcav_routines[0]
+	grid_min = data_forsubcav_routines[1]
+	grid_shape = data_forsubcav_routines[2]
+	final_pharma = data_forsubcav_routines[3]
+	cavities = data_forsubcav_routines[4]
+	pdbobject = data_forsubcav_routines[5]
 	print(args.out)
 	with StringIO() as bufsubcav, redirect_stdout(bufsubcav):
 		from caviar_gui.prody_parser import writePDB
 		writePDB(f"./caviar_out/{args.code[0:-4]}_subcavs.pdb", pdbobject)
 			# Iterate over liganded cavities only 
-		if len(filtered_cavities) == 1: # Don't go over everything if there's only one cavity!
+		if len(final_cavities) == 1: # Don't go over everything if there's only one cavity!
 			cav_of_interest = 0 # We have cavities from 0 but for comprehension we print from 1
-			im3d = transform_cav2im3d(filtered_cavities[0],
+			im3d = transform_cav2im3d(final_cavities[0],
 				grid_min, grid_shape)#, filtered_pharma[0])
 			labels = find_subcav_watershed(im3d, seeds_mindist = args.seeds_mindist)
 			subcavs = map_subcav_in_cav(cavities, cav_of_interest, labels,
@@ -496,7 +489,7 @@ def runsubcavities(data_forsubcav_routines, args, cavid = None):
 		elif cavid:
 			#try: #Could be a wrong cavity ID
 				cav_of_interest = int(cavid) - 1 # We have cavities from 0 but for comprehension we print from 1
-				im3d = transform_cav2im3d(filtered_cavities[order][cav_of_interest],
+				im3d = transform_cav2im3d(final_cavities[cav_of_interest],
 					grid_min, grid_shape)#, filtered_pharma[order][cav_of_interest])
 				labels = find_subcav_watershed(im3d, seeds_mindist = args.seeds_mindist)
 				subcavs = map_subcav_in_cav(cavities, cav_of_interest, labels,
@@ -509,7 +502,7 @@ def runsubcavities(data_forsubcav_routines, args, cavid = None):
 		# Iterate all cavities
 		else:
 			for cav_of_interest in range(0, len(cavities)):
-				im3d = transform_cav2im3d(filtered_cavities[order][cav_of_interest], grid_min,
+				im3d = transform_cav2im3d(final_cavities[cav_of_interest], grid_min,
 					grid_shape)#, filtered_pharma[order][cav_of_interest])
 				labels = find_subcav_watershed(im3d, seeds_mindist = args.seeds_mindist)
 				subcavs = map_subcav_in_cav(cavities, cav_of_interest, labels, args.code[:-4], grid_min, grid_shape)

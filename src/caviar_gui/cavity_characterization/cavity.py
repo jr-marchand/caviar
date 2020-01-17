@@ -55,7 +55,7 @@ class Cavity(set):
 		return f"Cavity {self.ID} size {self.size} median_bur {self.median_bur} hydrophobicity {self.hydrophobicity}"
 	
 
-def fill_cavities_object(dict_all_info, order, filtered_cavities, filtered_pharma, grid_decomposition,
+def fill_cavities_object(dict_all_info, final_cavities, final_pharma, grid_decomposition,
 	grid_min, grid_shape, gridspace = 1.0):  # list_asph,
 	"""
 	Uses the two classes above and the data previously generated to create
@@ -65,32 +65,34 @@ def fill_cavities_object(dict_all_info, order, filtered_cavities, filtered_pharm
 	"""
 	cavities = []
 	
-	for i in range(len(order)):
-		ID = int(order[i])
+	for i in range(len(final_cavities)):
 		
 		# Check if we have metal types in the fp
 		metaled = False
-		if 10 in filtered_pharma[ID]:
+		if 10 in final_pharma[i]:
 			metaled = True
 		# Or water
 		watered = False
-		if list(filter(lambda x: "HOH" in x, dict_all_info[ID]["cavity_residues"])):
+		if list(filter(lambda x: "HOH" in x, dict_all_info[i]["cavity_residues"])):
 			watered = True
 
-		cav = Cavity(ID = ID, residues = dict_all_info[ID]["cavity_residues"], chains = "A",
-					missing = dict_all_info[ID]["missingatoms"] + dict_all_info[ID]["missingres"],
-					score = dict_all_info[ID]["score"], size = dict_all_info[ID]["size"],
-					median_bur = dict_all_info[ID]["median_buriedness"], bur_7thq = dict_all_info[ID]["7thq_buriedness"],
-					hydrophobicity = dict_all_info[ID]["hydrophobicity"], interchain = dict_all_info[ID]["interchain"],
-					altlocs = dict_all_info[ID]["altlocs"], metaled = metaled, watered = True, subcavities = {})
+		cav = Cavity(ID = i, residues = dict_all_info[i]["cavity_residues"], chains = "A",
+			missing = dict_all_info[i]["missingatoms"] + dict_all_info[i]["missingres"],
+			score = dict_all_info[i]["score"], size = dict_all_info[i]["size"],
+			median_bur = dict_all_info[i]["median_buriedness"], bur_7thq = dict_all_info[i]["7thq_buriedness"],
+			hydrophobicity = dict_all_info[i]["hydrophobicity"], interchain = dict_all_info[i]["interchain"],
+			altlocs = dict_all_info[i]["altlocs"], metaled = metaled, watered = True, subcavities = {})
 		# Add points to cavity object
 		point_nb = 0
-		for point in filtered_cavities[ID]:
+		for point in final_cavities[i]:
 			index_point = get_index_of_coor(point, grid_min, grid_shape, gridspace = gridspace)
-			cav.gp.append(CavGridPoint(coords = point, pharma = filtered_pharma[ID][point_nb],
+			cav.gp.append(CavGridPoint(coords = point, pharma = final_pharma[i][point_nb],
 					bur = grid_decomposition[int(index_point)], #asph = list_asph[i][point_nb],
 					index = index_point))
 			point_nb += 1
 		cavities.append(cav)
+
 	
 	return cavities
+
+

@@ -1,19 +1,19 @@
 def main():
 
 	import sys
-	try:
+	#try:
 		# tweak to import sip from PyQt 5.11
 		#from PyQt5 import QtCore
 		#import sip
 		# end of tweak
-		from PyQt5 import QtWidgets, uic
-		from PyQt5.QtWidgets import QFileDialog
-		from caviar_gui import cavity_detect_gui
-	except:
-		print("It looks like we're missing some libraries here!")
-		print("Please install PyQt5, scipy, numpy, pyparse, skimage and networkx:")
-		print("conda install -c conda-forge pyparsing numpy scipy networkx scikit-image pyqt")
-		sys.exit()
+	from PyQt5 import QtWidgets, uic
+	from PyQt5.QtWidgets import QFileDialog
+	from caviar_gui import cavity_detect_gui
+	#except:
+	#	print("It looks like we're missing some libraries here!")
+	#	print("Please install PyQt5, scipy, numpy, pyparse, skimage and networkx:")
+	#	print("conda install -c conda-forge pyparsing numpy scipy networkx scikit-image pyqt")
+	#	sys.exit()
 
 	import os 
 	dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -66,50 +66,50 @@ def main():
 			exclude_missing = self.exclude_missing.isChecked()
 			exclude_interchain = self.exclude_interchain.isChecked()
 	
-			try:
-				parser = cavity_detect_gui.arguments()
-				global args
-				if user_chain:
-					args = parser.parse_args(["-sourcedir", sourcedir, "-code", code, "-user_chain",
-						str(user_chain), "-chain_id", chain,
-						"-exclude_missing", str(exclude_missing), "-exclude_interchain", str(exclude_interchain)])
-				else:
-					args = parser.parse_args(["-sourcedir", sourcedir, "-code", code,
+			#try:
+			parser = cavity_detect_gui.arguments()
+			global args
+			if user_chain:
+				args = parser.parse_args(["-sourcedir", sourcedir, "-code", code, "-user_chain",
+					str(user_chain), "-chain_id", chain,
 					"-exclude_missing", str(exclude_missing), "-exclude_interchain", str(exclude_interchain)])
-				
-				global data4subcav
-				report, cavity_file, data4subcav = cavity_detect_gui.run(args)
-				# Now write the pml file
-				from caviar_gui.gen_pmlfile import write_pmlfile
-				if self.bypharma.isChecked():
-					what = "pharmacophore"
-				elif self.byburi.isChecked():
-					what = "buriedness"
-				elif self.bycav.isChecked():
-					what = "bychain"
+			else:
+				args = parser.parse_args(["-sourcedir", sourcedir, "-code", code,
+				"-exclude_missing", str(exclude_missing), "-exclude_interchain", str(exclude_interchain)])
+			
+			global data4subcav
+			report, cavity_file, data4subcav = cavity_detect_gui.run(args)
+			# Now write the pml file
+			from caviar_gui.gen_pmlfile import write_pmlfile
+			if self.bypharma.isChecked():
+				what = "pharmacophore"
+			elif self.byburi.isChecked():
+				what = "buriedness"
+			elif self.bycav.isChecked():
+				what = "bychain"
+			else:
+				what = None
+			abs_cavfile = local + "/caviar_out/" + cavity_file
+			write_pmlfile(cavity_file = abs_cavfile, what = what, outputfile = str(code[:-4]+"_cavities.pml"))
+		
+			# Print output in results and log
+			self.OutputTextBrowser.setText(report)
+		
+			if self.pymol.isChecked():
+				from shutil import which
+				if which("pymol"):
+					import subprocess
+					subprocess.Popen(["pymol "+local+str(code[:-4]+"_cavities.pml")], shell=True,
+					stdin=None, stdout=None, stderr=True, close_fds=True)
 				else:
-					what = None
-				abs_cavfile = local + "/caviar_out/" + cavity_file
-				write_pmlfile(cavity_file = abs_cavfile, what = what, outputfile = str(code[:-4]+"_cavities.pml"))
-		
-				# Print output in results and log
-				self.OutputTextBrowser.setText(report)
-		
-				if self.pymol.isChecked():
-					from shutil import which
-					if which("pymol"):
-						import subprocess
-						subprocess.Popen(["pymol "+local+str(code[:-4]+"_cavities.pml")], shell=True,
-						stdin=None, stdout=None, stderr=True, close_fds=True)
-					else:
-						self.OutputTextBrowser.append("Could not open PyMOL: please set up a variable 'pymol' in your terminal")
+					self.OutputTextBrowser.append("Could not open PyMOL: please set up a variable 'pymol' in your terminal")
 	
-				# Here open subcavity windows
-				window_subcav = SubCav()
-				window_subcav.show()
+			# Here open subcavity windows
+			window_subcav = SubCav()
+			window_subcav.show()
 	
-			except:
-				self.OutputTextBrowser.setText("Hey! You forgot to give me a PDB file/code :( (mmCIF not yet supported)")
+			#except:
+			#	self.OutputTextBrowser.setText("Hey! You forgot to give me a PDB file/code :( (mmCIF not yet supported)")
 	
 	
 	class SubCav(QtWidgets.QWidget, Ui_SubCav):
