@@ -4,17 +4,17 @@ with open("README.MD", "r") as fh:
 	long_description = fh.read()
 
 setup(
-	name="caviar_gui",
+	name="caviar",
 	version="1.0",
 	entry_points = {
-        'console_scripts': [ 'caviar_gui=caviar_gui.gui:main']
+        'console_scripts': [ 'caviar_gui=caviar.gui:main', 'caviar=caviar.caviar:main']
         },
     author="Jean-Remy Marchand",
 	author_email="jeanremy.marchand@gmail.com",
-	description="A GUI for the automatic detection of protein cavities and their segmentation in subcavities",
+	description="A toolkit for the automatic detection of protein cavities and their segmentation in subcavities",
 	long_description=long_description,
 	long_description_content_type="text/markdown",
-	url="https://github.com/jr-marchand/CAVIAR-GUI",
+	url="https://github.com/jr-marchand/CAVIAR",
 
 	# When your source code is in a subdirectory under the project root, e.g.
 	# `caviar_gui/`, it is necessary to specify the `package_dir` argument.
