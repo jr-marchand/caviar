@@ -34,6 +34,7 @@ cf conda.recipe/meta.yaml, requirements/run section
 ## How to use
 
 - GUI
+
 Run "caviar_gui" from the command line 
 
 The first window that will open is to give the PDB file / PDB code to download from the RCSB PDB. You can also select one or more chains to work on, and decide whether to open pymol with the results and the coloring scheme.
@@ -41,6 +42,7 @@ The first window that will open is to give the PDB file / PDB code to download f
 Once you click the run button, a second window will open, for subcavity decomposition. You can either decompose all cavities detected earlier, or choose one. Same remark for pymol.
 
 - Command line tool
+
 The python command line tool is accessible via the command "caviar". More information with the -h option
 
 ## Credits
