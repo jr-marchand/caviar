@@ -358,13 +358,13 @@ def print_scores(dict_all_info, pdbcode, cavities):
 	idx = 0
 	print(f"PDB_chain  CavID  Ligab.   Score   Size  Hydrophob  Interchain  AltLocs  MissAtoms")
 	for cav in range(len(cavities)):
-		print(f'{pdbcode}_{dict_all_info[cav]["chains"]}\t{idx+1:>8d}   '
-			f'{cavities[idx].ligandability}     '
+		print(f'{pdbcode}_{dict_all_info[cav]["chains"]}\t{idx+1:>8d}    '
+			f'{cavities[idx].ligandability}      '
 			f'{dict_all_info[cav]["score"]:>4.1f} '
-			f'  {dict_all_info[cav]["size"]:>5d} '
-			f'{dict_all_info[cav]["hydrophobicity"]*100:>8.0f}%      '
-			f'{dict_all_info[cav]["interchain"]:>5d}\t{dict_all_info[cav]["altlocs"]:>5d}'
-			f' {dict_all_info[cav]["missingatoms"]+dict_all_info[cav]["missingres"]:>10d}')
+			f'  {dict_all_info[cav]["size"]:>5d}   '
+			f'{dict_all_info[cav]["hydrophobicity"]*100:>8.0f}%         '
+			f'{bool(dict_all_info[cav]["interchain"])}          {bool(dict_all_info[cav]["altlocs"])}'
+			f'          {bool(dict_all_info[cav]["missingatoms"]+dict_all_info[cav]["missingres"])}')
 		idx += 1
 		
 	return None

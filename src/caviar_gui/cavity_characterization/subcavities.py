@@ -11,8 +11,8 @@ from skimage.morphology import watershed
 from caviar_gui.cavity_identification.gridtools import get_index_of_coor_list
 from .cavity import Cavity
 
-__all__ = ['transform_cav2im3d', 'find_subcav_watershed', 'map_subcav_in_cav', 'transform_im3d2cav',
-			'transform_cav2im3d_entropy', 'find_subcav_watershed_entropy', 'merge_small_enclosed_subcavs']
+__all__ = ['transform_cav2im3d', 'find_subcav_watershed', 'map_subcav_in_cav', 
+		'print_subcavs_pphores', 'merge_small_enclosed_subcavs']
 
 def transform_cav2im3d(cavity_coords, grid_min, grid_shape):
 	"""
@@ -200,10 +200,33 @@ def merge_small_enclosed_subcavs(subcavs, minsize_subcavs = 50, min_contacts = 0
 		return subcavs
 
 
-def map_subcav_in_cav(cavities, cav_of_interest, labels, pdbcode, grid_min, grid_shape,
-	printv = True, printvv = True):
+def map_subcav_in_cav(labels, grid_min):
 	"""
 	Extract information from subcavities: return the coordinates as subcavs, 
+	/! function cut with print_subcavs_pphores in case we merged small subcavities
+	"""
+
+	subcavs = []
+	for i in range(1, np.amax(labels)+1):
+		
+		subcav = np.argwhere(labels == i) + grid_min
+		subcavs.append(subcav)
+
+	return subcavs
+
+
+def transform_im3d2cav(im3d, grid):
+	"""
+	Invert of original function. It's a simple command but nice to have it here with a good name
+	"""
+	cav_coor = grid[np.flatnonzero(im3d)]
+
+	return cav_coor
+
+
+def print_subcavs_pphores(cavities, subcavs, cav_of_interest, pdbcode, grid_min,
+	grid_shape, printv = True, printvv = True):
+	"""
 	print information about PP environment
 	and in particular, set in cavities object (class) the subcavity indices
 	"""
@@ -214,18 +237,15 @@ def map_subcav_in_cav(cavities, cav_of_interest, labels, pdbcode, grid_min, grid
 	names = ["none", "hydrophobic", "shouldnotbethere", "polar non charged", "shouldnotbethere", "shouldnotbethere",
 	"negative", "positive", "cys", "his", "metal"]
 
-	subcavs = []
-	for i in range(1, np.amax(labels)+1):
-		
-		subcav = np.argwhere(labels == i) + grid_min
-		subcavs.append(subcav)
-
+	for i in range(0, len(subcavs)):
 		# Find the corresponding indices in cavities[cav_of_interest]
+		subcav = subcavs[i]
+
 		oricav_indices = np.intersect1d(get_index_of_coor_list(subcav, grid_min, grid_shape),
 			get_index_of_coor_list(np.array([x.coords for x in cavities[cav_of_interest].gp]), grid_min, grid_shape),
 			return_indices=True)[2]
 		# Update the cavity object
-		cavities[cav_of_interest].subcavities[i-1] = oricav_indices
+		cavities[cav_of_interest].subcavities[i] = oricav_indices
 
 		if not printv:
 			continue
@@ -251,18 +271,7 @@ def map_subcav_in_cav(cavities, cav_of_interest, labels, pdbcode, grid_min, grid
 			# Get proportion of this value
 			prop = counts[j] / total
 			if prop > 0.1: # if more than 10% print info
-				print(f"subcavity {i-1} of cavity {cav_of_interest} of pdb {pdbcode[:-4]} has {np.round(prop*100)}"
+				print(f"subcavity {i+1} of cavity {cav_of_interest+1} of pdb {pdbcode[:-4]} has {np.round(prop*100)}"
 					f"% of pharmacophores of type {names[values[j]]}")
 
-
-	return subcavs
-
-
-def transform_im3d2cav(im3d, grid):
-	"""
-	Invert of original function. It's a simple command but nice to have it here with a good name
-	"""
-	cav_coor = grid[np.flatnonzero(im3d)]
-
-	return cav_coor
-
+	return None

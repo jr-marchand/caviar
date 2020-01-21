@@ -33,7 +33,7 @@
           </font>
          </property>
          <property name="text">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Subcavity decomposition panel&lt;/p&gt;&lt;p&gt;Cavities can be decomposed here according mostly to a geometric criterium,&lt;/p&gt;&lt;p&gt;augmented with pharmacophore information (Shannon's entropy of pharmacophore types)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Subcavity decomposition panel.&lt;/p&gt;&lt;p&gt;Cavities are decomposed into subcavities based on geometry.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="textFormat">
           <enum>Qt::RichText</enum>

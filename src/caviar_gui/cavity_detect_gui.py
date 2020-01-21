@@ -155,14 +155,14 @@ def arguments():
 
 	parser.add_argument("-boxmargin", type = float, help=": Margin around the protein \n"
 						"  (default: 2.0)", default = 2.0)
-	parser.add_argument("-max_distance", type = float, help=": Maximum distance for a solvent grid point to the protein \n"
+	parser.add_argument("-maxdistance", type = float, help=": Maximum distance for a solvent grid point to the protein \n"
 						"  (default: 6.0)", default = 6.0)
 	parser.add_argument("-gridspace", type=float, help=": Grid spacing \n"
 						"  (default: 1.0)", default = 1.0)
 	parser.add_argument("-filevdwsizes", type=str, help=": file (with path) containing van der Waals radius of"
 						" protein atoms. \n (default: cavity_identification/vdw_size_atoms.dat",
 						default = home+"cavity_identification/vdw_size_atoms.dat")
-	parser.add_argument("-size_probe", type = float, help=": Size of the probe for defining protein points."
+	parser.add_argument("-sizeprobe", type = float, help=": Size of the probe for defining protein points."
 						" This size is added to the vdW radius from vdw_size_atoms.dat."
 						"\n (default: 1.0)", default = 1.0)
 	parser.add_argument("-radius_cube", type=int, help=": Size of the cubic solvation shell"
@@ -179,6 +179,10 @@ def arguments():
 	parser.add_argument("-min_burial_enc", type = int, help=": Equivalent to min_burial but for the"
 						" second pass (cf help of radius_cube_enc). \n (default: 8)", default = 8)
 
+
+# ---------------------- CAVITY FILTERING ----------------------- #
+
+
 	parser.add_argument("-min_points", type = int, help=": Minimum number of points to consider a group of cavity points"
 						" as an actual cavity. Is modified by gridspace argument (real value = min_points * 1 / gridspace).\n"
 						"If gridspace = 0.5, the real value used for min_points is doubled."
@@ -194,11 +198,6 @@ def arguments():
 	parser.add_argument("-min_burial_q", type = int, help=": Minimum buriedness value of grid points at the xth quantile "
 						" (strictly greater than) [parameter -quantile]. \n (default: 10)", default = 10)
 	parser.add_argument("-quantile", type = float, help=": Quantile related to min_burial_q \n (default: 0.8)", default = 0.8)
-
-
-# ----------------------- CAVITY CHARACT/FILTERING ------------------------ #
-
-
 	parser.add_argument("-max_hydrophobicity", type = float, help=": Maximum percentage of hydrophobic points in the cavity."
 						" \n (default: 1.0)", default = 1.0)
 	parser.add_argument("-exclude_interchain", type = str2bool, help=": Exclude cavities that are in between different protein chains."
@@ -360,35 +359,56 @@ def run(arguments):
 		grid_set = SetOfPoints(grid)
 		size = len(grid)
 	
-		# Main wrapper for cavity identification. A bit of cavity filtering is done here too
-		# but it's all geometry based. More will be done afterwards with pharmacophores
-		early_cavities, cavities_info, grid_decomposition = wrapper_early_cav_identif(grid,
-			grid_min, grid_shape, selection_protein, selection_coords,
-			file_sizes = args.filevdwsizes, size_probe = args.size_probe, 
-			maxdistance = args.max_distance, radius_cube = args.radius_cube, min_burial = args.min_burial,
-			radius_cube_enc = args.radius_cube_enc, min_burial_enc = args.min_burial_enc,
-			gridspace = args.gridspace, min_degree = args.min_degree, radius = 2,
-			trim_score = args.trim_score, min_points = args.min_points, min_burial_q = args.min_burial_q,
-			quantile = args.quantile)
-		try:
-			early_cavities[0]
-		except:
+		# Identify points of the grid that are within the surface of the protein
+
+		grid_protein, grid_solv, grid_decomposition_0 = find_protein_points_variablevolume(grid, selection_protein,
+			file_sizes = args.filevdwsizes, size_probe = args.sizeprobe)
+
+		## Filter out bulk solvent, ie solvent grid points that are > args.maxdistance from the protein
+		## due to the cubic shape of the box
+
+		nonbulk_gridsolv = filter_out_bulksolvent(selection_coords = selection_coords, grid = grid, grid_solv = grid_solv, maxdistance = args.maxdistance)
+
+		# Most time consuming function (less now that we trim out bulk solvent)
+		# Scans solvent grid points to set the buriedness of all grid points and identify
+		# potential cavity grid points
+
+		grid_decomposition = set_burial_scandir_np(grid_solv = nonbulk_gridsolv, grid_decomposition = grid_decomposition_0, grid_protein = grid_protein,
+			grid_shape = grid_shape, radius_cube = args.radius_cube, min_burial = args.min_burial,
+			radius_cube_enc = args.radius_cube_enc, min_burial_enc = args.min_burial_enc)
+
+		# Generate a graph from potential grid points. Filter out self loops, bridges, not well connected nodes
+		# (with min_degree)
+
+		G, cav = generate_graph(grid_decomposition, grid, grid_min, grid_shape, gridspace = args.gridspace,
+			min_degree = args.min_degree, radius = 2, score = args.trim_score)
+		if G == None:
 			print(f"{args.code[0:-4]} does not have a cavity")
-			return None
-		
+			return buf.getvalue() 
+	
+	
 		# ------------------------------------------------------------------------------------------- #
 		# ------------------------------- CAVITY FILTERING ROUTINES --------------------------------- #
 		# ------------------------------------------------------------------------------------------- #
 	
+	
+		# Filter out small cavities
+		array_cavs_coords = get_large_cavities_from_graph(G, cav, min_points = args.min_points * 1/args.gridspace) # adapt number of points with gridspace
+		# Score cavities, filter out cavities that have less that 1-quantile grid points
+		# buried with a min_burial_q
+		cavities, cavities_info = filter_cavities(array_cavs_coords, grid_decomposition, grid_min, grid_shape, gridspace = args.gridspace,
+			min_burial_q = args.min_burial_q, quantile = args.quantile)
+
+	
 		# Set pharmacophore properties to cavity grid points
 
-		pharmacophore_types = set_pharmacophore_type(early_cavities, selection_protein, selection_coords)
+		pharmacophore_types = set_pharmacophore_type(cavities, selection_protein, selection_coords)
 
 	
 		# Combine information, exclude the cavities that were filtered before + cavities that are too
 		# hydrophobic (max_hydrophobicity), find residues lining the cavities, and lots of information
 		# And ranks cavities
-		final_cavities, final_pharma, dict_all_info = cavity_cleansing(cavities_info, early_cavities,
+		final_cavities, final_pharma, dict_all_info = cavity_cleansing(cavities_info, cavities,
 			pharmacophore_types, args.max_hydrophobicity,
 			selection_coords, selection_protein, dict_pdb_info,
 			args.exclude_missing, args.exclude_interchain, args.exclude_altlocs)
@@ -460,23 +480,26 @@ def runsubcavities(data_forsubcav_routines, args, cavid = None):
 			im3d = transform_cav2im3d(final_cavities[0],
 				grid_min, grid_shape)#, filtered_pharma[0])
 			labels = find_subcav_watershed(im3d, seeds_mindist = args.seeds_mindist)
-			subcavs = map_subcav_in_cav(cavities, cav_of_interest, labels,
-				args.code[:-4], grid_min, grid_shape)
-			subcavs = merge_small_enclosed_subcavs(subcavs, minsize_subcavs = 50, min_contacts = 0.667, v = False)
+			subcavs = map_subcav_in_cav(labels, grid_min)
+			subcavs = merge_small_enclosed_subcavs(subcavs, minsize_subcavs = 50,
+				min_contacts = 0.667, v = False)
+			print_subcavs_pphores(cavities, subcavs, cav_of_interest, args.code, grid_min, grid_shape,
+						printv = True, printvv = True)
 			export_pdb_subcavities(subcavs, args.code[:-4], grid_min, grid_shape,
 				gridspace = 1.0, outdir = args.out, oridir = str(args.sourcedir))
 
 		elif cavid:
 			#try: #Could be a wrong cavity ID
-				cav_of_interest = int(cavid) - 1 # We have cavities from 0 but for comprehension we print from 1
-				im3d = transform_cav2im3d(final_cavities[cav_of_interest],
+			cav_of_interest = int(cavid) - 1 # We have cavities from 0 but for comprehension we print from 1
+			im3d = transform_cav2im3d(final_cavities[cav_of_interest],
 					grid_min, grid_shape)#, filtered_pharma[order][cav_of_interest])
-				labels = find_subcav_watershed(im3d, seeds_mindist = args.seeds_mindist)
-				subcavs = map_subcav_in_cav(cavities, cav_of_interest, labels,
-					args.code[:-4], grid_min, grid_shape)
-				subcavs = merge_small_enclosed_subcavs(subcavs, minsize_subcavs = 50, min_contacts = 0.667, v = False)
-				export_pdb_subcavities(subcavs, args.code[:-4], grid_min, grid_shape, cavid = cavid,
-					gridspace = 1.0, outdir = args.out, oridir = str(args.sourcedir))
+			subcavs = map_subcav_in_cav(labels, grid_min)
+			subcavs = merge_small_enclosed_subcavs(subcavs, minsize_subcavs = 50,
+				min_contacts = 0.667, v = False)
+			print_subcavs_pphores(cavities, subcavs, cav_of_interest, args.code, grid_min, grid_shape,
+						printv = True, printvv = True)
+			export_pdb_subcavities(subcavs, args.code[:-4], grid_min, grid_shape,
+				gridspace = 1.0, outdir = args.out, oridir = str(args.sourcedir))
 			#except:
 			#	print(f"Are you sure the cavity ID is an existing cavity?")
 		# Iterate all cavities
@@ -485,11 +508,13 @@ def runsubcavities(data_forsubcav_routines, args, cavid = None):
 				im3d = transform_cav2im3d(final_cavities[cav_of_interest], grid_min,
 					grid_shape)#, filtered_pharma[order][cav_of_interest])
 				labels = find_subcav_watershed(im3d, seeds_mindist = args.seeds_mindist)
-				subcavs = map_subcav_in_cav(cavities, cav_of_interest, labels, args.code[:-4], grid_min, grid_shape)
-				subcavs = merge_small_enclosed_subcavs(subcavs, minsize_subcavs = 50, min_contacts = 0.667, v = False)
-				export_pdb_subcavities(subcavs, args.code[:-4], grid_min, grid_shape, cavid = cav_of_interest,
-				gridspace = 1.0, outdir = args.out, oridir = str(args.sourcedir))
-	
+				subcavs = map_subcav_in_cav(labels, grid_min)
+				subcavs = merge_small_enclosed_subcavs(subcavs, minsize_subcavs = 50,
+					min_contacts = 0.667, v = False)
+				print_subcavs_pphores(cavities, subcavs, cav_of_interest, args.code, grid_min, grid_shape,
+							printv = True, printvv = True)
+				export_pdb_subcavities(subcavs, args.code[:-4], grid_min, grid_shape,
+					gridspace = 1.0, outdir = args.out, oridir = str(args.sourcedir))	
 		fn = f"{args.code[0:-4]}_subcavs.pdb"
 		return bufsubcav.getvalue(), fn
 
