@@ -1,6 +1,6 @@
-# CAVIAR-GUI
+# CAVIAR
 
-CAVity Identification And Rationalization GUI
+CAVity Identification And Rationalization -- GUI and command line tool
 
 ## General information
 
@@ -18,11 +18,11 @@ This project aims at creating a python plateform to:
 This package is hosted on anaconda.org
 
 To install it, simply run:
-conda -c jr-marchand caviar_gui
+conda -c jr-marchand caviar
 
 To install it in a brand new environment:
 
-conda create -n myenv -c jr-marchand python=3.7 caviar_gui
+conda create -n caviar -c jr-marchand caviar
 
 To install it locally from the git repository:
 
@@ -33,12 +33,15 @@ cf conda.recipe/meta.yaml, requirements/run section
 
 ## How to use
 
+- GUI
 Run "caviar_gui" from the command line 
 
 The first window that will open is to give the PDB file / PDB code to download from the RCSB PDB. You can also select one or more chains to work on, and decide whether to open pymol with the results and the coloring scheme.
 
 Once you click the run button, a second window will open, for subcavity decomposition. You can either decompose all cavities detected earlier, or choose one. Same remark for pymol.
 
+- Command line tool
+The python command line tool is accessible via the command "caviar". More information with the -h option
 
 ## Credits
 
@@ -50,9 +53,10 @@ Weekly discussions with Peter Ertl and Bernard Pirard
 
 
 This package relies on open source software:
-* python 3 (< 3.8)
+* python 3 (< 3.8 because of compatibility with networkx)
 * pyparse for arguments parsing
 * scipy, numpy, networkx for cavity identification
 * skimage (scikit-image) for subcavity decomposition
+* sklearn for ligandability predictions
 * PyQt5 for the GUI -- restricted to version pyqt 5.9.2
 
