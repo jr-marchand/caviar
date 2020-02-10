@@ -4,15 +4,52 @@ This module defines some functions aiming at describing subcavities
 and caracterize their shapes
 """
 
+import os
 import numpy as np
 from scipy import ndimage
 from skimage.feature import peak_local_max
 from skimage.morphology import watershed
 from caviar.cavity_identification.gridtools import get_index_of_coor_list
+from caviar.misc_tools.misc import export_pdb_subcavities
 from .cavity import Cavity
 
-__all__ = ['transform_cav2im3d', 'find_subcav_watershed', 'map_subcav_in_cav', 
-		'print_subcavs_pphores', 'merge_small_enclosed_subcavs']
+__all__ = ['wrapper_subcavities']
+
+
+def wrapper_subcavities(final_cavities, cav_of_interest, grid_min, grid_shape, cavities, code, out, sourcedir, list_ligands,
+	seeds_mindist = 3, merge_subcavs = True, minsize_subcavs = 50, min_contacts = 0.667, v = False,
+	printv = False, print_pphores_subcavs = False, export_subcavs = False, gridspace = 1.0):
+	"""
+	Wraps transform_cav2im3d, find_subcav_watershed, map_subcav_in_cav
+	merge_small_enclosed_subcavs, print_subcavs_pphores and export_pdb_subcavities
+	as one function
+	"""
+
+	# Convert to a 3D image for skimage
+	im3d = transform_cav2im3d(final_cavities[cav_of_interest], grid_min,
+		grid_shape) #filtered_pharma[order][cav_of_interest])
+	# Perform the watershed algorithm, including entropy of pharmacophores 
+	labels = find_subcav_watershed(im3d, seeds_mindist)
+	# Map results of watershed to grid points of cavity
+	#subcavs = map_subcav_in_cav(cavities, cav_of_interest, labels, args.code, grid_min, grid_shape)
+	subcavs = map_subcav_in_cav(labels, grid_min)
+	if merge_subcavs == True:
+		subcavs = merge_small_enclosed_subcavs(subcavs, minsize_subcavs = minsize_subcavs,
+			min_contacts = min_contacts, v = v)
+	print_subcavs_pphores(cavities, subcavs, cav_of_interest, code, grid_min, grid_shape,
+		printv = printv, printvv = print_pphores_subcavs)
+	
+	# Export
+	if export_subcavs:
+		try:
+			os.mkdir(out)
+		except:
+			pass
+		export_pdb_subcavities(subcavs, code[:-4], grid_min, grid_shape,
+			cavid = cav_of_interest, gridspace = gridspace, outdir = out,
+			listlig = list_ligands, oridir = sourcedir)
+
+
 
 def transform_cav2im3d(cavity_coords, grid_min, grid_shape):
 	"""

@@ -255,7 +255,7 @@ def find_ligand_presence(final_cavities, list_ligands, list_lig_coords, pdbcode,
 			coverage = covered / size_lig
 			coverage_cav = cav_covered_by_lig / size_cav # not really proof for any use, watch out!
 		except:
-			value = "LIG NOT FOUND IN CAVITIES"
+			value = "666"
 			coverage = 0.
 			coverage_cav = 0.
 
@@ -290,7 +290,7 @@ def find_ligand_presence(final_cavities, list_ligands, list_lig_coords, pdbcode,
 	howbig = []
 	if not list_lig_coords:
 		if printflag:
-			print(f"No ligand")
+			print(f"{pdbcode} : does not have the specified ligand")
 		return None
 	for ligand in list_lig_coords:
 		howbig.append(len(ligand))
@@ -316,17 +316,17 @@ def find_ligand_presence(final_cavities, list_ligands, list_lig_coords, pdbcode,
 	if printflag:
 		if tocenter:
 			for key, value in dict_coverage.items():
-				print(f"Ligand {str(list_ligands[int(key)])} ({howbig[int(key)]} atoms) is found within 4A"
-					f" of the center of cavity {str(value)} of {pdbcode}")
+				print(f"{pdbcode} : Ligand {str(list_ligands[int(key)])} ({howbig[int(key)]} atoms) is found within 4A"
+					f" of the center of cavity {str(value)}")
 		else:
 			for key, value in dict_coverage.items():
-				print(f"Ligand {str(list_ligands[int(key)])} ({howbig[int(key)]} atoms) is found in cavity {value[0]} of {pdbcode} and has {value[1]*100}% of atoms covered")
+				print(f"{pdbcode} : Ligand {str(list_ligands[int(key)])} ({howbig[int(key)]} atoms) is found in cavity {value[0]} and has {value[1]*100}% of atoms covered")
 
 	return dict_coverage
 
 def export_clean_cav_ligand_info(dict_coverage, list_ligands, list_lig_coords, cavities):
 	"""
-	Helpful for storage because with what's above it's a horrible mess
+	Helpful for the database storage because with what's above it's a horrible mess
 	"""
 	try:
 		dict_coverage.items()
@@ -335,7 +335,7 @@ def export_clean_cav_ligand_info(dict_coverage, list_ligands, list_lig_coords, c
 	list_covered_ligands = []
 	dict_cavid_lig_bool = {}
 	for ligid, value in dict_coverage.items():
-		if value[1] > 0.3:
+		if value[1] > 0.01:
 			ligname = list_ligands[int(ligid)]
 			ligsize = len(list_lig_coords[int(ligid)])
 			resname = ligname[0:3]
@@ -344,6 +344,9 @@ def export_clean_cav_ligand_info(dict_coverage, list_ligands, list_lig_coords, c
 			# 3 letters code, cavity chain ID, chain ID, residue number, lig size, coverage % 
 			list_covered_ligands.append([resname, value[0], chid, resnb, ligsize, value[1]])
 			cavities[int(value[0])].liganded = resname
+			cavities[int(value[0])].sizelig = ligsize
+			cavities[int(value[0])].cavcov = value[2]
+			cavities[int(value[0])].ligcov = value[1]
 			dict_cavid_lig_bool[value[0]] = 1
 		else:
 			dict_cavid_lig_bool[value[0]] = 0
@@ -358,15 +361,29 @@ def print_scores(dict_all_info, pdbcode, cavities):
 	idx = 0
 	print(f"PDB_chain  CavID  Ligab.   Score   Size  Hydrophob  Interchain  AltLocs  MissAtoms")
 	for cav in range(len(cavities)):
-		print(f'{pdbcode}_{dict_all_info[cav]["chains"]}\t{idx+1:>8d}    '
-			f'{cavities[idx].ligandability}      '
+		print(f'{pdbcode}_{dict_all_info[cav]["chains"]}\t{idx+1:>8d}   '
+			f'{cavities[idx].ligandability}     '
 			f'{dict_all_info[cav]["score"]:>4.1f} '
-			f'  {dict_all_info[cav]["size"]:>5d}   '
-			f'{dict_all_info[cav]["hydrophobicity"]*100:>8.0f}%         '
-			f'{bool(dict_all_info[cav]["interchain"])}          {bool(dict_all_info[cav]["altlocs"])}'
-			f'          {bool(dict_all_info[cav]["missingatoms"]+dict_all_info[cav]["missingres"])}')
+			f'  {dict_all_info[cav]["size"]:>5d} '
+			f'{dict_all_info[cav]["hydrophobicity"]*100:>8.0f}%      '
+			f'{dict_all_info[cav]["interchain"]:>5d}\t{dict_all_info[cav]["altlocs"]:>5d}'
+			f' {dict_all_info[cav]["missingatoms"]+dict_all_info[cav]["missingres"]:>10d}')
 		idx += 1
-		
+
+	return None
+
+def _print_scores(dict_all_info, order, pdbcode):
+	"""
+	Returns the information with the order for export (final_cavities)
+	"""
+	idx = 0
+	print(f"PDB  Cavity_ID, score, size, median_bur, 7thq_bur, hydrophob, interchain, altlocs, missingatoms_res")
+	for cav in order:
+		print(f'{pdbcode} {idx:<10d}{dict_all_info[cav]["score"]:>5.1f}{dict_all_info[cav]["size"]:>7d}{int(dict_all_info[cav]["median_buriedness"]):>8d}'
+			f'{int(dict_all_info[cav]["7thq_buriedness"]):>10d}{dict_all_info[cav]["hydrophobicity"]:>10.2f}{dict_all_info[cav]["interchain"]:>10d}'
+			f'{dict_all_info[cav]["altlocs"]:>10d}{dict_all_info[cav]["missingatoms"]+dict_all_info[cav]["missingres"]:>10d}')
+		idx += 1
+
 	return None
 
 def export_pdb_cavity(final_cavities, final_pharma, pdbcode, grid_min, grid_shape,
@@ -488,7 +505,7 @@ def export_pdb_subcavities(subcavs, pdbcode, grid_min, grid_shape, cavid = 1, gr
 	for i in range(0, len(subcavs)):
 		pdbdummy = []
 		for coordinates in subcavs[i]:
-			pdbdummy.append(f"HETATM    1  N   SUB {chr(int(cavid)+96+1).upper()}{i+1:>4}    {coordinates[0]:8.3f}{coordinates[1]:8.3f}"
+			pdbdummy.append(f"HETATM    1  N   SUB {chr(cavid+96+1).upper()} {i+1:>3}    {coordinates[0]:8.3f}{coordinates[1]:8.3f}"
 				f"{coordinates[2]:8.3f}  1.00   1.00           N\n")
 		a = open(outdir + pdbcode + "_subcavs.pdb", "a")
 		a.write("".join(pdbdummy))

@@ -33,6 +33,9 @@ class Cavity(set):
 		altlocs, metaled, watered, subcavities):
 		self.metaled = metaled
 		self.liganded = None
+		self.sizelig = 0
+		self.cavcov = 0.
+		self.ligcov = 0.
 		self.ligandability = 0.
 		self.watered = watered
 		self.fp1 = []
@@ -90,6 +93,7 @@ def fill_cavities_object(dict_all_info, final_cavities, final_pharma, grid_decom
 					bur = grid_decomposition[int(index_point)], #asph = list_asph[i][point_nb],
 					index = index_point))
 			point_nb += 1
+
 		cavities.append(cav)
 
 	

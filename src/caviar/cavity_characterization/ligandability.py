@@ -11,6 +11,12 @@ sklearn.neighbors import KNeighborsClassifier
 sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 sklearn.naive_bayes import GaussianNB, BernoulliNB, CategoricalNB, ComplementNB, MultinomialNB
 sklearn.svm import SVC (tried different kernels, gamma, etc)
+sklearn.neural_network import MLPClassifier (max_iter = 1000)
+sklearn.gaussian_process import GaussianProcessClassifier(RBF kernel)
+sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
+sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
+(Basically lists from https://scikit-learn.org/stable/auto_examples/classification/plot_classifier_comparison.html
+and https://github.com/susanli2016/Machine-Learning-with-Python/blob/master/Solving%20A%20Simple%20Classification%20Problem%20with%20Python.ipynb)
 
 knn was best according to: precision (weighted 0.89, macro 0.91),
 accuracy (0.86), recall(weighted 0.86, macro 0.82), f1-score (weighted 0.86, macro 0.84)
@@ -20,11 +26,9 @@ accuracy (0.86), recall(weighted 0.86, macro 0.82), f1-score (weighted 0.86, mac
 
 import numpy as np
 import os
-
-__all__ = ['calculate_ligandability']
-
 path = os.path.dirname(__file__)
 
+__all__ = ['calculate_ligandability']
 
 def calculate_ligandability(cavities, cavid, scaler_pickle = path+"/scaler.pickle", knn_pickle = path+"/knn.pickle"):
 	"""

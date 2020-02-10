@@ -101,7 +101,7 @@ def arguments():
 
 
 	parser.add_argument("-out", type = str, help = ":  Path/to/outfolder.\n  "
-						"(default: ./cavitome_out/", default="./cavitome_out")
+						"(default: ./caviar_out/", default="./caviar_out")
 	parser.add_argument("-export_cavities", type = str2bool, help = ": Export PDB files with cavities (True/False) \n"
 						"  (default: True)", default = True)
 	parser.add_argument("-withprot", type = str2bool, help = ": Export it with the protein (True/False) \n"
@@ -512,79 +512,37 @@ def run(arguments):
 				pass
 			writePDB(args.out + args.code[:-4] + "_subcavs.pdb", selection_protein)
 		if len(final_cavities) == 1: # Don't go over everything if there's only one cavity!				
-			# Convert to a 3D image for skimage
-			im3d = transform_cav2im3d(final_cavities[0], grid_min,
-				grid_shape)#, filtered_pharma[0])
-			# Perform the watershed algorithm, including entropy of pharmacophores 
-			labels = find_subcav_watershed(im3d, seeds_mindist = args.seeds_mindist)
-			# Map results of watershed to grid points of cavity
-			#subcavs = map_subcav_in_cav(cavities, 0, labels, args.code, grid_min, grid_shape)
-			subcavs = map_subcav_in_cav(labels, grid_min)
-			if args.merge_subcavs == True:
-				subcavs = merge_small_enclosed_subcavs(subcavs, minsize_subcavs = 50,
-					min_contacts = 0.667, v = False)
-			print_subcavs_pphores(cavities, subcavs, 0, args.code, grid_min, grid_shape, printv = True,
-						printvv = args.print_pphores_subcavs)
-			# Export
-			if args.export_subcavs:
-				try:
-					os.mkdir(args.out)
-				except:
-					pass
-				export_pdb_subcavities(subcavs, args.code[:-4], grid_min, grid_shape,
-					gridspace = 1.0, outdir = args.out, listlig = list_ligands, oridir = args.sourcedir)
+			wrapper_subcavities(final_cavities, cav_of_interest, grid_min, grid_shape,
+			cavities, args.code, args.out, args.sourcedir, list_ligands,
+			seeds_mindist = args.seeds_mindist, merge_subcavs = args.merge_subcavs, minsize_subcavs = 50,
+			min_contacts = 0.667, v = False, printv = args.print_pphores_subcavs,
+			print_pphores_subcavs = args.print_pphores_subcavs, export_subcavs = args.export_subcavs,
+			gridspace = args.gridspace)
 		# Iterate over liganded cavities only 
 		elif args.subcavs_lig_only:
 			try: #Could be activated without ligand
 				for key,value in dict_coverage.items():
 					cav_of_interest = int(value[0])
-					# Convert to a 3D image for skimage
-					im3d = transform_cav2im3d(final_cavities[cav_of_interest], grid_min,
-						grid_shape) #filtered_pharma[order][cav_of_interest])
-					# Perform the watershed algorithm, including entropy of pharmacophores 
-					labels = find_subcav_watershed(im3d, seeds_mindist = args.seeds_mindist)
-					# Map results of watershed to grid points of cavity
-					#subcavs = map_subcav_in_cav(cavities, cav_of_interest, labels, args.code, grid_min, grid_shape)
-					subcavs = map_subcav_in_cav(labels, grid_min)
-					if args.merge_subcavs == True:
-						subcavs = merge_small_enclosed_subcavs(subcavs, minsize_subcavs = 50,
-							min_contacts = 0.667, v = False)
-					print_subcavs_pphores(cavities, subcavs, cav_of_interest, args.code, grid_min, grid_shape,
-						printv = True, printvv = args.print_pphores_subcavs)
-			
-					# Export
-					if args.export_subcavs:
-						try:
-							os.mkdir(args.out)
-						except:
-							pass
-						export_pdb_subcavities(subcavs, args.code[:-4], grid_min, grid_shape,
-							cavid = cav_of_interest, gridspace = 1.0, outdir = args.out,
-							listlig = list_ligands, oridir = args.sourcedir)
+					wrapper_subcavities(final_cavities, cav_of_interest, grid_min, grid_shape,
+					cavities, args.code, args.out, args.sourcedir, list_ligands,
+					seeds_mindist = args.seeds_mindist, merge_subcavs = args.merge_subcavs, minsize_subcavs = 50,
+					min_contacts = 0.667, v = False, printv = args.print_pphores_subcavs,
+					print_pphores_subcavs = args.print_pphores_subcavs, export_subcavs = args.export_subcavs,
+					gridspace = args.gridspace)
+
 			except:
 				print(f"{args.code[0:-4]} does not have a liganded cavity for subcavity decomposition"
 					". Please review the -subcavs_lig_only option")
 		# Iterate all cavities
 		else:
 			for cav_of_interest in range(len(cavities)):
-				im3d = transform_cav2im3d(final_cavities[cav_of_interest], grid_min,
-					grid_shape)#, filtered_pharma[order][cav_of_interest])
-				labels = find_subcav_watershed(im3d, seeds_mindist = args.seeds_mindist)
+				wrapper_subcavities(final_cavities, cav_of_interest, grid_min, grid_shape,
+				cavities, args.code, args.out, args.sourcedir, list_ligands,
+				seeds_mindist = args.seeds_mindist, merge_subcavs = args.merge_subcavs, minsize_subcavs = 50,
+				min_contacts = 0.667, v = False, printv = args.print_pphores_subcavs,
+				print_pphores_subcavs = args.print_pphores_subcavs, export_subcavs = args.export_subcavs,
+				gridspace = args.gridspace)
 
-				subcavs = map_subcav_in_cav(labels, grid_min)
-				if args.merge_subcavs == True:
-					subcavs = merge_small_enclosed_subcavs(subcavs, minsize_subcavs = 50,
-						min_contacts = 0.667, v = False)
-				print_subcavs_pphores(cavities, subcavs, cav_of_interest, args.code, grid_min,
-					grid_shape, printv = True, printvv = args.print_pphores_subcavs)
-				if args.export_subcavs:
-					try:
-						os.mkdir(args.out)
-					except:
-						pass
-					export_pdb_subcavities(subcavs, args.code[:-4], grid_min, grid_shape,
-						cavid = cav_of_interest, gridspace = 1.0, outdir = args.out,
-						listlig = list_ligands, oridir = args.sourcedir)
 
 
 	# ------------------------------------------------------------------------------------------- #
