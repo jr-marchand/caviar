@@ -3,7 +3,7 @@
 This module defines support classes and functions.
 """
 
-__all__ = ['misc', 'cavity_cleaning', 'gen_pmlfile.py']
+__all__ = ['misc', 'cavity_cleaning', 'gen_pmlfile']
 
 from . import misc
 from .misc import *
