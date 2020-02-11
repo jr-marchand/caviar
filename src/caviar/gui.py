@@ -80,7 +80,7 @@ def main():
 			global data4subcav
 			report, cavity_file, data4subcav = cavity_detect_gui.run(args)
 			# Now write the pml file
-			from caviar.gen_pmlfile import write_pmlfile
+			from caviar.misc_tools.gen_pmlfile import write_pmlfile
 			if self.bypharma.isChecked():
 				what = "pharmacophore"
 			elif self.byburi.isChecked():
@@ -129,7 +129,7 @@ def main():
 	
 			report_subcavs, subcavity_file = cavity_detect_gui.runsubcavities(data4subcav, args, cavid = cavID)
 			# Now write the pml file
-			from caviar.gen_pmlfile import write_pmlsubcavs
+			from caviar.misc_tools.gen_pmlfile import write_pmlsubcavs
 			abs_subcavfile = local + "/caviar_out/" + subcavity_file
 			write_pmlsubcavs(cavity_file = abs_subcavfile, outputfile = str(code[:-4]+"_subcavities.pml"))
 		
