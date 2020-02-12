@@ -33,6 +33,7 @@ class Cavity(set):
 		altlocs, metaled, watered, subcavities):
 		self.metaled = metaled
 		self.liganded = None
+		self.ligfull = None
 		self.sizelig = 0
 		self.cavcov = 0.
 		self.ligcov = 0.
@@ -79,12 +80,12 @@ def fill_cavities_object(dict_all_info, final_cavities, final_pharma, grid_decom
 		if list(filter(lambda x: "HOH" in x, dict_all_info[i]["cavity_residues"])):
 			watered = True
 
-		cav = Cavity(ID = i, residues = dict_all_info[i]["cavity_residues"], chains = "A",
+		cav = Cavity(ID = i, residues = dict_all_info[i]["cavity_residues"], chains = dict_all_info[i]["chains"],
 			missing = dict_all_info[i]["missingatoms"] + dict_all_info[i]["missingres"],
 			score = dict_all_info[i]["score"], size = dict_all_info[i]["size"],
 			median_bur = dict_all_info[i]["median_buriedness"], bur_7thq = dict_all_info[i]["7thq_buriedness"],
 			hydrophobicity = dict_all_info[i]["hydrophobicity"], interchain = dict_all_info[i]["interchain"],
-			altlocs = dict_all_info[i]["altlocs"], metaled = metaled, watered = True, subcavities = {})
+			altlocs = dict_all_info[i]["altlocs"], metaled = metaled, watered = watered, subcavities = {})
 		# Add points to cavity object
 		point_nb = 0
 		for point in final_cavities[i]:
