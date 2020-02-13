@@ -16,17 +16,17 @@ def export_hydrophobicity(pharmacophore_types, cavid):
 	"""
 	Prints the % of hydrophobicity of the cavity
 	"""
-	unique, counts = np.unique(pharmacophore_types[cavid][:,1], return_counts=True)
+	unique, counts = np.unique(pharmacophore_types[cavid][:,0], return_counts=True)
 	dico = dict(zip(unique, counts))
 	size = len(pharmacophore_types[cavid])
-	try: hydro = (dico[2]+dico[3])/size
+	try: hydro = (dico[1]+dico[2])/size
 	except:
 		try:
-			hydro = dico[2]/size
+			hydro = dico[1]/size
 		except:
 			# WTF no aliphatic atoms in pocket????
 			try:
-				hydro = dico[3]/size
+				hydro = dico[2]/size
 			except:
 				# No aliph and no arom in pocket, that sounds weird
 				hydro = 0.
