@@ -78,7 +78,11 @@ def main():
 				"-exclude_missing", str(exclude_missing), "-exclude_interchain", str(exclude_interchain)])
 			
 			global data4subcav
-			report, cavity_file, data4subcav = cavity_detect_gui.run(args)
+			try:
+				report, cavity_file, data4subcav = cavity_detect_gui.run(args)
+			except:
+				report = self.OutputTextBrowser.setText(f"CAVIAR does not detect any cavity in {code[:-4]} with this set of parameters.\n")
+				return None
 			# Now write the pml file
 			from caviar.misc_tools.gen_pmlfile import write_pmlfile
 			if self.bypharma.isChecked():
