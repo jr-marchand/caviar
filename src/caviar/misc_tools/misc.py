@@ -15,6 +15,7 @@ from caviar.prody_parser.proteins.header import parsePDBHeader
 from caviar.cavity_identification.gridtools import get_index_of_coor_list
 import numpy as np
 from caviar.cavity_identification.geometry import SetOfPoints
+import os
 
 __all__ = ['get_information_header', 'kill_from_header', 'get_residues_fromsel', 'export_pdb_cavity',
 			'print_scores', 'find_ligand_presence', 'simple_export_pdb_noinfo', 'simple_export_pdb_onecav',
@@ -400,15 +401,15 @@ def export_pdb_cavity(final_cavities, final_pharma, pdbcode, grid_min, grid_shap
 
 	if withprot:
 		from caviar.prody_parser import writePDB
-		writePDB(outdir + pdbcode + "_cavs.pdb", selection_protein)
+		writePDB(os.path.join(outdir, pdbcode + "_cavs.pdb"), selection_protein)
 		if listlig:
 			ligs = ""
-			a = open(oridir+"/"+pdbcode+".pdb", "r")
+			a = open(os.path.join(oridir, pdbcode+".pdb"), "r")
 			file = a.readlines()
 			for lig in listlig:
 				ligs+="".join([x for x in file if lig in x])
 			a.close()
-			a = open(outdir + pdbcode + "_cavs.pdb", "a")
+			a = open(os.path.join(outdir, pdbcode + "_cavs.pdb"), "a")
 			a.write(ligs)
 			a.close()
 
@@ -425,10 +426,10 @@ def export_pdb_cavity(final_cavities, final_pharma, pdbcode, grid_min, grid_shap
 				f"  {final_pharma[cavid-1][idx_][0]:>3.2f} {grid_decomposition[cav_indices[idx]]:>5.2f}           S\n")
 			idx += 1
 			idx_ += 1
-	a = open(outdir + pdbcode + "_cavs.pdb", "a")
+	a = open(os.path.join(outdir, pdbcode + "_cavs.pdb"), "a")
 	a.write("".join(pdbdummy))
 	a.close()
-
+	print(os.path.join(outdir, pdbcode + "_cavs.pdb"))
 	return None
 
 
@@ -492,12 +493,12 @@ def export_pdb_subcavities(subcavs, pdbcode, grid_min, grid_shape, cavid = 1, gr
 
 	if listlig:
 		ligs = ""
-		a = open(oridir+"/"+pdbcode+".pdb", "r")
+		a = open(os.path.join(oridir, pdbcode+".pdb"), "r")
 		file = a.readlines()
 		for lig in listlig:
 			ligs+="".join([x for x in file if lig in x])
 		a.close()
-		a = open(outdir + pdbcode + "_subcavs.pdb", "a")
+		a = open(os.path.join(outdir, pdbcode + "_subcavs.pdb"), "a")
 		a.write(ligs)
 		a.close()
 
@@ -507,7 +508,7 @@ def export_pdb_subcavities(subcavs, pdbcode, grid_min, grid_shape, cavid = 1, gr
 		for coordinates in subcavs[i]:
 			pdbdummy.append(f"HETATM    1  N   SUB {chr(cavid+96+1).upper()} {i+1:>3}    {coordinates[0]:8.3f}{coordinates[1]:8.3f}"
 				f"{coordinates[2]:8.3f}  1.00   1.00           N\n")
-		a = open(outdir + pdbcode + "_subcavs.pdb", "a")
+		a = open(os.path.join(outdir, pdbcode + "_subcavs.pdb"), "a")
 		a.write("".join(pdbdummy))
 		a.close()
 

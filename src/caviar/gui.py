@@ -17,13 +17,13 @@ def main():
 
 	import os 
 	dir_path = os.path.dirname(os.path.realpath(__file__))
-	local = os.getcwd()+"/"
+	local = os.getcwd()
 
-	qtcreator_file  = dir_path+"/cavity.ui" # Enter file here.
+	qtcreator_file  = os.path.join(dir_path, "cavity.ui") # Enter file here.
 	Ui_MainWindow, QtBaseClass = uic.loadUiType(qtcreator_file)
 
 
-	qtcreator_subcav  = dir_path+"/subcavity.ui" # Enter file here.
+	qtcreator_subcav  = os.path.join(dir_path, "subcavity.ui") # Enter file here.
 	Ui_SubCav, QtBaseClass2 = uic.loadUiType(qtcreator_subcav)
 
 
@@ -51,8 +51,9 @@ def main():
 				input_filename = None
 			global code
 			if input_filename:
-				code = input_filename.split("/")[-1]
-				sourcedir = input_filename.rsplit("/", 1)[0]+"/"
+				code = os.path.split(input_filename)[-1]
+				print(os.path.split(input_filename)[0:-1])
+				sourcedir = os.path.split(input_filename)[0:-1][0]
 			else:
 				code = self.code.text()
 				sourcedir = local
@@ -78,11 +79,13 @@ def main():
 				"-exclude_missing", str(exclude_missing), "-exclude_interchain", str(exclude_interchain)])
 			
 			global data4subcav
-			try:
-				report, cavity_file, data4subcav = cavity_detect_gui.run(args)
-			except:
-				report = self.OutputTextBrowser.setText(f"CAVIAR does not detect any cavity in {code[:-4]} with this set of parameters.\n")
-				return None
+			#try:
+				#print(args)
+			cavity_detect_gui.run(args)
+			report, cavity_file, data4subcav = cavity_detect_gui.run(args)
+			#except:
+			#	report = self.OutputTextBrowser.setText(f"CAVIAR does not detect any cavity in {code[:-4]} with this set of parameters.\n")
+			#	return None
 			# Now write the pml file
 			from caviar.misc_tools.gen_pmlfile import write_pmlfile
 			if self.bypharma.isChecked():
@@ -93,7 +96,7 @@ def main():
 				what = "bychain"
 			else:
 				what = None
-			abs_cavfile = local + "/caviar_out/" + cavity_file
+			abs_cavfile = os.path.join(local, "caviar_out", cavity_file)
 			write_pmlfile(cavity_file = abs_cavfile, what = what, outputfile = str(code[:-4]+"_cavities.pml"))
 		
 			# Print output in results and log
@@ -103,7 +106,7 @@ def main():
 				from shutil import which
 				if which("pymol"):
 					import subprocess
-					subprocess.Popen(["pymol "+local+str(code[:-4]+"_cavities.pml")], shell=True,
+					subprocess.Popen(["pymol "+ os.path.join(local,str(code[:-4]+"_cavities.pml"))], shell=True,
 					stdin=None, stdout=None, stderr=True, close_fds=True)
 				else:
 					self.OutputTextBrowser.append("Could not open PyMOL: please set up a variable 'pymol' in your terminal")
@@ -134,7 +137,7 @@ def main():
 			report_subcavs, subcavity_file = cavity_detect_gui.runsubcavities(data4subcav, args, cavid = cavID)
 			# Now write the pml file
 			from caviar.misc_tools.gen_pmlfile import write_pmlsubcavs
-			abs_subcavfile = local + "/caviar_out/" + subcavity_file
+			abs_subcavfile = os.path.join(local, "caviar_out", subcavity_file)
 			write_pmlsubcavs(cavity_file = abs_subcavfile, outputfile = str(code[:-4]+"_subcavities.pml"))
 		
 			# Print output in results and log
@@ -144,7 +147,7 @@ def main():
 				from shutil import which
 				if which("pymol"):
 					import subprocess
-					subprocess.Popen(["pymol "+local+str(code[:-4]+"_subcavities.pml")], shell=True,
+					subprocess.Popen(["pymol " + os.path.join(local, str(code[:-4]+"_subcavities.pml"))], shell=True,
 					stdin=None, stdout=None, stderr=True, close_fds=True)
 				else:
 					self.output_subcavs.append("Could not open PyMOL: please set up a variable 'pymol' in your terminal")

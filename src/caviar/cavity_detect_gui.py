@@ -14,10 +14,9 @@ import textwrap
 
 
 # get path of main.py
-if os.path.dirname(__file__):
-	home = os.path.dirname(__file__) + "/"
-else:
-	home = "./"
+#if os.path.dirname(__file__):
+root = os.path.dirname(__file__)
+home = os.getcwd()
 
 
 def str2bool(v):
@@ -100,7 +99,7 @@ def arguments():
 
 
 	parser.add_argument("-out", type = str, help = ":  Path/to/outfolder.\n  "
-						"(default: ./caviar_out/", default="./caviar_out/")
+						"(default: ./caviar_out/", default=os.path.join(home,"caviar_out"))
 	parser.add_argument("-export_cavities", type = str2bool, help = ": Export PDB files with cavities (True/False) \n"
 						"  (default: True)", default = True)
 	parser.add_argument("-withprot", type = str2bool, help = ": Export it with the protein (True/False) \n"
@@ -161,7 +160,7 @@ def arguments():
 						"  (default: 1.0)", default = 1.0)
 	parser.add_argument("-filevdwsizes", type=str, help=": file (with path) containing van der Waals radius of"
 						" protein atoms. \n (default: cavity_identification/vdw_size_atoms.dat",
-						default = home+"cavity_identification/vdw_size_atoms.dat")
+						default = os.path.join(root,"cavity_identification/vdw_size_atoms.dat"))
 	parser.add_argument("-size_probe", type = float, help=": Size of the probe for defining protein points."
 						" This size is added to the vdW radius from vdw_size_atoms.dat."
 						"\n (default: 1.0)", default = 1.0)
@@ -215,7 +214,7 @@ def arguments():
 						" \n (default: True)", default = True)
 	parser.add_argument("-lig_tabu_list", type = str, help=": Explicit the tabu list for the ligand."
 						" \n (default: misc_tools/tabu_lists/tabulist_ligand_maximal)",
-						default = home+"misc_tools/tabu_lists/tabulist_ligand_maximal")
+						default = os.path.join(root, "misc_tools","tabu_lists","tabulist_ligand_maximal"))
 	parser.add_argument("-iflig_print", type = str2bool, help=": Print what was found if -check_if_lig was activated."
 						" \n (default: False)", default = False)
 	parser.add_argument("-ligsizeflag", type = str2bool, help=": Flag to define a minimal size for the ligand."
@@ -282,8 +281,8 @@ def run(arguments):
 		args = arguments
 		# ===== RUN ===== #
 		printv("> verbose on")
-		if not args.out.endswith('/'):
-			args.out += '/'
+		#if not args.out.endswith('/'):
+		#	args.out += '/'
 		try:
 			os.mkdir(args.out)
 		except:
@@ -291,7 +290,7 @@ def run(arguments):
 
 		### Read PDB file
 		try:
-			pdbobject = parsePDB(str(args.sourcedir)+str(args.code))
+			pdbobject = parsePDB(os.path.join(args.sourcedir, args.code))
 		except:
 			# Download
 			print("PDB " + str(args.code) + " not found in directory, downloading from RCSB PDB")
@@ -303,7 +302,7 @@ def run(arguments):
 				print("PDB " + str(args.code) + " not found on RCSB PDB webservers neither")
 				return buf.getvalue()
 		### Read information from the PDB header
-		dict_pdb_info = get_information_header(str(args.sourcedir)+str(args.code))
+		dict_pdb_info = get_information_header(os.path.join(args.sourcedir,str(args.code)))
 		# Here options to exclude non XR, resolution...
 		#killswitch = kill_from_header(dict_pdb_info, onlyxr = args.onlyxr, resolution_filter = args.resolution_filter, resolution = args.resolution,
 		#pdbversion_filter = args.pdbversion_filter, pdbversion = args.pdbversion, caveat = args.caveat, obsolete = args.obsolete,
@@ -445,10 +444,9 @@ def runsubcavities(data_forsubcav_routines, args, cavid = None):
 	final_pharma = data_forsubcav_routines[3]
 	cavities = data_forsubcav_routines[4]
 	pdbobject = data_forsubcav_routines[5]
-	print(args.out)
 	with StringIO() as bufsubcav, redirect_stdout(bufsubcav):
 		from caviar.prody_parser import writePDB
-		writePDB(f"./caviar_out/{args.code[0:-4]}_subcavs.pdb", pdbobject)
+		writePDB(os.path.join("caviar_out", f"{args.code[0:-4]}_subcavs.pdb"), pdbobject)
 			# Iterate over liganded cavities only 
 		if len(final_cavities) == 1: # Don't go over everything if there's only one cavity!
 			wrapper_subcavities(final_cavities, 0, grid_min, grid_shape,
