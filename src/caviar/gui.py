@@ -52,7 +52,7 @@ def main():
 			global code
 			if input_filename:
 				code = os.path.split(input_filename)[-1]
-				print(os.path.split(input_filename)[0:-1])
+				#print(os.path.split(input_filename)[0:-1])
 				sourcedir = os.path.split(input_filename)[0:-1][0]
 			else:
 				code = self.code.text()
