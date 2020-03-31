@@ -429,7 +429,6 @@ def export_pdb_cavity(final_cavities, final_pharma, pdbcode, grid_min, grid_shap
 	a = open(os.path.join(outdir, pdbcode + "_cavs.pdb"), "a")
 	a.write("".join(pdbdummy))
 	a.close()
-	print(os.path.join(outdir, pdbcode + "_cavs.pdb"))
 	return None
 
 
