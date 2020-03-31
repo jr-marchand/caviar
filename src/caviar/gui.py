@@ -106,7 +106,7 @@ def main():
 				try:
 					import pymol
 					_file = str(os.path.join(local,str(code[:-4]+"_cavities.pml")))
-					pymol.finish_launching(['pymol', file])
+					pymol.finish_launching(['pymol', _file])
 				except:
 					try:
 						import subprocess
@@ -152,7 +152,7 @@ def main():
 				try:
 					import pymol
 					_file = str(os.path.join(local,str(code[:-4]+"_subcavs.pml")))
-					pymol.finish_launching(['pymol', file])
+					pymol.finish_launching(['pymol', _file])
 				except:
 					try:
 						import subprocess
