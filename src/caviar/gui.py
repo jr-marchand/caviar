@@ -104,11 +104,11 @@ def main():
 		
 			if self.pymol.isChecked():
 				from shutil import which
-				if which("pymol"):
+				try:
 					import subprocess
-					subprocess.Popen(["pymol "+ os.path.join(local,str(code[:-4]+"_cavities.pml"))], shell=True,
+					subprocess.Popen(["pymol "+ os.path.join(local,str(code[:-4]+"_cavities.pml"))], shell=False,
 					stdin=None, stdout=None, stderr=True, close_fds=True)
-				else:
+				except:
 					self.OutputTextBrowser.append("Could not open PyMOL: please set up a variable 'pymol' in your terminal")
 	
 			# Here open subcavity windows
@@ -145,11 +145,11 @@ def main():
 		
 			if self.pymol_subcavs.isChecked():
 				from shutil import which
-				if which("pymol"):
+				try:
 					import subprocess
-					subprocess.Popen(["pymol " + os.path.join(local, str(code[:-4]+"_subcavities.pml"))], shell=True,
+					subprocess.Popen(["pymol " + os.path.join(local, str(code[:-4]+"_subcavities.pml"))], shell=False,
 					stdin=None, stdout=None, stderr=True, close_fds=True)
-				else:
+				except:
 					self.output_subcavs.append("Could not open PyMOL: please set up a variable 'pymol' in your terminal")
 
 
