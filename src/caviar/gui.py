@@ -52,7 +52,6 @@ def main():
 			global code
 			if input_filename:
 				code = os.path.split(input_filename)[-1]
-				#print(os.path.split(input_filename)[0:-1])
 				sourcedir = os.path.split(input_filename)[0:-1][0]
 			else:
 				code = self.code.text()
@@ -103,14 +102,19 @@ def main():
 			self.OutputTextBrowser.setText(report)
 		
 			if self.pymol.isChecked():
-				from shutil import which
+				#from shutil import which
 				try:
-					import subprocess
-					subprocess.Popen(["pymol "+ os.path.join(local,str(code[:-4]+"_cavities.pml"))], shell=True,
-					stdin=None, stdout=None, stderr=True, close_fds=True)
+					import pymol
+					_file = str(os.path.join(local,str(code[:-4]+"_cavities.pml")))
+					pymol.finish_launching(['pymol', file])
 				except:
-					self.OutputTextBrowser.append("Could not open PyMOL: please set up a variable 'pymol' in your terminal")
-	
+					try:
+						import subprocess
+						subprocess.Popen(["pymol "+ os.path.join(local,str(code[:-4]+"_cavities.pml"))], shell=True,
+						stdin=None, stdout=None, stderr=True, close_fds=True)
+					except:
+						self.OutputTextBrowser.append("Could not open PyMOL: please set up a variable 'pymol' in your terminal")
+				
 			# Here open subcavity windows
 			window_subcav = SubCav()
 			window_subcav.show()
@@ -144,13 +148,18 @@ def main():
 			self.output_subcavs.setText(report_subcavs)
 		
 			if self.pymol_subcavs.isChecked():
-				from shutil import which
+				#from shutil import which
 				try:
-					import subprocess
-					subprocess.Popen(["pymol " + os.path.join(local, str(code[:-4]+"_subcavities.pml"))], shell=True,
-					stdin=None, stdout=None, stderr=True, close_fds=True)
+					import pymol
+					_file = str(os.path.join(local,str(code[:-4]+"_subcavs.pml")))
+					pymol.finish_launching(['pymol', file])
 				except:
-					self.output_subcavs.append("Could not open PyMOL: please set up a variable 'pymol' in your terminal")
+					try:
+						import subprocess
+						subprocess.Popen(["pymol "+ os.path.join(local,str(code[:-4]+"_subcavs.pml"))], shell=True,
+						stdin=None, stdout=None, stderr=True, close_fds=True)
+					except:
+						self.OutputTextBrowser.append("Could not open PyMOL: please set up a variable 'pymol' in your terminal")
 
 
 	app = QtWidgets.QApplication(sys.argv)
