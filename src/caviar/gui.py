@@ -106,7 +106,7 @@ def main():
 				from shutil import which
 				try:
 					import subprocess
-					subprocess.Popen(["pymol "+ os.path.join(local,str(code[:-4]+"_cavities.pml"))], shell=False,
+					subprocess.Popen(["pymol "+ os.path.join(local,str(code[:-4]+"_cavities.pml"))], shell=True,
 					stdin=None, stdout=None, stderr=True, close_fds=True)
 				except:
 					self.OutputTextBrowser.append("Could not open PyMOL: please set up a variable 'pymol' in your terminal")
