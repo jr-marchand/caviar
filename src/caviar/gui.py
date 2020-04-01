@@ -151,12 +151,12 @@ def main():
 				#from shutil import which
 				try:
 					import pymol
-					_file = str(os.path.join(local,str(code[:-4]+"_subcavs.pml")))
+					_file = str(os.path.join(local,str(code[:-4]+"_subcavities.pml")))
 					pymol.finish_launching(['pymol', _file])
 				except:
 					try:
 						import subprocess
-						subprocess.Popen(["pymol "+ os.path.join(local,str(code[:-4]+"_subcavs.pml"))], shell=True,
+						subprocess.Popen(["pymol "+ os.path.join(local,str(code[:-4]+"_subcavities.pml"))], shell=True,
 						stdin=None, stdout=None, stderr=True, close_fds=True)
 					except:
 						self.OutputTextBrowser.append("Could not open PyMOL: please set up a variable 'pymol' in your terminal")
