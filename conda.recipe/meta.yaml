@@ -15,24 +15,24 @@ requirements:
   #build:
   #  - git
   host:
-    - python >=3.5 #,<3.8 # conflict for networkx 2.3 and python 3.8
-    - pyparsing >=2.4,<=2.4.6
-    - numpy >=1.17,<=1.17.3
-    - scipy >=1.3,<=1.4.1
-    - networkx >=2.0,<=2.4
-    - scikit-image >=0.16,<=0.16.2
-    - pyqt >=5.9.2,<=5.12.13
-    - scikit-learn =0.22.1
+    - python>=3.7 #,<3.8 # conflict for networkx 2.3 and python 3.8
+    - pyparsing >=2.4
+    - numpy >=1.17
+    - scipy >=1.3
+    - networkx >=2.0
+    - scikit-image >=0.16
+    - pyqt >=5.9.2
+    - scikit-learn=0.22.1
     - setuptools
   run:
-    - python >=3.5 #,<3.8 # conflict for networkx 2.3 and python 3.8
-    - pyparsing >=2.4,<=2.4.6
-    - numpy >=1.17,<=1.17.3
-    - scipy >=1.3,<=1.4.1
-    - networkx >=2.0,<=2.4
-    - scikit-image >=0.16,<=0.16.2
-    - pyqt >=5.9.2,<=5.12.13
-    - scikit-learn =0.22.1
+    - python=3.7 #,<3.8 # conflict for networkx 2.3 and python 3.8
+    - pyparsing >=2.4
+    - numpy >=1.17
+    - scipy >=1.3
+    - networkx >=2.0
+    - scikit-image >=0.16
+    - pyqt >=5.9.2
+    - scikit-learn=0.22.1
 
 
 test:
@@ -44,3 +44,11 @@ about:
   license: MIT 
   #description: |
   #\# CAVIAR-GUI\n    CAVity Identification And Rationalization GUI\n    \#\# General information\n    This is the user interface that relates to the Caviar / Cavitome project\n    This project aims at creating a python plateform to:\n     - Download/parse PDB files and fetch as much information from the header as possible\n     - Select interesting protein chains with advanced automatic selection (eg, longest protein chain and contacting chains with more than X contacts, keep metal, well structured structural waters)\n     - Identify cavities (grid based algorithm based on buriedness)\n     - Decompose them in subcavities and print their properties\n     - Much more to come!\n    \#\# How to use\n    Run "caviar_gui" from the command line \n    The first window that will open is to give the PDB file / PDB code to download from the RCSB PDB. You can also select one or more chains to work on, and decide whether to open pymol with the results and the coloring scheme.\n    Once you click the run button, a second window will open, for subcavity decomposition. You can either decompose all cavities detected earlier, or choose one. Same remark for pymol.\n    \#\# Credits\n    Project by Jean-Rémy Marchand, initiated by Joakim Deheuvels (proof of concept)\n    Mentoring from Finton Sirockin\n    Weekly discussions with Peter Ertl and Bernard Pirard\n    This package relies on open source software:\n    * python 3 (< 3.8)\n    * pyparse for arguments parsing\n    * scipy, numpy, networkx for cavity identification\n    * skimage (scikit-image) for subcavity decomposition\n    * PyQt5 for the GUI -- restricted to version pyqt 5.9.2
+
+#    - pyparsing >=2.4,<=2.4.6
+#    - numpy >=1.17,<=1.17.3
+#    - scipy >=1.3,<=1.4.1
+#    - networkx >=2.0,<=2.4
+#    - scikit-image >=0.16,<=0.16.2
+#    - pyqt >=5.9.2,<=5.12.13
+#    - scikit-learn =0.22.1
