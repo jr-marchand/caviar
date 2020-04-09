@@ -1,0 +1,13 @@
+HEADER File contains binding site atoms
+HEADER Protein 2FWZ
+HEADER Pocket P_4_3
+ATOM      1  CA  ALA A   1     -11.824  14.050  24.506  0.10  0.00           C
+ATOM      2  CA  ALA A   2     -11.824  14.450  24.506  0.10  0.00           C
+ATOM      3  CA  ALA A   3     -11.424  14.450  24.506  0.10  0.00           C
+ATOM      4  CA  ALA A   4     -11.824  14.050  24.906  0.10  0.00           C
+ATOM      5  CA  ALA A   5     -11.424  14.050  24.906  0.10  0.00           C
+ATOM      6  CA  ALA A   6     -12.224  14.450  24.906  0.10  0.00           C
+ATOM      7  CA  ALA A   7     -11.824  14.450  24.906  0.10  0.00           C
+ATOM      8  CA  ALA A   8     -11.424  14.450  24.906  0.10  0.00           C
+ATOM      9  CA  ALA A   9     -11.824  14.850  24.906  0.10  0.00           C
+ATOM     10  CA  ALA A  10     -11.424  14.850  24.906  0.10  0.00           C

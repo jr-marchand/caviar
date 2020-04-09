@@ -1,0 +1,2 @@
+pdb_lists/ contains lists of PDB IDs, possibly with protein chains, and ligands, used to validate the cavity detection algorithm
+subcavities/ contains outputs for CAVIAR and DoGSite the manuscript refers to

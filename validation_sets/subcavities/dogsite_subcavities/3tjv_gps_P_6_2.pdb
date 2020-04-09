@@ -1,0 +1,21 @@
+HEADER File contains binding site atoms
+HEADER Protein 3TJV
+HEADER Pocket P_6_2
+ATOM      1  CA  ALA A   1       8.896 -18.940  -6.560  0.10  0.00           C
+ATOM      2  CA  ALA A   2       8.496 -18.540  -6.560  0.10  0.00           C
+ATOM      3  CA  ALA A   3       8.896 -18.540  -6.560  0.10  0.00           C
+ATOM      4  CA  ALA A   4       9.296 -18.540  -6.560  0.10  0.00           C
+ATOM      5  CA  ALA A   5       8.496 -18.140  -6.560  0.10  0.00           C
+ATOM      6  CA  ALA A   6       8.896 -18.140  -6.560  0.10  0.00           C
+ATOM      7  CA  ALA A   7       8.896 -18.940  -6.160  0.10  0.00           C
+ATOM      8  CA  ALA A   8       8.496 -18.540  -6.160  0.10  0.00           C
+ATOM      9  CA  ALA A   9       8.896 -18.540  -6.160  0.10  0.00           C
+ATOM     10  CA  ALA A  10       9.296 -18.540  -6.160  0.10  0.00           C
+ATOM     11  CA  ALA A  11       8.496 -18.140  -6.160  0.10  0.00           C
+ATOM     12  CA  ALA A  12       8.896 -18.140  -6.160  0.10  0.00           C
+ATOM     13  CA  ALA A  13       8.496 -17.740  -6.160  0.10  0.00           C
+ATOM     14  CA  ALA A  14       8.496 -18.540  -5.760  0.10  0.00           C
+ATOM     15  CA  ALA A  15       8.896 -18.540  -5.760  0.10  0.00           C
+ATOM     16  CA  ALA A  16       8.496 -18.140  -5.760  0.10  0.00           C
+ATOM     17  CA  ALA A  17       8.896 -18.140  -5.760  0.10  0.00           C
+ATOM     18  CA  ALA A  18       8.496 -17.740  -5.760  0.10  0.00           C

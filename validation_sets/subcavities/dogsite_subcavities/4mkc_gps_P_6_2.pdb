@@ -1,0 +1,7 @@
+HEADER File contains binding site atoms
+HEADER Protein 4MKC
+HEADER Pocket P_6_2
+ATOM      1  CA  ALA A   1     -17.905  27.638  -8.728  0.10  0.00           C
+ATOM      2  CA  ALA A   2     -18.305  27.238  -8.328  0.10  0.00           C
+ATOM      3  CA  ALA A   3     -17.905  27.638  -7.928  0.10  0.00           C
+ATOM      4  CA  ALA A   4     -17.905  27.238  -8.728  0.10  0.00           C

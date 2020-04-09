@@ -1,0 +1,28 @@
+HEADER File contains binding site atoms
+HEADER Protein 3CS9
+HEADER Pocket P_1_3
+ATOM      1  CA  ALA A   1      24.282  13.108  79.619  0.10  0.00           C
+ATOM      2  CA  ALA A   2      24.682  13.108  79.619  0.10  0.00           C
+ATOM      3  CA  ALA A   3      24.282  13.508  79.619  0.10  0.00           C
+ATOM      4  CA  ALA A   4      24.282  12.708  80.019  0.10  0.00           C
+ATOM      5  CA  ALA A   5      24.682  12.708  80.019  0.10  0.00           C
+ATOM      6  CA  ALA A   6      23.482  13.108  80.019  0.10  0.00           C
+ATOM      7  CA  ALA A   7      23.882  13.108  80.019  0.10  0.00           C
+ATOM      8  CA  ALA A   8      24.282  13.108  80.019  0.10  0.00           C
+ATOM      9  CA  ALA A   9      24.682  13.108  80.019  0.10  0.00           C
+ATOM     10  CA  ALA A  10      25.082  13.108  80.019  0.10  0.00           C
+ATOM     11  CA  ALA A  11      23.482  13.508  80.019  0.10  0.00           C
+ATOM     12  CA  ALA A  12      23.882  13.508  80.019  0.10  0.00           C
+ATOM     13  CA  ALA A  13      24.282  13.508  80.019  0.10  0.00           C
+ATOM     14  CA  ALA A  14      24.682  13.508  80.019  0.10  0.00           C
+ATOM     15  CA  ALA A  15      23.482  13.108  80.419  0.10  0.00           C
+ATOM     16  CA  ALA A  16      23.882  13.108  80.419  0.10  0.00           C
+ATOM     17  CA  ALA A  17      24.282  13.108  80.419  0.10  0.00           C
+ATOM     18  CA  ALA A  18      24.682  13.108  80.419  0.10  0.00           C
+ATOM     19  CA  ALA A  19      23.082  13.508  80.419  0.10  0.00           C
+ATOM     20  CA  ALA A  20      23.482  13.508  80.419  0.10  0.00           C
+ATOM     21  CA  ALA A  21      23.882  13.508  80.419  0.10  0.00           C
+ATOM     22  CA  ALA A  22      24.282  13.508  80.419  0.10  0.00           C
+ATOM     23  CA  ALA A  23      23.482  13.508  80.819  0.10  0.00           C
+ATOM     24  CA  ALA A  24      23.882  13.508  80.819  0.10  0.00           C
+ATOM     25  CA  ALA A  25      24.282  13.508  80.819  0.10  0.00           C

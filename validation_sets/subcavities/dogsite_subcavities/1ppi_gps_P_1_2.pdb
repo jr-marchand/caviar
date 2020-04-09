@@ -1,0 +1,30 @@
+HEADER File contains binding site atoms
+HEADER Protein 1PPI
+HEADER Pocket P_1_2
+ATOM      1  CA  ALA A   1       0.763  44.934   2.713  0.10  0.00           C
+ATOM      2  CA  ALA A   2       0.363  44.134   3.113  0.10  0.00           C
+ATOM      3  CA  ALA A   3       0.763  44.134   3.113  0.10  0.00           C
+ATOM      4  CA  ALA A   4       0.363  44.534   3.113  0.10  0.00           C
+ATOM      5  CA  ALA A   5       0.763  44.534   3.113  0.10  0.00           C
+ATOM      6  CA  ALA A   6       0.763  44.934   3.113  0.10  0.00           C
+ATOM      7  CA  ALA A   7       1.163  44.934   3.113  0.10  0.00           C
+ATOM      8  CA  ALA A   8       0.763  45.334   3.113  0.10  0.00           C
+ATOM      9  CA  ALA A   9       1.163  45.334   3.113  0.10  0.00           C
+ATOM     10  CA  ALA A  10       0.363  44.134   3.513  0.10  0.00           C
+ATOM     11  CA  ALA A  11       0.763  44.134   3.513  0.10  0.00           C
+ATOM     12  CA  ALA A  12       0.363  44.534   3.513  0.10  0.00           C
+ATOM     13  CA  ALA A  13       0.763  44.534   3.513  0.10  0.00           C
+ATOM     14  CA  ALA A  14       0.363  44.934   3.513  0.10  0.00           C
+ATOM     15  CA  ALA A  15       0.763  44.934   3.513  0.10  0.00           C
+ATOM     16  CA  ALA A  16       1.163  44.934   3.513  0.10  0.00           C
+ATOM     17  CA  ALA A  17       0.763  45.334   3.513  0.10  0.00           C
+ATOM     18  CA  ALA A  18       1.163  45.334   3.513  0.10  0.00           C
+ATOM     19  CA  ALA A  19       0.363  44.134   3.913  0.10  0.00           C
+ATOM     20  CA  ALA A  20       0.763  44.134   3.913  0.10  0.00           C
+ATOM     21  CA  ALA A  21       0.363  44.534   3.913  0.10  0.00           C
+ATOM     22  CA  ALA A  22       0.763  44.534   3.913  0.10  0.00           C
+ATOM     23  CA  ALA A  23       0.363  44.934   3.913  0.10  0.00           C
+ATOM     24  CA  ALA A  24       0.763  44.934   3.913  0.10  0.00           C
+ATOM     25  CA  ALA A  25       0.363  44.534   4.313  0.10  0.00           C
+ATOM     26  CA  ALA A  26      -0.037  44.534   3.913  0.10  0.00           C
+ATOM     27  CA  ALA A  27       0.363  44.534   4.713  0.10  0.00           C

@@ -1,0 +1,17 @@
+HEADER File contains binding site atoms
+HEADER Protein 4A5S
+HEADER Pocket P_19_2
+ATOM      1  CA  ALA A   1      17.865  -2.559  77.256  0.10  0.00           C
+ATOM      2  CA  ALA A   2      17.865  -2.101  77.256  0.10  0.00           C
+ATOM      3  CA  ALA A   3      18.322  -2.101  77.256  0.10  0.00           C
+ATOM      4  CA  ALA A   4      18.322  -1.644  77.256  0.10  0.00           C
+ATOM      5  CA  ALA A   5      17.865  -2.559  77.713  0.10  0.00           C
+ATOM      6  CA  ALA A   6      17.865  -2.101  77.713  0.10  0.00           C
+ATOM      7  CA  ALA A   7      18.322  -2.101  77.713  0.10  0.00           C
+ATOM      8  CA  ALA A   8      17.865  -1.644  77.713  0.10  0.00           C
+ATOM      9  CA  ALA A   9      18.322  -1.644  77.713  0.10  0.00           C
+ATOM     10  CA  ALA A  10      17.865  -1.186  77.713  0.10  0.00           C
+ATOM     11  CA  ALA A  11      18.322  -1.186  77.713  0.10  0.00           C
+ATOM     12  CA  ALA A  12      17.865  -2.101  78.171  0.10  0.00           C
+ATOM     13  CA  ALA A  13      17.865  -1.644  78.171  0.10  0.00           C
+ATOM     14  CA  ALA A  14      17.865  -1.186  78.171  0.10  0.00           C

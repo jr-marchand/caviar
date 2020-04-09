@@ -1,0 +1,48 @@
+1bid 	3tms 	Thymidylate synthase 	UMP 	CBX
+1cdo 	8adh 	Alcohol dehydrogenase 	NAD 	zn
+1dwd 	1hxf 	Alpha thrombin 	MID 	chains i, l
+1fbp 	2fbp 	Fructose 1,6-bisphosphatase 	AMP 	F6P, mg
+1gca 	1gcg 	Glucose/galactose-binding protein 	GAL 	ca
+1hew 	1hel 	Hen egg white lysozyme 	NAG 	-
+1hyt 	1npc 	Thermolysin 	BZS 	DMS, ca, zn
+1inc 	1esa 	Elastase 	ICL 	ca, so4
+1rbp 	1brq 	Retinol binding protein 	RTL 	-
+1rob 	8rat 	Ribonuclease A 	C2P 	-
+1stp 	1swb 	Streptavidin 	BTN 	-
+1ulb 	1ula 	Purine nucleoside phosphorylase 	GUN 	so4
+2ifb 	1ifb 	Fatty acid binding protein 	PLM 	-
+3ptb 	3ptn 	Beta trypsin 	BEN 	ca
+2ypi 	1ypi 	Triose phosphate isomerase 	PGA 	-
+4dfr 	5dfr 	Dihydrofolate reductase 	MTX 	ca, cl
+4phv 	3phv 	HIV 1 protease 	VAC 	-
+5cna 	2ctv 	Concanavalin A 	MMA 	ca, cl, mn
+7cpa 	5cpa 	Carboxypeptidase A 	FVF 	zn
+1a6w 	1a6u 	B1-8 FV fragment 	NIP 	-
+1acj 	1qif 	Acetylcholinesterase 	THA 	-
+1apu 	3app 	Penicillopepsin 	[IVA-VAL-VAL-STA-OET] 	MAN
+1blh 	1djb 	Beta-lactamase 	FOS 	-
+1byb 	1bya 	Beta amylase 	GLC 	so4
+1hfc 	1cge 	Fibroblast collagenase 	HAP 	ca, zn
+1ida 	1hsi 	HIV 2 protease 	[QND-VAL-HPB-PPL-PY2] 	-
+1igj 	1a4j 	Immunoglobulin 	DGX 	chain y
+1imb 	1ime 	Inositol monophosphatase 	LIP 	gd
+1ivd 	1nna 	Hydrolase 	ST1 	FUC, NAG, MAN, ca
+1mrg 	1ahc 	Alpha momorcharin 	ADN 	-
+1mtw 	2tga 	Trypsin 	DX9 	ca
+1okm 	4ca2 	Carbonic anhydrase II 	SAB 	hg, zn
+1pdz 	1pdy 	Enolase 	PGA 	ace, mn
+1phd 	1phc 	Camphor 5-monoxygenase 	PIM 	HEM
+1pso 	1psn 	Pepsin 3a 	[IVA-VAL-VAL-STA-ALA-STA] 	-
+1qpe 	3lck 	Lck kinase 	PP2 	PTR, so4
+1rne 	1bbs 	Renin 	C60 	NAG
+1snc 	1stn 	Staphylococcal nuclease 	PTP 	ca
+1srf 	1pts 	Streptavidin 	MTB 	-
+2ctc 	2ctb 	Carboxypeptidase A 	LOF 	zn
+2h4n 	2cba 	Carbonic anhydrase II 	AZM 	zn
+2pk4 	1krn 	Plasminogen kringle 	ACA 	-
+2sim 	2sil 	Sialidase 	DAN 	-
+2tmn 	1l3f 	Thermolysin 	[PHO-LEU-NH2] 	ca, zn
+3gch 	1chg 	Gamma chymotrypsin 	CIN 	-
+3mth 	6ins 	Methylparaben insulin 	MPB 	cl, zn
+5p2p 	3p2p 	Phosphilipase 	DHG 	ca
+6rsa 	7rat 	Ribonuclease A 	UVC 	dod 
