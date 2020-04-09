@@ -509,7 +509,7 @@ def run(arguments):
 				pass
 			writePDB(os.path.join(args.out, args.code[:-4] + "_subcavs.pdb"), selection_protein)
 		if len(final_cavities) == 1: # Don't go over everything if there's only one cavity!				
-			wrapper_subcavities(final_cavities, cav_of_interest, grid_min, grid_shape,
+			wrapper_subcavities(final_cavities, 0, grid_min, grid_shape,
 			cavities, args.code, args.out, args.sourcedir, list_ligands,
 			seeds_mindist = args.seeds_mindist, merge_subcavs = args.merge_subcavs, minsize_subcavs = 50,
 			min_contacts = 0.667, v = False, printv = args.print_pphores_subcavs,
