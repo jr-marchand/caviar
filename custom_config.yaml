@@ -1,0 +1,7 @@
+### Example of custom parameter file for CAVIAR ###
+
+[custom]
+  sourcedir: /db/pdb/ # Source directory, otherwise downloads file
+  code: 1dwc       # PDB Code (no default)
+  out: ./caviar_out/ # Path/to/outfolder.
+  subcavs_decomp: True # Unactivate the subcavities decomposition 

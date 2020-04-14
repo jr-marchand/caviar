@@ -57,9 +57,11 @@ from caviar.cavity_characterization.gridpoint_properties import trim_cavity_bylo
 
 __all__ = ['wrapper_early_cav_identif']
 
+import os
+
 #@profile
 def find_protein_points_variablevolume(gridpoints, protselection,
-	file_sizes = "cavity_identification/vdw_size_atoms.dat", size_probe = 1.0):
+	file_sizes = os.path.join(os.path.dirname(__file__), "vdw_size_atoms.dat"), size_probe = 1.0):
 	"""
 	Identifies grid points that are belonging to protein atoms (sizes in file_sizes)
 	size_probe is the size of the solvent sphere
@@ -278,7 +280,7 @@ def filter_cavities(array_cavs_coords, grid_decomposition, grid_min, grid_shape,
 
 
 def wrapper_early_cav_identif(grid, grid_min, grid_shape, selection_protein, selection_coords,
-	file_sizes = "cavity_identification/vdw_size_atoms.dat", size_probe = 1.0, maxdistance = 6.0,
+	size_probe = 1.0, maxdistance = 6.0,
 	radius_cube = 4, min_burial = 8, radius_cube_enc = 3, min_burial_enc = 8, gridspace = 1.0, min_degree = 3,
 	radius = 2, trim_score = 500, min_points = 40, min_burial_q = 10, quantile = 0.8):
 	"""
@@ -286,8 +288,8 @@ def wrapper_early_cav_identif(grid, grid_min, grid_shape, selection_protein, sel
 	we combine all of the afore-coded functions as one wrapper
 	"""
 	# Identify points of the grid that are within the surface of the protein
-	grid_protein, grid_solv, grid_decomposition_0 = find_protein_points_variablevolume(grid,
-		selection_protein, file_sizes, size_probe)
+	grid_protein, grid_solv, grid_decomposition_0 = find_protein_points_variablevolume(gridpoints = grid,
+		protselection = selection_protein, size_probe =  size_probe)
 	## Filter out bulk solvent, ie solvent grid points that are > args.maxdistance from the protein
 	## due to the cubic shape of the box
 	nonbulk_gridsolv = filter_out_bulksolvent(selection_coords = selection_coords, grid = grid,

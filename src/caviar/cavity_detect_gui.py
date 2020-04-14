@@ -158,9 +158,7 @@ def arguments():
 						"  (default: 6.0)", default = 6.0)
 	parser.add_argument("-gridspace", type=float, help=": Grid spacing \n"
 						"  (default: 1.0)", default = 1.0)
-	parser.add_argument("-filevdwsizes", type=str, help=": file (with path) containing van der Waals radius of"
-						" protein atoms. \n (default: cavity_identification/vdw_size_atoms.dat",
-						default = os.path.join(root,"cavity_identification/vdw_size_atoms.dat"))
+
 	parser.add_argument("-size_probe", type = float, help=": Size of the probe for defining protein points."
 						" This size is added to the vdW radius from vdw_size_atoms.dat."
 						"\n (default: 1.0)", default = 1.0)
@@ -212,9 +210,6 @@ def arguments():
 
 	parser.add_argument("-excl_ligs", type = str2bool, help=": Activate an explicit the tabu list for the ligand."
 						" \n (default: True)", default = True)
-	parser.add_argument("-lig_tabu_list", type = str, help=": Explicit the tabu list for the ligand."
-						" \n (default: misc_tools/tabu_lists/tabulist_ligand_maximal)",
-						default = os.path.join(root, "misc_tools","tabu_lists","tabulist_ligand_maximal"))
 	parser.add_argument("-iflig_print", type = str2bool, help=": Print what was found if -check_if_lig was activated."
 						" \n (default: False)", default = False)
 	parser.add_argument("-ligsizeflag", type = str2bool, help=": Flag to define a minimal size for the ligand."
@@ -362,7 +357,7 @@ def run(arguments):
 		# but it's all geometry based. More will be done afterwards with pharmacophores
 		early_cavities, cavities_info, grid_decomposition = wrapper_early_cav_identif(grid,
 			grid_min, grid_shape, selection_protein, selection_coords,
-			file_sizes = args.filevdwsizes, size_probe = args.size_probe, 
+			size_probe = args.size_probe, 
 			maxdistance = args.max_distance, radius_cube = args.radius_cube, min_burial = args.min_burial,
 			radius_cube_enc = args.radius_cube_enc, min_burial_enc = args.min_burial_enc,
 			gridspace = args.gridspace, min_degree = args.min_degree, radius = 2,

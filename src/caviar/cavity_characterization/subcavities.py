@@ -94,7 +94,8 @@ def find_subcav_watershed(im3d, seeds_mindist = 3):
 	# min_distance can be tuned to change the definition of seeds for the watershed algorithm
 	# Peaks are separated by at least min_distance
 	# increasing the value decreases the number of seeds and thus subpockets
-	local_maxi = peak_local_max(distance, min_distance = seeds_mindist, # 
+	#print(seeds_mindist)
+	local_maxi = peak_local_max(distance, min_distance = int(seeds_mindist), # 
 		threshold_abs=None, threshold_rel=None, exclude_border=True, # default
 		indices=False, # Modified to return boolean mask
 		footprint=None, labels=None,# default

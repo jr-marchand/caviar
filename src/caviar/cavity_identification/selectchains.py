@@ -6,7 +6,7 @@ longest, or the longest + its neighbors. One can also keep metals, or very well 
 water molecules (>= 3 hydrogen bonds with the protein)
 """
 
-import sys
+import sys, os
 from caviar.prody_parser.atomic.atomgroup import AtomGroup
 from caviar.prody_parser.atomic import select
 from caviar.prody_parser.proteins.pdbfile import parsePDB
@@ -217,7 +217,7 @@ def select_objects(pdbobject, metal = False, water = False, threshold_nres = 30,
 	
 	return selection
 
-def get_ligand(pdbobject, tabu_list = "misc_tools/tabu_lists/tabulist_ligand_min_peptides_nucleic_sugars",
+def get_ligand(pdbobject, tabu_list =  "tabulist_ligand_maximal",
 	returnsel = False, lig_id = False):
 	"""
 	Function to select potential ligands
@@ -253,7 +253,7 @@ def get_ligand(pdbobject, tabu_list = "misc_tools/tabu_lists/tabulist_ligand_min
 	else:
 		tabu_string = "hetero and not hydrogen "
 		if tabu_list:
-			with open(tabu_list) as tabulist:
+			with open(os.path.join( os.path.dirname(__file__), "..", "misc_tools", "tabu_lists", tabu_list)) as tabulist:
 				for tabures in tabulist:
 					if tabures[0] != "#":
 						tabu_string += f"and not resname {tabures[:3]} "

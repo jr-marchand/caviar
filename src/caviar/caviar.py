@@ -9,272 +9,122 @@ from caviar.prody_parser import *
 from caviar.cavity_identification import *
 from caviar.cavity_characterization import *
 from caviar.misc_tools import *
+from caviar.cavity_comparisons import *
+from caviar.database_functions import *
 import time
-import argparse 
-import textwrap
-
+import argparse
 
 # get path of main.py
 root = os.path.dirname(__file__)
 home = os.getcwd()
 
-def str2bool(v):
-	"""
-	The python argument parser does not really understand
-	bool options (can set True, but can't set False)
-	This function overrides the type=bool with type=str2bool
-	"""
-	if v.lower() in ('yes', 'true', 't', 'y', '1'):
-		return True
-	elif v.lower() in ('no', 'false', 'f', 'n', '0'):
-		return False
-	else:
-		raise argparse.ArgumentTypeError('Boolean value expected.')
-
 
 def arguments():
 	"""
-	Advanced argument passing via (pyparse) argparse module
+	Advanced argument passing with argparse and configparse
+	Takes as input a configuration file and potentially command line arguments
 	"""
 	
+	def str2bool(v):
+		"""
+		The python argument parser does not really understand
+		bool options (can set True, but can't set False)
+		This function overrides the type=bool with type=str2bool
+		"""
+		if v.lower() in ('yes', 'true', 't', 'y', '1'):
+			return True
+		elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+			return False
+		else:
+			raise argparse.ArgumentTypeError('Boolean value expected.')
+
+
+	# Create a temporary parser for storing parameters from a configuration file
+	parent_parser = argparse.Namespace()
+
+	# Create a dummy parser for the first two arguments, without 
+	# creating a help, so that we can have all help with the real parser
+	init_parser = argparse.ArgumentParser(add_help=False)
+	#Im not sure if its the smartest way to do it, probably parent_parser could be avoided
+
+	# Start by parsing which preset configuration file to use
+	init_parser.add_argument('-preset_config', required=False, help='Chose one of the three standard configuration: default, cavities_only, subcavities_only\n',
+		default = "default", choices=["default", "cavities_only", "subcavities_only"])
+	# Also parse a potential custom configuration file -- in addition to the preset
+	init_parser.add_argument('-custom_config', required=False, help='Custom configuration file that can contain any custom parameters, the rest being read from the preset_config\n')
+
+	init_parser.parse_known_args(namespace=parent_parser)
+
+	# Access the dictionary of the parameter values to modify it (currently empy)
+	d = vars(parent_parser)
+	# And update it with the configuration file parameters: magically it updates also parent_parser
+	d.update(get_default_parameters(preset_choice = parent_parser.preset_config))
+	# Update it with custom configuration
+	if parent_parser.custom_config:
+		d.update(get_custom_parameters(file = parent_parser.custom_config))
 
 	parser = argparse.ArgumentParser(
 		formatter_class=argparse.RawTextHelpFormatter,
-		description=textwrap.dedent('''
-   \_________________________________________________________________________ /
-    \                   Welcome to the Cavitome Project!                     /
-     \    You can use this program to identify and characterize cavities    /
-      \                    ... And soon much more ...                      /
-       \__________________________________________________________________/
-    
-    1) Reads the PDB file and its header, filter out unwanted properties
-    2) Builds a grid, identify cavities, set their properties (buriedness, pharmacophores)
-    3) Cures cancer
-         '''))
+		description=str(""
+		"\_________________________________________________________________________ /\n"
+		" \                   Welcome to the Cavitome Project!                     /\n"
+		"  \    You can use this program to identify and characterize cavities    /\n"
+		"   \                    ... And soon much more ...                      /\n"
+		"    \__________________________________________________________________/\n\n\n"
 
 
-# --------------------------------- INPUT --------------------------------- #
+		"You may write all command line parameters in a custom configuration file \n"
+		"with the -custom_config option. The default configuration file is located at \n"
+		f"{os.path.realpath(os.path.join(root, 'config//default_caviar.yaml'))}\n"
+		"alongside the two other default configurations (cavities_only, subcavities_only)\n"
+		"You may reuse any of the keywords of these configuration files for creating a -custom_config\n"
+		"You can also give simple arguments to the command line, such as the pdb code,\n"
+		"to use with automatically set default parameters\n"),
+		parents = [init_parser])
 
 
-	parser.add_argument("-sourcedir", type = str, help = ": Path of the directory "
-						"where are the pdb files.\n"
-						"  (default: /db/pdb/)", default = "/db/pdb/")
-	parser.add_argument("-code", type = str, help = ": PDB code of the file to "
-						"be computed.\n  If the file isn't in given directory "
-						"(-sourcedir),\n  this program will try to download it"
-						" from RCSB.\n  (no default)\n")
-	parser.add_argument("-codeslist", type = str, help = ": List of PDB codes to "
-						"be computed.\n  If the files aren't in given directory "
-						"(-sourcedir),\n  this program will try to download it"
-						" from RCSB.\n  (no default)\n")
-
-
-# ----------------------------- GENERAL & KILL SWITCHES ------------------------------- #
-
-
-	parser.add_argument("-v", action = "store_true", help = ": turn verbosity on."
-						"\n\n")
-	parser.add_argument("-onlyxr", type = str2bool, help = ": Only work with XR structures (True/False) \n"
-						"  (default: False)", default = False)
-	parser.add_argument("-resolution_filter", type = str2bool, help = ": Define a resolution filter (True/False)\n"
-						"  (default: False)", default = False)
-	parser.add_argument("-resolution", type = float, help = ": Value for the resolution filter \n"
-						"  (default: 3.0)", default = 3.0)
-	parser.add_argument("-pdbversion_filter", type = bool, help = ": Define a filter on the PDB version\n"
-						"  (default: False)", default = False)
-	parser.add_argument("-pdbversion", type = float, help = ": Minimal PDB version\n"
-						"  (default: 3.30)", default = 3.30)
-	parser.add_argument("-caveat", type = str2bool, help = ": Exclude PDB tagged with CAVEATS\n"
-						"  (default: False)", default = False)
-	parser.add_argument("-obsolete", type = str2bool, help = ": Exclude PDB tagged with OBSOLETE\n"
-						"  (default: False)", default = False)
-	parser.add_argument("-deposition_date_filter", type = bool, help = ": Exclude PDB deposited/reviewed before a date\n"
-						"  (default: False)", default = False)
-	parser.add_argument("-date", type = int, help = ": Minimal deposition/revision date\n"
-						"  (default: 2010)", default = 2010)
-
-
-# --------------------------------- OUTPUT --------------------------------- #
-
-
-	parser.add_argument("-out", type = str, help = ":  Path/to/outfolder.\n  "
-						"(default: ./caviar_out/", default=os.path.join(home,"caviar_out"))
-	parser.add_argument("-export_cavities", type = str2bool, help = ": Export PDB files with cavities (True/False) \n"
-						"  (default: True)", default = True)
-	parser.add_argument("-withprot", type = str2bool, help = ": Export it with the protein (True/False) \n"
-						"  (default: True)", default = True)
-	parser.add_argument("-print_cav_info", type = str2bool, help = ": print a report on cavity identification) \n"
-						" (default = True)\n", default = True)
-
-
-# ---------------------------- OBJECT SELECTION ----------------------------- #
-
-
-	parser.add_argument("-metal", type = str2bool, help = ": Keep metals\n"
-						"  (default: True)", default = True)
-	parser.add_argument("-water", type = str2bool, help = ": Keep waters molecules "
-						"that make at least 3 HB with protein atoms\n"
-						"  (default: True)", default = True)
-	parser.add_argument("-structural_ligand", type = str, help = ": Keep structural ligand \n"
-						"(give 3 letters resname code)\n"
-						"  (default: False)", default = False)
-	parser.add_argument("-threshold_nres", type = int, help = ": Minimum number of residues "
-						"in a protein chain to keep it \n"
-						"  (default: 30)", default = 30)
+	# Add other parameters from command line 
+	parser.add_argument("-sourcedir", type = str, help = ": Path of the directory where the pdb files are.\n")
+	
+	parser.add_argument("-code", type = str, help = ": PDB code of the file to  be computed.\n"
+						"If the file isn't in given directory (-sourcedir), this program will try to download it from RCSB.\n")
+	
 	parser.add_argument("-what", type = str, help = ": Keyword defining what protein chains "
 						"to keep for cavity detection: all protein chains (above threshold_nres)"
 						", just the longest chain, or the longest chain plus contacting chains (at 5A) \n"
-						"  (default: 'allproteins'; other possibilities: 'longestchain', 'longestandcontacting')",
-						default = "allproteins")
-	parser.add_argument("-min_contacts", type = int, help = ": In case you choose longestandcontacting with"
-						" option -what, this keyword controls how many contacts between the main chain \n"
-						" and the 'contacting' chain should be at minimum present. These are interatomic "
-						" contacts at 5A, so be loose with the number. The aim is to keep only chains \n"
-						" of the PDB that are functionally in contact and not simply symmetric chains \n"
-						" of the same domain in the crystal unit.\n"
-						"  (default: 75)", default = 75)
-	parser.add_argument("-chain_id", type = str, help = ": User-specified chain ID to investigate "
-						"(e.g., A).\n Is compatible with -what => overseeds the lookup for the longest chain."
+						"  (default: 'allproteins'; other possibilities: 'longestchain', 'longestandcontacting')")
+	
+	parser.add_argument("-chain_id", type = str, help = ": User-specified chain ID to investigate (e.g., A).\n"
+						"Is compatible with -what => overseeds the lookup for the longest chain."
 						"You can select this chain + contacting one (-what longestandcontacting)\n"
-						"  (default: None)", default = None)
-	parser.add_argument("-chainid_in_pdblist", type = str2bool, help = ": Same chain_id but implemented in input list "
-						"\n rather than passed as explicit argument. Same warning as -chain_id.\n"
-						"The chain identifier (e.g. A, B...) should be given after an underscore to the\n"
-						"PDB code. For example 1AAA_A for chain A of PDB 1AAA.\n"
-						"In case you want to specify more than one chain, just put all of them, e.g., 1AAA_ABC for chains A, B, and C.\n"
-						"  (default: False)", default = False)
+						"  (default: None)")
+	
+	parser.add_argument("-subcavs_decomp", type = str2bool, help = ": Activates the subcavities decomposition \n(default = False)\n")
+	
+	parser.add_argument("-out", type = str, help = ":  Path to outfolder.\n  ")
+
+	parser.add_argument("-v", action = "store_true", help = ": turn verbosity on\n")
 
 
-# ---------------------- CAVITY IDENTIFICATION ----------------------- #
+	# Parse cmd line arguments
+	args = parser.parse_args(namespace = parent_parser)
 
-
-	parser.add_argument("-boxmargin", type = float, help=": Margin around the protein \n"
-						"  (default: 2.0)", default = 2.0)
-	parser.add_argument("-max_distance", type = float, help=": Maximum distance for a solvent grid point to the protein \n"
-						"  (default: 6.0)", default = 6.0)
-	parser.add_argument("-gridspace", type=float, help=": Grid spacing \n"
-						"  (default: 1.0)", default = 1.0)
-	parser.add_argument("-filevdwsizes", type=str, help=": file (with path) containing van der Waals radius of"
-						" protein atoms. \n (default: cavity_identification/vdw_size_atoms.dat",
-						default = os.path.join(root,"cavity_identification/vdw_size_atoms.dat"))
-	parser.add_argument("-size_probe", type = float, help=": Size of the probe for defining protein points."
-						" This size is added to the vdW radius from vdw_size_atoms.dat."
-						"\n (default: 1.0)", default = 1.0)
-	parser.add_argument("-radius_cube", type=int, help=": Size of the cubic solvation shell"
-						" to investigate burial of cavity points (in number of grid points).\n"
-						" (default: 4)", default = 4)
-	parser.add_argument("-min_burial", type = int, help=": Minimum number of grid-protein contacts"
-						" for a grid point (within -radius_cube) to consider it as potential"
-						" cavity point. This number is between 0 and 14 because we scan in the "
-						" 14 cubic directions\n (default: 8)", default = 8)
-	parser.add_argument("-radius_cube_enc", type = int, help=": Same as radius_cube, but for the second pass"
-						"to identify buried cavity points. This second pass aims to find 'middle' cavity points"
-						"that are not in direct contact with the protein [within radius_cube] but surrounded "
-						"by grid cavity points (middle of a large pocket). \n (default: 3)", default = 3)
-	parser.add_argument("-min_burial_enc", type = int, help=": Equivalent to min_burial but for the"
-						" second pass (cf help of radius_cube_enc). \n (default: 8)", default = 8)
-
-	parser.add_argument("-min_points", type = int, help=": Minimum number of points to consider a group of cavity points"
-						" as an actual cavity. Is modified by gridspace argument (real value = min_points * 1 / gridspace).\n"
-						"If gridspace = 0.5, the real value used for min_points is doubled."
-						"\n(default: 40)", default = 40)
-	parser.add_argument("-trim_score", type = int, help=": Scoring value for excluding potential cavity points.\n"
-						" Points within 2 grid spacing (in cubic directions, 125 points max) are detected. The score equals the\n"
-						" number of points times 10**(average_buriedness/10). Buriedness ranges from 9 to 14, len(points) from \n"
-						" 0 to 125. The maximum value of this score is 3139 (125*(10**(14/10)). The default is 500. \n"
-						" This corresponds roughly to an environement of 50 neighbors (out of 125 maximum, half) and an avg buriedness of 10."
-						"\n(default: 500)", default = 500)
-	parser.add_argument("-min_degree", type = int, help=": Minimum node degree to keep it, ie, minimum number of "
-						" connections with other nodes. \n (default: 3)", default = 3)
-	parser.add_argument("-min_burial_q", type = int, help=": Minimum buriedness value of grid points at the xth quantile "
-						" (strictly greater than) [parameter -quantile]. \n (default: 10)", default = 10)
-	parser.add_argument("-quantile", type = float, help=": Quantile related to min_burial_q \n (default: 0.8)", default = 0.8)
-
-
-# ----------------------- CAVITY CHARACT/FILTERING ------------------------ #
-
-
-	parser.add_argument("-max_hydrophobicity", type = float, help=": Maximum percentage of hydrophobic points in the cavity."
-						" \n (default: 1.0)", default = 1.0)
-	parser.add_argument("-exclude_interchain", type = str2bool, help=": Exclude cavities that are in between different protein chains."
-						" \n (default: False)", default = False)
-	parser.add_argument("-exclude_missing", type = str2bool, help=": Exclude cavities that have missing atoms/residues."
-						" \n (default: False)", default = False)
-	parser.add_argument("-exclude_altlocs", type = str2bool, help=": Exclude cavities that have alternative conformation of residues."
-						" \n (default: False)", default = False)
-
-
-# ----------------------- LIGAND VALIDATION OPTIONS ------------------------ #
-
-
-	parser.add_argument("-excl_ligs", type = str2bool, help=": Activate an explicit the tabu list for the ligand."
-						" \n (default: True)", default = True)
-	parser.add_argument("-lig_tabu_list", type = str, help=": Explicit the tabu list for the ligand."
-						" \n (default: misc_tools/tabu_lists/tabulist_ligand_maximal)",
-						default = os.path.join(root, "misc_tools","tabu_lists","tabulist_ligand_maximal"))
-	parser.add_argument("-iflig_print", type = str2bool, help=": Print what was found if -check_if_lig was activated."
-						" \n (default: False)", default = False)
-	parser.add_argument("-ligsizeflag", type = str2bool, help=": Flag to define a minimal size for the ligand."
-						" \n (default: False)", default = False)
-	parser.add_argument("-ligminsize", type = int, help=": Minimal size for the ligand if ligsizeflag is activated."
-						" \n (default: 8)", default = 8)
-	parser.add_argument("-lig_id", type = str, help = ": Ligand 3 letters ID code"
-						" in the PDB file, to check for presence in cavities \n (no default)\n")
-	parser.add_argument("-liglist_in_pdblist", type = str2bool, help = ": Specify ligand 3 letters ID code"
-						"in the second in the second column of the PDB list file (to check for presence in cavities)\n"
-						" (default = False)\n", default = False)
-	parser.add_argument("-lig_tocenter", type = str2bool, help = ": Ask to check if a ligand atom is within 4.0 A"
-						"of the geometric center of the pocket rather than within 1A of any cavity point \n"
-						" (default = False)\n", default = False)
-	parser.add_argument("-detect_only", type = str2bool, help = ": Kill the script after detecting cavities"
-						" and checking ligand coverage \n"
-						" (default = False)\n", default = False)
-
-
-# -------------------------------- SUBCAVITY DECOMPOSITION ------------------------------- #
-
-
-	parser.add_argument("-subcavs_decomp", type = str2bool, help = ": Activates the subcavities decomposition \n"
-						" (default = False)\n", default = False)
-	parser.add_argument("-subcavs_lig_only", type = str2bool, help = ": Find subcavities only for liganded cavities \n"
-						" (default = False)\n", default = False)
-	parser.add_argument("-export_subcavs", type = str2bool, help = ": Export subcavities in pdb file \n"
-						" (default = False)\n", default = False)
-	parser.add_argument("-seeds_mindist", type = int, help = ": Minimum distance between seed points in the"
-						" watershed algorithm \n"
-						" (default = 3)\n", default = 3)
-	parser.add_argument("-merge_subcavs", type = str2bool, help = ": Merge small subcavities enclosed in between"
-						" other subcavities (prevent oversegmentation) \n"
-						" (default = True)\n", default = True)
-	parser.add_argument("-print_pphores_subcavs", type = str2bool, help = ": prints pharmacophore data"
-						" of the subcavities.\n (default = False)\n", default = False)
-
-
-# -------------------------------- CAVITY CHARACTERIZATION ------------------------------- #
-
-
-
-		
+	#Needs at least a code
 	if len(sys.argv)==1:
 		parser.print_help()
 		sys.exit(1)
-	args = parser.parse_args()
-	#if not args.out.endswith('/'):
-	#	args.out += '/'
-
 
 	if args.sourcedir != '':
 		#if not args.sourcedir.endswith('/'):
 		#	args.sourcedir += '/'
 		if args.sourcedir[0] != '/' and args.sourcedir[0] != '~':
 			args.sourcedir = os.path.join(os.getcwd(),args.sourcedir)
-
 	if not args.code and not args.codeslist:
 		print("Fatal Error: need a pdb code")
-		sys.exit(-1)
+		#sys.exit(-1)
 	if args.code and not "pdb" in args.code:
 		args.code = args.code + ".pdb"
-	args.extract = False #set to True when called by chaotic
+
 	return args
 
 
@@ -393,7 +243,7 @@ def run(arguments):
 	# but it's all geometry based. More will be done afterwards with pharmacophores
 	early_cavities, cavities_info, grid_decomposition = wrapper_early_cav_identif(grid,
 		grid_min, grid_shape, selection_protein, selection_coords,
-		file_sizes = args.filevdwsizes, size_probe = args.size_probe, 
+		size_probe = args.size_probe, 
 		maxdistance = args.max_distance, radius_cube = args.radius_cube, min_burial = args.min_burial,
 		radius_cube_enc = args.radius_cube_enc, min_burial_enc = args.min_burial_enc,
 		gridspace = args.gridspace, min_degree = args.min_degree, radius = 2,
@@ -539,6 +389,42 @@ def run(arguments):
 				min_contacts = 0.667, v = False, printv = args.print_pphores_subcavs,
 				print_pphores_subcavs = args.print_pphores_subcavs, export_subcavs = args.export_subcavs,
 				gridspace = args.gridspace)
+
+
+
+	# ------------------------------------------------------------------------------------------- #
+	# -------------------------------- FINGERPRINT ROUTINES ------------------------------------- #
+	# ------------------------------------------------------------------------------------------- #
+
+
+	if args.gen_fp:
+	#### PLEASE PUT OPTIONS AND ARGUMENTS 
+		a = time.time()
+		for index in range(len(cavities)):
+			dist_fillings, buri_fillings, pp_fillings, iterations = prep_data_for_fp(cavities, index,
+				min_burial = args.min_burial, n_pp = 11)
+			fp = fp_construction(dist_fillings, buri_fillings, pp_fillings)
+			# update cavities with fp1
+			cavities[index].fp1 = fp
+			#print(fp)
+		b = time.time()
+		printv(f"It took {round(b-a, 3)} seconds to generate the fingerprint")
+
+
+	# ------------------------------------------------------------------------------------------- #
+	# ----------------------------- DATABASE INSERTION ROUTINES --------------------------------- #
+	# ------------------------------------------------------------------------------------------- #
+
+
+	if args.db_write == True:
+	#### PLEASE PUT OPTIONS AND ARGUMENTS 
+		conn, cursor = connect_database(database = args.db_name, user = "marchje7", host="127.0.0.1")
+		# Write metadata about the PDB file (from header!)
+		write_pdb(conn, cursor, dict_pdb_info, pdbcode = args.code[0:-4], v = False)
+		# Write metadata about the protein chains
+		write_pdbchains(conn, cursor, dict_pdb_info, pdbcode = args.code[0:-4], v = False)
+		# Write cavities
+		write_cavities(conn, cursor, dict_all_info, cavities_object = cavities, pdbcode = args.code[0:-4], v = False)
 
 
 
