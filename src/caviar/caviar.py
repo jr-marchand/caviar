@@ -9,8 +9,8 @@ from caviar.prody_parser import *
 from caviar.cavity_identification import *
 from caviar.cavity_characterization import *
 from caviar.misc_tools import *
-from caviar.cavity_comparisons import *
-from caviar.database_functions import *
+#from caviar.cavity_comparisons import *
+#from caviar.database_functions import *
 import time
 import argparse
 
@@ -391,40 +391,6 @@ def run(arguments):
 				gridspace = args.gridspace)
 
 
-
-	# ------------------------------------------------------------------------------------------- #
-	# -------------------------------- FINGERPRINT ROUTINES ------------------------------------- #
-	# ------------------------------------------------------------------------------------------- #
-
-
-	if args.gen_fp:
-	#### PLEASE PUT OPTIONS AND ARGUMENTS 
-		a = time.time()
-		for index in range(len(cavities)):
-			dist_fillings, buri_fillings, pp_fillings, iterations = prep_data_for_fp(cavities, index,
-				min_burial = args.min_burial, n_pp = 11)
-			fp = fp_construction(dist_fillings, buri_fillings, pp_fillings)
-			# update cavities with fp1
-			cavities[index].fp1 = fp
-			#print(fp)
-		b = time.time()
-		printv(f"It took {round(b-a, 3)} seconds to generate the fingerprint")
-
-
-	# ------------------------------------------------------------------------------------------- #
-	# ----------------------------- DATABASE INSERTION ROUTINES --------------------------------- #
-	# ------------------------------------------------------------------------------------------- #
-
-
-	if args.db_write == True:
-	#### PLEASE PUT OPTIONS AND ARGUMENTS 
-		conn, cursor = connect_database(database = args.db_name, user = "marchje7", host="127.0.0.1")
-		# Write metadata about the PDB file (from header!)
-		write_pdb(conn, cursor, dict_pdb_info, pdbcode = args.code[0:-4], v = False)
-		# Write metadata about the protein chains
-		write_pdbchains(conn, cursor, dict_pdb_info, pdbcode = args.code[0:-4], v = False)
-		# Write cavities
-		write_cavities(conn, cursor, dict_all_info, cavities_object = cavities, pdbcode = args.code[0:-4], v = False)
 
 
 

@@ -42,9 +42,6 @@ def get_default_parameters(preset_choice = "default"):
 	args["withprot"] = conffile["output"].getboolean("withprot")
 	args["print_cav_info"] = conffile["output"].getboolean("print_cav_info")
 	args["detect_only"] = conffile["output"].getboolean("detect_only")
-	args["gen_fp"] = conffile["output"].getboolean("gen_fp")
-	args["db_write"] = conffile["output"].getboolean("db_write")
-	args["db_name"] = conffile["output"]["db_name"]
 	#Selection section
 	args["metal"] = conffile["selection"].getboolean("metal")
 	args["water"] = conffile["selection"].getboolean("water")
