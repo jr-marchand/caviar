@@ -322,9 +322,10 @@ def run(arguments):
 			grid_decomposition, selection_protein = selection_protein,
 		gridspace = args.gridspace, outdir = args.out, withprot = args.withprot, listlig = list_ligands,
 		oridir = args.sourcedir)
+		if args.write_pml_cavs:
+			write_pmlfile(cavity_file = os.path.join(args.out, args.code[0:-4] + "_cavs.pdb"), what = args.color_cavs_by, outputfile = str(args.code[0:-4]+"_cavities.pml"))
 
-
-	#dict_coverage['0'][0]	# Kills here the process if detection mode
+	# Kills here the process if detection mode
 	if args.detect_only:
 		return None
 
@@ -358,6 +359,9 @@ def run(arguments):
 			except:
 				pass
 			writePDB(os.path.join(args.out, args.code[:-4] + "_subcavs.pdb"), selection_protein)
+			if args.write_pml_subcavs:
+				write_pmlsubcavs(os.path.join(args.out, args.code[:-4] + "_subcavs.pdb"), outputfile = str(args.code[0:-4]+"_subcavities.pml"))
+				
 		if len(final_cavities) == 1: # Don't go over everything if there's only one cavity!				
 			wrapper_subcavities(final_cavities, 0, grid_min, grid_shape,
 			cavities, args.code, args.out, args.sourcedir, list_ligands,
