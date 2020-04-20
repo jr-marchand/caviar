@@ -1,0 +1,40 @@
+---
+# Front matter comment to ensure Jekyll properly reads file.
+---
+
+// Variables and mixins
+@import "../_scss/variables";
+@import "../_scss/mixins";
+
+/*! Spectre.css v#{$version} | MIT License | github.com/picturepan2/spectre */
+// Reset and dependencies
+@import "../_scss/normalize";
+@import "../_scss/base";
+
+// Elements
+@import "../_scss/typography";
+@import "../_scss/buttons";
+@import "../_scss/codes";
+@import "../_scss/media";
+
+// Layout
+@import "../_scss/layout";
+@import "../_scss/navbar";
+@import "../_scss/footer";
+
+// ../_scss
+@import "../_scss/avatars";
+@import "../_scss/breadcrumbs";
+@import "../_scss/cards";
+@import "../_scss/dropdowns";
+@import "../_scss/menus";
+@import "../_scss/navs";
+
+@import "../_scss/landing";
+
+// Utility classes
+@import "../_scss/utilities";
+
+#anglesvg {
+  display: block;
+}

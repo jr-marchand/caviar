@@ -1,0 +1,38 @@
+<head>
+  <meta charset="UTF-8">
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <meta property="og:title" content="{{ site.title }}">
+  <meta property="og:site_name" content="{{ site.brand_name }}">
+  <meta property="og:url" content="{{site.url }}{{ site.baseurl }}">
+  <meta property="og:description" content="{{ site.description }}">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="{{site.url }}{{ site.baseurl }}/assets/{{ site.meta_image }}">
+
+  <link rel="stylesheet" href="https://unicons.iconscout.com/release/v2.0.1/css/unicons.css">
+
+  <title>
+    {% if page.title == "Home" %}
+      {{ site.title }} | {{ site.tagline }}
+    {% else %}
+      {{ page.title }} | {{ site.title }}
+    {% endif %}
+  </title>
+
+
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="{{ site.baseurl }}/css/styles.css">
+  <link rel="stylesheet" href="{{ site.url }}{{ site.baseurl }}/css/styles.css">
+
+
+
+  <!-- Icons -->
+  <link rel="shortcut icon" href="{{ site.url }}{{ site.baseurl }}/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/atom+xml" title="{{ site.title }}" href="{{ site.baseurl }}atom.xml">
+</head>
