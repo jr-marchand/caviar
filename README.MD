@@ -2,11 +2,11 @@
 
 CAVity Identification And Rationalization -- GUI and command line tool
 
+CAVIAR is a new open source tool for protein cavity identification and rationalization, written in python and available as command line and as a GUI. It comprises a subcavity segmentation algorithm that produces meaningful decomposition of cavities, fully focused on the protein structure and agnostic of any ligand information. 
+
 ## General information
 
-This is the user interface that relates to the Caviar / Cavitome project
-
-This project aims at creating a python plateform to:
+This project aims at creating a python platform to:
  - Download/parse PDB files and fetch as much information from the header as possible
  - Select interesting protein chains with advanced automatic selection (eg, longest protein chain and contacting chains with more than X contacts, keep metal, well structured structural waters)
  - Identify cavities (grid based algorithm based on buriedness)
@@ -28,7 +28,7 @@ To install it locally from the git repository:
 
 python setup.py install
 /!\ Check that you have the correct dependencies/libraries
-cf conda.recipe/meta.yaml, requirements/run section
+cf conda.recipe/meta.yaml, requirements section
 /!\ 
 
 ## How to use
@@ -55,10 +55,9 @@ Weekly discussions with Peter Ertl and Bernard Pirard
 
 
 This package relies on open source software:
-* python 3 (< 3.8 because of compatibility with networkx)
+* python 3 
 * pyparse for arguments parsing
 * scipy, numpy, networkx for cavity identification
 * skimage (scikit-image) for subcavity decomposition
 * sklearn for ligandability predictions
-* PyQt5 for the GUI -- restricted to version pyqt 5.9.2
-
+* PyQt5 for the GUI 
