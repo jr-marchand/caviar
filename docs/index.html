@@ -1,0 +1,37 @@
+---
+layout: default
+title: Home
+---
+{% assign page_category = site.data.category_list[page.category] %}
+
+  {% include header-home.html %}
+    <div class="container-full">
+      <div class="container grid-xl">
+        <div class="columns negative-m-s">
+          <div class="column col-12 text-center">
+            <h6 class="text-secondary">Select a Category</h6>
+          </div>
+          {% for category in site.data.category_list %}
+          {% capture category_name %}{{ category | first }}{% endcapture %}
+          {% assign page_category = site.data.category_list[category_name] %}
+          <div class="column col-4 col-md-6 col-sm-12">
+            <a href="{{ site.baseurl }}/{{ category_name | slugify }}">
+              <div class="card card-link">
+                <div class="card-body text-center my-4">
+                  <h5 class="text-bold">{{ page_category.name }}</h5>
+                      
+                  {% if category[1].size == 1 %}
+                  <p class="m-0">{{ category | last | size }} article</p>
+                  {% else %}
+                  <p class="m-0">{{ category | last | size }} articles</p>
+                  {% endif %}
+                </div>
+              </div>
+            </a>
+          </div>
+          {% endfor %} 
+
+          {% include more-help.html %}
+        </div>
+      </div>
+    </div>

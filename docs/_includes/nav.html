@@ -1,0 +1,39 @@
+<nav class="container grid-xl navbar">
+  <div class="flex-vertical-center hide-sm">
+    <a style="width: 20%;" href="{{ site.url }}{{ site.baseurl }}" class="logo">
+      <img style="max-width: 100%;" src="{{ site.baseurl }}/assets/{{ site.brand_logo }}"/>
+    </a>
+    <p class="m-0 ml-2 text-light d-inline">{{ site.content_type }}</p>
+  </div>
+  <div class="text-center show-sm">
+    <a style="width: 100%;" href="{{ site.url }}{{ site.baseurl }}" class="logo flex-centered">
+      <img style="max-width: 150px;" src="{{ site.baseurl }}/assets/{{ site.brand_logo }}"/>
+    </a>
+    <p class="m-0 text-light">{{ site.content_type }}</p>
+    <a style="height: auto;" class="btn btn-lg btn-outline py-2 mt-4">Return to {{ site.brand_name }} Home</a>
+
+  </div>
+  <ul class="main-nav">
+    {% if site.nav_item_one == null %}
+    {% else %}
+    <li class="mx-4">
+      <a  class="nav-links" href="{{ site.nav_item_one_link }}">{{ site.nav_item_one }}</a>
+    </li>
+    {% endif %}
+    {% if site.nav_item_two == null %}
+    {% else %}
+    <li class="mx-4">
+      <a  class="nav-links" href="{{ site.nav_item_two_link }}">{{ site.nav_item_two }}</a>
+    </li>
+    {% endif %}
+    {% if site.nav_item_three == null %}
+    {% else %}
+    <li class="mx-4">
+      <a  class="nav-links" href="{{ site.nav_item_three_link }}">{{ site.nav_item_three }}</a>
+    </li>
+    {% endif %}
+    <li>
+      <a href="{{ site.nav_button_link }}" style="height: auto;" class="btn btn-lg btn-outline py-2">{{ site.nav_button }}</a>
+    </li>
+  </ul>
+</nav>
