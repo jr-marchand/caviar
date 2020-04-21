@@ -2,62 +2,42 @@
 layout: default
 ---
 
-{% include header.html %}
+<div class="container">
+    <div class="row">
 
-{% assign page_category = site.data.category_list[page.category] %}
-
-
-<div class="container-full">
-    <div class="container grid-xl">
-      <div class="mt-12 show-md"></div>
-      <div class="mt-8"></div>
-      <div class="columns negative-m-xl">
-        <div class="column col-12">
-          <ul class="breadcrumb">
-            <li class="breadcrumb-item">
-              <a href="{{ site.url }}{{ site.baseurl }}">Help Center Home</a>
-            </li>
-            <li class="breadcrumb-item">
-              <a href="../{{ page.category }}">{{ page_category.name }}</a>
-            </li>
-            <li class="breadcrumb-item">
-              <a href="#">{{ page.title }}</a>
-            </li>
-          </ul>
-          <h2 class="text-light text-bold">{{ page.title }}</h2>
-          <p class="text-light mb-0">{{ page.short-description }}</p>
-        </div>
-        <div class="column col-12">
-          <div class="card">
-            <div class="card-body">
-                {% if site.use_authors == true %}
-                {% assign post_author = site.data.authors[page.author] %}
-                <div class="flex-vertical-center mb-4">
-                  <figure class="avatar d-inline-block" style="align-items: center;">
-                    <img  src="../assets/{{ post_author.image }}" alt="...">
-                  </figure>
-                  <div class="ml-2">
-                    <p class="text-dark text-small mb-0">Written by <span class="text-primary">{{ post_author.name }}</span></p>
-                    <p class="text-dark text-small text-italic mb-0">{% include reading-time.html %}</p>
-                  </div>
-                </div>
-                {% else %}
-                <div class="ml-2">
-                    <p class="m-0 text-small">Last updated:</p>
-                    <p class="text-dark text-small text-italic mb-0">{{ page.last_modified_at | date: '%B %d, %Y'  }} - {% include reading-time.html %}</p>
-                  </div>
-                {% endif %}
-
-              {{ content }}
-
-              
-            
-
-
+        <div class="col-md-4">
+            <div class="well">
+                <h4>RECENT POSTS</h4>
+                <ul class="list-unstyled post-list-container">
+                    {% for post in site.posts limit:10 %}
+                    <li><a href="{{ post.url | relative_url }}" {% if page.title==post.title %} class="active" {% endif %}>{{ post.title }}</a></li>
+                    {% endfor %}
+                    <li><a href="{{ "/allposts" | relative_url }}">All posts ...</a></li>
+                </ul>
             </div>
-          </div>
         </div>
-        {% include more-help.html %}
-      </div>
+
+        <div class="col-md-8">
+            <h1>{{ page.title }}</h1>
+            <p>{{ page.date | date: "%b %-d, %Y" }}{% if page.author %} • {{ page.author }}{% endif %}{% if page.meta %} • {{ page.meta }}{% endif %}</p>
+            <div  id="markdown-content-container">{{ content }}</div>
+            <hr>
+            <ul class="pager">
+                {% if page.previous %}
+                <li class="previous">
+                    <a href="{{ page.previous.url | relative_url }}">
+                        <span aria-hidden="true">&larr;</span> Older
+                    </a>
+                </li>
+                {% endif %} {% if page.next %}
+                <li class="next">
+                    <a href="{{ page.next.url | relative_url }}">
+                      Newer <span aria-hidden="true">&rarr;</span>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+
     </div>
-  </div>
+</div>
