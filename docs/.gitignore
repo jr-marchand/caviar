@@ -1,6 +1,6 @@
 _site
 .sass-cache
 .jekyll-cache
-*.gem
-.bundle
-vendor/bundle
+.jekyll-metadata
+vendor
+Odin.ai

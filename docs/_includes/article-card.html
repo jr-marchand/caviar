@@ -1,0 +1,31 @@
+<div class="column col-12">
+  <a href="{{ site.baseurl}}{{ post.url }}">
+    <div class="card card-link my-1" itemprop="blogPosts" itemscope="" itemtype="http://schema.org/BlogPosting">
+      <div class="card-body">
+        <div class="columns col-x-align">
+          <div class="column col col-sm-12">
+            <h5 class="text-semibold m-0">{{ post.title }}</h5>
+            <p class="m-0 text-dark">{{ post.short-description }}</p>
+          </div>
+          <div class="column col-auto hide-sm">
+            {% if site.use_authors == true %}
+            {% assign post_author = site.data.authors[post.author] %}
+            <div class="flex-vertical-center">
+              <figure class="avatar d-inline-block" style="align-items: center;">
+                <img  src="{{ site.baseurl }}/assets/{{ post_author.image}}" alt="...">
+              </figure>
+              <div class="ml-2">
+                <p class="text-dark text-small mb-0">Written by <span class="text-primary">{{ post_author.name }}</span></p>
+              </div>
+            </div>
+            {% else %}
+            {% endif %}
+           
+          </div>
+        </div>
+      </div>
+    </div>
+  </a>
+</div>
+
+

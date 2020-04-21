@@ -1,20 +1,15 @@
 <!DOCTYPE html>
-<html lang="{{ page.lang | default: site.lang | default: "en" }}">
+<html lang="en">
 
-{% include head.html %}
+  {% include head.html %}
 
-<body>
-
-    {% include topnav.html %}
-
-    <div class="page-content">
-        <div class="wrapper">
-            {{ content }}
-        </div>
-    </div>
+  <body>
+    {{ content }}
 
     {% include footer.html %}
-    {% include js_files.html %}
-</body>
 
+    <script async defer src="https://cdn.simpleanalytics.io/hello.js"></script>
+    <noscript><img src="https://api.simpleanalytics.io/hello.gif" alt=""></noscript>
+    
+  </body>
 </html>
