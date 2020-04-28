@@ -1,0 +1,46 @@
+//
+// Basic Bootstrap table
+//
+
+.table {
+  --bs-table-bg: #{$table-bg};
+  --bs-table-accent-bg: transparent;
+  --bs-table-striped-color: #{$table-striped-color};
+  --bs-table-striped-bg: #{$table-striped-bg};
+  --bs-table-active-color: #{$table-active-color};
+  --bs-table-active-bg: #{$table-active-bg};
+  --bs-table-hover-color: #{$table-hover-color};
+  --bs-table-hover-bg: #{$table-hover-bg};
+
+  width: 100%;
+  margin-bottom: $spacer;
+  color: $table-color;
+  vertical-align: $table-cell-vertical-align;
+  border-color: $table-border-color;
+
+  // Target th & td
+  // We need the child combinator to prevent styles leaking to nested tables which doesn't have a `.table` class.
+  // We use the universal selectors here to simplify the selector (else we would need 6 different selectors).
+  // Another advantage is that this generates less code and makes the selector less specific making it easier to override.
+  // stylelint-disable-next-line selector-max-universal
+  > :not(caption) > * > * {
+    padding: $table-cell-padding;
+    background-color: var(--bs-table-bg);
+    background-image: linear-gradient(var(--bs-table-accent-bg), var(--bs-table-accent-bg));
+    border-bottom-width: $table-border-width;
+  }
+
+  > tbody {
+    vertical-align: inherit;
+  }
+
+  > thead {
+    vertical-align: bottom;
+  }
+
+  // Highlight border color between thead, tbody and tfoot.
+  // stylelint-disable-next-line selector-max-universal
+  > :not(:last-child) > :last-child > * {
+    border-bottom-color: $table-group-seperator-color;
+  }
+}

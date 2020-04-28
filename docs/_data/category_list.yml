@@ -1,0 +1,14 @@
+#This file defines all the categories you are using
+
+presentation:
+  name: Presentation
+  description: What is CAVIAR, actually?
+using-caviar:
+  name: Using CAVIAR
+  description: Learn the basic use of CAVIAR and get started within few minutes
+advanced-use:
+  name: Advanced usage
+  description: Let's get our hands dirty
+cite:
+  name: Citing CAVIAR
+  description: Cite CAVIAR
