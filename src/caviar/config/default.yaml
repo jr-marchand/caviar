@@ -40,7 +40,7 @@
                     # These are interatomic  contacts at 5A, so be loose with the number
                     # The aim is to keep only chains of the PDB that are functionally in contact
                     # and not simply symmetric chains of the same domain in the crystal unit
-  chain_id:    # User-specified chain ID to investigate (e.g., A). Overseeds -what, unless it's "longestandcontacting"
+  chain_id:         # User-specified chain ID to investigate (e.g., A). Overseeds -what, unless it's "longestandcontacting"
   chainid_in_pdblist: False # Same chain_id but implemented in input list 
                     # rather than passed as explicit argument. Same warning as -chain_id.
                     # The chain identifier (e.g. A, B...) should be given after an underscore to the
@@ -89,7 +89,7 @@
   # tabulist_ligand_min_peptides_nucleic_sugars and tabulist_ligand_maximal
   ligsizeflag: False # Flag to define a minimal size for the ligand. 
   ligminsize: 8    # Minimal size for the ligand if ligsizeflag is activated. 
-  lig_id:  # Ligand 3 letters ID code in the PDB file, to check for presence in cavities (no default)
+  lig_id:          # Ligand 3 letters ID code in the PDB file, to check for presence in cavities (no default)
   liglist_in_pdblist: False # Specify ligand 3 letters ID code in the second in the second column
                     # of the PDB list file (to check for presence in cavities), eg, "1dwc_H MIT" "PDB_chainID LIG"
   lig_tocenter: False # Check if a ligand atom is within 4A of the geometric center of the pocket 

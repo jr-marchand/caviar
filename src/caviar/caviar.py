@@ -90,18 +90,21 @@ def arguments():
 						"If the file isn't in given directory (-sourcedir), this program will try to download it from RCSB.\n")
 	
 	parser.add_argument("-what", type = str, help = ": Keyword defining what protein chains "
-						"to keep for cavity detection: all protein chains (above threshold_nres)"
+						"to keep for cavity detection: all protein chains (above threshold_nres)\n"
 						", just the longest chain, or the longest chain plus contacting chains (at 5A) \n"
-						"  (default: 'allproteins'; other possibilities: 'longestchain', 'longestandcontacting')")
+						"  (default: 'allproteins'; other possibilities: 'longestchain', 'longestandcontacting')\n")
 	
 	parser.add_argument("-chain_id", type = str, help = ": User-specified chain ID to investigate (e.g., A).\n"
-						"Is compatible with -what => overseeds the lookup for the longest chain."
+						"Is compatible with -what => overseeds the lookup for the longest chain.\n"
 						"You can select this chain + contacting one (-what longestandcontacting)\n"
-						"  (default: None)")
+						"  (default: None)\n")
 	
-	parser.add_argument("-subcavs_decomp", type = str2bool, help = ": Activates the subcavities decomposition \n(default = False)\n")
-	
-	parser.add_argument("-out", type = str, help = ":  Path to outfolder.\n  ")
+	parser.add_argument("-subcavs_decomp", type = str2bool, help = ": Activates the subcavities decomposition \n(default = True)\n")
+
+	parser.add_argument("-color_cavs_by", type = str, help = ": write a session *.pml file for pymol to open the output and color cavities by chain/buriedness/pharmacophore\n"
+						"(default = bychain\n", default = "bychain", choices=["bychain", "buriedness", "pharmacophore"])
+
+	parser.add_argument("-out", type = str, help = ":  Path to outfolder.\n(default = ./caviar_out/)\n  ")
 
 	parser.add_argument("-v", action = "store_true", help = ": turn verbosity on\n")
 
@@ -172,6 +175,7 @@ def run(arguments):
 		urllib.request.urlretrieve('http://files.rcsb.org/download/'+str(args.code), str(args.code))
 		try:
 			pdbobject = parsePDB(str(args.code))
+			args.sourcedir = "./"
 		except:
 			print("PDB " + str(args.code) + " not found on RCSB PDB webservers neither")
 			return None
