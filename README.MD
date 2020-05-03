@@ -4,6 +4,11 @@ CAVity Identification And Rationalization -- GUI and command line tool
 
 CAVIAR is a new open source tool for protein cavity identification and rationalization, written in python and available as command line and as a GUI. It comprises a subcavity segmentation algorithm that produces meaningful decomposition of cavities, fully focused on the protein structure and agnostic of any ligand information. 
 
+### Website and manual
+
+https://jr-marchand.github.io/caviar contains extended information about installation, usage, and an extended manual.   
+
+
 ## General information
 
 This project aims at creating a python platform to:
