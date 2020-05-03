@@ -404,7 +404,7 @@ def run(arguments):
 			cavities[cava].ligandability = ligability
 
 		# Print formatted information
-		print_scores(dict_all_info, args.code[0:-4], cavities)
+		print_scores(dict_all_info, args.code[0:-4], cavities, False)
 	
 		# Export a dummy pdb containing the filtered, ranked cavities with buriedness data (in B factor column)
 		# and pharmacophore types (in occupancy column)
@@ -442,35 +442,37 @@ def runsubcavities(data_forsubcav_routines, args, cavid = None):
 	with StringIO() as bufsubcav, redirect_stdout(bufsubcav):
 		from caviar.prody_parser import writePDB
 		writePDB(os.path.join("caviar_out", f"{args.code[0:-4]}_subcavs.pdb"), pdbobject)
-			# Iterate over liganded cavities only 
+		subcavs_table = ""
+		# Iterate over liganded cavities only 
 		if len(final_cavities) == 1: # Don't go over everything if there's only one cavity!
-			wrapper_subcavities(final_cavities, 0, grid_min, grid_shape,
+			subcavs_table += wrapper_subcavities(final_cavities, 0, grid_min, grid_shape,
 			cavities, args.code, args.out, args.sourcedir, list_ligands = None,
 			seeds_mindist = 3, merge_subcavs = True, minsize_subcavs = 50,
-			min_contacts = 0.667, v = False, printv = True,
-			print_pphores_subcavs = True, export_subcavs = True,
+			min_contacts = 0.667, v = False, export_subcavs = True,
 			gridspace = 1.0)
 
 		elif cavid:
 			#try: #Could be a wrong cavity ID
 			cav_of_interest = int(cavid) - 1 # We have cavities from 0 but for comprehension we print from 1
-			wrapper_subcavities(final_cavities, cav_of_interest, grid_min, grid_shape,
+			subcavs_table += wrapper_subcavities(final_cavities, cav_of_interest, grid_min, grid_shape,
 			cavities, args.code, args.out, args.sourcedir, list_ligands = None,
 			seeds_mindist = 3, merge_subcavs = True, minsize_subcavs = 50,
-			min_contacts = 0.667, v = False, printv = True,
-			print_pphores_subcavs = True, export_subcavs = True,
+			min_contacts = 0.667, v = False, export_subcavs = True,
 			gridspace = 1.0)
 			#except:
 			#	print(f"Are you sure the cavity ID is an existing cavity?")
 		# Iterate all cavities
 		else:
 			for cav_of_interest in range(0, len(cavities)):
-				wrapper_subcavities(final_cavities, cav_of_interest, grid_min, grid_shape,
+				subcavs_table += wrapper_subcavities(final_cavities, cav_of_interest, grid_min, grid_shape,
 				cavities, args.code, args.out, args.sourcedir, list_ligands = None,
 				seeds_mindist = 3, merge_subcavs = True, minsize_subcavs = 50,
-				min_contacts = 0.667, v = False, printv = True,
-				print_pphores_subcavs = True, export_subcavs = True,
+				min_contacts = 0.667, v = False, export_subcavs = True,
 				gridspace = 1.0)
+		# print table
+		print(f"PDB_chain CavID SubCavID Size Hydrophob. Polar  Neg   Pos  Other")
+		print(subcavs_table)
+
 		fn = f"{args.code[0:-4]}_subcavs.pdb"
 		return bufsubcav.getvalue(), fn
 

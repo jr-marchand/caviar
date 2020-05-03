@@ -347,9 +347,6 @@ def run(arguments):
 	list_covered_ligands, dict_cavid_lig_bool = export_clean_cav_ligand_info(dict_coverage,
 		list_ligands, list_lig_coords, cavities)
 
-	# Print formatted information
-	if args.print_cav_info:
-		print_scores(dict_all_info, args.code[0:-4], cavities)
 
 	# ------------------------------------------------------------------------------------------- #
 	# -------------------------------- SUBCAVITIES ROUTINES ------------------------------------- #
@@ -366,23 +363,22 @@ def run(arguments):
 			if args.write_pml_subcavs:
 				write_pmlsubcavs(os.path.join(args.out, args.code[:-4] + "_subcavs.pdb"), outputfile = str(args.code[0:-4]+"_subcavities.pml"))
 				
+		subcavs_table = ""
 		if len(final_cavities) == 1: # Don't go over everything if there's only one cavity!				
-			wrapper_subcavities(final_cavities, 0, grid_min, grid_shape,
+			subcavs_table += wrapper_subcavities(final_cavities, 0, grid_min, grid_shape,
 			cavities, args.code, args.out, args.sourcedir, list_ligands,
 			seeds_mindist = args.seeds_mindist, merge_subcavs = args.merge_subcavs, minsize_subcavs = 50,
-			min_contacts = 0.667, v = False, printv = args.print_pphores_subcavs,
-			print_pphores_subcavs = args.print_pphores_subcavs, export_subcavs = args.export_subcavs,
+			min_contacts = 0.667, v = False, export_subcavs = args.export_subcavs,
 			gridspace = args.gridspace)
 		# Iterate over liganded cavities only 
 		elif args.subcavs_lig_only:
 			try: #Could be activated without ligand
 				for key,value in dict_coverage.items():
 					cav_of_interest = int(value[0])
-					wrapper_subcavities(final_cavities, cav_of_interest, grid_min, grid_shape,
+					subcavs_table += wrapper_subcavities(final_cavities, cav_of_interest, grid_min, grid_shape,
 					cavities, args.code, args.out, args.sourcedir, list_ligands,
 					seeds_mindist = args.seeds_mindist, merge_subcavs = args.merge_subcavs, minsize_subcavs = 50,
-					min_contacts = 0.667, v = False, printv = args.print_pphores_subcavs,
-					print_pphores_subcavs = args.print_pphores_subcavs, export_subcavs = args.export_subcavs,
+					min_contacts = 0.667, v = False, export_subcavs = args.export_subcavs,
 					gridspace = args.gridspace)
 
 			except:
@@ -391,16 +387,23 @@ def run(arguments):
 		# Iterate all cavities
 		else:
 			for cav_of_interest in range(len(cavities)):
-				wrapper_subcavities(final_cavities, cav_of_interest, grid_min, grid_shape,
+				subcavs_table += wrapper_subcavities(final_cavities, cav_of_interest, grid_min, grid_shape,
 				cavities, args.code, args.out, args.sourcedir, list_ligands,
 				seeds_mindist = args.seeds_mindist, merge_subcavs = args.merge_subcavs, minsize_subcavs = 50,
-				min_contacts = 0.667, v = False, printv = args.print_pphores_subcavs,
-				print_pphores_subcavs = args.print_pphores_subcavs, export_subcavs = args.export_subcavs,
+				min_contacts = 0.667, v = False, export_subcavs = args.export_subcavs,
 				gridspace = args.gridspace)
 
 
+	# Print formatted information
+	if args.print_cav_info:
+		# print with subcavities information if subcavs_decomp was activated
+		print_scores(dict_all_info, args.code[0:-4], cavities, subcavs = args.subcavs_decomp)
 
-
+	# Print formatted information for subcavities 
+	if args.print_pphores_subcavs:
+		print(f"{'PDB_chain':<9}{'CavID':^7}{'SubCavID':^8}{'Size':^6}{'Hydrophob.':^10}"
+			f"{'Polar':^7}{'Neg':^6}{'Pos':^6}{'Other':^6}")
+		print(subcavs_table)
 
 	# ------------------------------------------------------------------------------------------- #
 	# ----------------------------------- THIS IS THE END! -------------------------------------- #

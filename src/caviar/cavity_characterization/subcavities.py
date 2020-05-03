@@ -36,8 +36,7 @@ def wrapper_subcavities(final_cavities, cav_of_interest, grid_min, grid_shape, c
 	if merge_subcavs == True:
 		subcavs = merge_small_enclosed_subcavs(subcavs, minsize_subcavs = minsize_subcavs,
 			min_contacts = min_contacts, v = v)
-	print_subcavs_pphores(cavities, subcavs, cav_of_interest, code, grid_min, grid_shape,
-		printv = printv, printvv = print_pphores_subcavs)
+	subcavs_table = print_subcavs_pphores(cavities, subcavs, cav_of_interest, code, grid_min, grid_shape)
 	
 	# Export
 	if export_subcavs:
@@ -49,7 +48,7 @@ def wrapper_subcavities(final_cavities, cav_of_interest, grid_min, grid_shape, c
 			cavid = cav_of_interest, gridspace = gridspace, outdir = out,
 			listlig = list_ligands, oridir = sourcedir)
 
-
+	return subcavs_table
 
 def transform_cav2im3d(cavity_coords, grid_min, grid_shape):
 	"""
@@ -262,8 +261,7 @@ def transform_im3d2cav(im3d, grid):
 	return cav_coor
 
 
-def print_subcavs_pphores(cavities, subcavs, cav_of_interest, pdbcode, grid_min,
-	grid_shape, printv = True, printvv = True):
+def print_subcavs_pphores(cavities, subcavs, cav_of_interest, pdbcode, grid_min, grid_shape):
 	"""
 	print information about PP environment
 	and in particular, set in cavities object (class) the subcavity indices
@@ -272,9 +270,9 @@ def print_subcavs_pphores(cavities, subcavs, cav_of_interest, pdbcode, grid_min,
 	#names = ["none", "aliphatic", "aromatic", "donor", "acceptor", "doneptor", "negative",
 	# "positive", "cys", "his", "metal"]
 	# Dictionary of pharmacophore types to print
-	names = ["none", "hydrophobic", "shouldnotbethere", "polar non charged", "shouldnotbethere", "shouldnotbethere",
-	"negative", "positive", "cys", "his", "metal"]
-
+	names = ["shouldnotbethere", "hydrophobic", "shouldnotbethere", "polar non charged", "shouldnotbethere", "shouldnotbethere",
+	"negative", "positive", "other", "shouldnotbethere", "shouldnotbethere"]
+	subcavs_table = ""
 	for i in range(0, len(subcavs)):
 		# Find the corresponding indices in cavities[cav_of_interest]
 		subcav = subcavs[i]
@@ -285,13 +283,6 @@ def print_subcavs_pphores(cavities, subcavs, cav_of_interest, pdbcode, grid_min,
 		# Update the cavity object
 		cavities[cav_of_interest].subcavities[i] = oricav_indices
 
-		if not printv:
-			continue
-		print(f"subcavity {i+1} of cavity {cav_of_interest+1} of pdb {pdbcode[:-4]} has "
-					f"{len(oricav_indices)} grid points")
-
-		if not printvv:
-			continue
 		# Find the pharmacophore types of the gridpoints of the subcavity
 		listouille = [cavities[cav_of_interest].gp[x].pharma[0] for x in oricav_indices]
 
@@ -300,16 +291,28 @@ def print_subcavs_pphores(cavities, subcavs, cav_of_interest, pdbcode, grid_min,
 		# Convert types acceptor and doneptor into "polar non charged" (originally donor)
 		listouille = np.where(np.array(listouille)==4, 3, listouille)
 		listouille = np.where(np.array(listouille)==5, 3, listouille)
+		# Convert None, cys, his, metal to the same "other"
+		listouille = np.where(np.array(listouille)==0, 8, listouille)
+		listouille = np.where(np.array(listouille)==9, 8, listouille)
+		listouille = np.where(np.array(listouille)==10, 8, listouille)
 	
 		# Count occurences of each value
 		values, counts = np.unique(listouille, return_counts=True)
-		# Get total of values
 		total = np.sum(counts)
-		for j in range(0, len(values)):
-			# Get proportion of this value
-			prop = counts[j] / total
-			if prop > 0.1: # if more than 10% print info
-				print(f"subcavity {i+1} of cavity {cav_of_interest+1} of pdb {pdbcode[:-4]} has {np.round(prop*100)}"
-					f"% of pharmacophores of type {names[values[j]]}")
+		# create a dummy dictionary to store values better for printing
+		# set it up with 0 in case some values are absent
+		dico = {1: 0, 3: 0, 6: 0, 7: 0, 8: 0}
+		# Replace the 0 by the actual values
+		for aa in range(len(values)):
+			dico[values[aa]] = np.divide(counts[aa], total)
 
-	return None
+		# create the table with subcavs information, that we may print or not
+		# Will be: PDB_chain cav_id subcav_id size hydroph polar neg pos other
+		name = str(pdbcode[0:-4] + "_" + cavities[cav_of_interest].chains)
+		subcavs_table += f"{name:<9}"
+		subcavs_table += f"{cav_of_interest+1:^7d}{i+1:^8d}{len(oricav_indices):^6d}"
+		subcavs_table += f"{str(int(np.around(dico[1]*100)))+'%':^10}{str(int(np.around(dico[3]*100)))+'%':^7}"
+		subcavs_table += f"{str(int(np.around(dico[6]*100)))+'%':^6}{str(int(np.around(dico[7]*100)))+'%':^6}{str(int(np.around(dico[8]*100)))+'%':^6}"
+		subcavs_table += f"\n"
+
+	return subcavs_table

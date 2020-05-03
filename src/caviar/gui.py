@@ -36,8 +36,8 @@ def main():
 			self.run.clicked.connect(self.find_cavities)
 			self.button_close.clicked.connect(self.close)
 			self.button_browse.clicked.connect(self.getfile)
-	
-	
+
+			
 		def getfile(self):
 			fname = QFileDialog.getOpenFileName(self, 'Open file', 
 				'./',"PDB files (*.pdb)")[0]

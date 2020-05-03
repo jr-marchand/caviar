@@ -355,21 +355,31 @@ def export_clean_cav_ligand_info(dict_coverage, list_ligands, list_lig_coords, c
 
 	return list_covered_ligands, dict_cavid_lig_bool
 
-def print_scores(dict_all_info, pdbcode, cavities):
+def print_scores(dict_all_info, pdbcode, cavities, subcavs = False):
 	"""
 	Returns the information with the order for export (final_cavities)
 	"""
-	idx = 0
-	print(f"PDB_chain  CavID  Ligab.   Score   Size  Hydrophob  Interchain  AltLocs  MissAtoms")
-	for cav in range(len(cavities)):
-		print(f'{pdbcode}_{dict_all_info[cav]["chains"]}\t{idx+1:>8d}   '
-			f'{cavities[idx].ligandability}     '
-			f'{dict_all_info[cav]["score"]:>4.1f} '
-			f'  {dict_all_info[cav]["size"]:>5d} '
-			f'{dict_all_info[cav]["hydrophobicity"]*100:>8.0f}%      '
-			f'{dict_all_info[cav]["interchain"]:>5d}\t{dict_all_info[cav]["altlocs"]:>5d}'
-			f' {dict_all_info[cav]["missingatoms"]+dict_all_info[cav]["missingres"]:>10d}')
-		idx += 1
+	if subcavs:
+		print(f"{'PDB_chain':<9}{'CavID':^7}{'Ligab.':^6}{'Score':^7}{'Size':^6}{'Hydrophob.':^10}"
+			f"{'InterChain':^12}{'AltLoc':^6}{'Miss':^6}{'Subcavs':^9}")
+		for cav in range(len(cavities)):
+			name = str(pdbcode + "_" + dict_all_info[cav]["chains"])
+			print(f'{name:<9}{cav+1:^7d}{cavities[cav].ligandability:^6.1f}'
+				f'{dict_all_info[cav]["score"]:^7.1f}{dict_all_info[cav]["size"]:^6d}'
+				f'{str(int(np.around(dict_all_info[cav]["hydrophobicity"]*100)))+"%":^10}'
+				f'{dict_all_info[cav]["interchain"]:^12d}{dict_all_info[cav]["altlocs"]:^6d}'
+				f'{dict_all_info[cav]["missingatoms"]+dict_all_info[cav]["missingres"]:^6d}'
+				f'{len(cavities[cav].subcavities):^9d}')
+	else:
+		print(f"{'PDB_chain':<9}{'CavID':^7}{'Ligab.':^6}{'Score':^7}{'Size':^6}{'Hydrophob.':^10}"
+			f"{'InterChain':^12}{'AltLoc':^6}{'Miss':^6}")
+		for cav in range(len(cavities)):
+			name = str(pdbcode + "_" + dict_all_info[cav]["chains"])
+			print(f'{name:<9}{cav+1:^7d}{cavities[cav].ligandability:^6.1f}'
+				f'{dict_all_info[cav]["score"]:^7.1f}{dict_all_info[cav]["size"]:^6d}'
+				f'{str(int(np.around(dict_all_info[cav]["hydrophobicity"]*100)))+"%":^10}'
+				f'{dict_all_info[cav]["interchain"]:^12d}{dict_all_info[cav]["altlocs"]:^6d}'
+				f'{dict_all_info[cav]["missingatoms"]+dict_all_info[cav]["missingres"]:^6d}')
 
 	return None
 
