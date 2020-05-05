@@ -17,7 +17,7 @@ In the terminal where you have activate the CAVIAR environment, write down:
   
 This will open the main window of CAVIAR, focused on cavity identification.
 
-![caviar_gui main window](/docs/assets/gui_main.png){: .img-responsive }
+![caviar_gui main window]({{ site.baseurl }}/assets/gui_main.png){: .img-responsive }
 
 ### Input options  
 
@@ -62,7 +62,7 @@ By default, all cavities are decomposed into subcavities, but you can specify a 
 
 Similarly, PyMOL can be called from the GUI, with a session coloring subcavities automatically for easy visualization. 
 
-![caviar_gui subpocket window](/docs/assets/gui_sub.png){: .img-responsive }
+![caviar_gui subpocket window]({{ site.baseurl }}/assets/gui_sub.png){: .img-responsive }
 
 | PDB_chain | CavID | SubCavID | Size | Hydrophob. | Polar | Neg | Pos | Other |
 | --------- |------ | -------- | ---- | ---------- | ----- | --- | --- | ----- | 
