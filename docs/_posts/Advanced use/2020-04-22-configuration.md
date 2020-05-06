@@ -29,7 +29,7 @@ Parameters will now be described in this order:
 
 The parameters can be in any order, and see [--> this article <--]({{ site.baseurl }}{% link _posts/Using CAVIAR/2020-04-23-caviar-cmdline.md %}) for more details.  
 
-<A href="#input">#### Input ####</A>
+#### Input ####
 
   - sourcedir: /home/user/pdb/  
 Source directory of the input PDB files, otherwise downloads from the RCSB PDB  
