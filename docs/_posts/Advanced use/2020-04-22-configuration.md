@@ -61,7 +61,7 @@ Exclude PDB deposited/reviewed before a date (boolean)
   - date: 2010  
 Minimal deposition/revision date (year, 4 digits)  
 
-<A href="#output">#### Output ####</A>
+#### Output ####
 
   - out: ./caviar_out/  
 Path to output folder, containing the PDB files of cavities  
@@ -76,7 +76,7 @@ If a PyMOL session file is written, how to color the cavities: by chain, buriedn
   - print_cav_info: True  
 Print out the table report on cavity identification (boolean)  
 
-<A href="#selection">#### Selection of objects ####</A>
+#### Selection of objects ####
 
   - metal: True  
 Keep metals and consider them part of the protein (boolean)  
@@ -96,7 +96,7 @@ Explicit user-specified chain ID to investigate (Nothing or a letter, or several
   - chainid_in_pdblist: False  
 Same as "chain_id" but implemented in the input list specified in "codeslist". The chain identifier (e.g. A, B...) should be given after an underscore to the PDB code. For example 1AAA_A for chain A of PDB 1AAA. 1AAA_ABC for chains A, B, and C.  
 
-<A href="#id">#### Identification of cavities ####</A>
+#### Identification of cavities ####
 
 All distance values in Angstroms.  
 
@@ -123,7 +123,7 @@ Score for excluding potential cavity points as probably overspanning. Points wit
   - min_degree: 3  
 In the graph representation, each node is a grid point and edges are created between nodes in direct contact (1 grid spacing in one of the 14 cubic directions). Cavity grid points with a node degree below this threshold are excluded, again to avoid overspanning.  
 
-<A href="#filtering">#### Filtering of cavities ####</A>
+#### Filtering of cavities ####
 
   - min_burial_q: 10  
 Minimum buriedness value of grid points at the x-th quantile (strictly greater than) (again between 8 and 14).  
@@ -139,7 +139,7 @@ Exclude cavities that have missing atoms/residues (boolean).
 Exclude cavities that have alternative conformation of residues (boolean).  
 
 
-<A href="#lig">#### Ligand validation routines ####</A>
+#### Ligand validation routines ####
 
 Activated with one of the two first keywords (lig_id or liglist_in_pdblist) 
 
@@ -164,7 +164,7 @@ Minimal size for the ligand if ligsizeflag is activated (in heavy atoms).
   - lig_tocenter: False
 Check if any ligand atom is within 4A of the geometric center of the pocket rather than within 1A of any cavity point (boolean).   
 
-<A href="#segmentation">#### Segmentation into subcavities ####</A>
+#### Segmentation into subcavities ####
 
   - subcavs_decomp: True  
 Activates the subcavities decomposition (boolean).   
@@ -182,7 +182,7 @@ Merge small subcavities enclosed in between other subcavities to prevent overseg
 prints pharmacophore data of the subcavities as a table.  
 
 
-<A href="#default">#### Default configuration file ####</A>
+#### Default configuration file ####
 ```
 [input]
   sourcedir: /db/pdb/ # Source directory, otherwise downloads file
