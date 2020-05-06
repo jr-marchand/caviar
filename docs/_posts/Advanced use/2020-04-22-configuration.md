@@ -10,7 +10,7 @@ short-description: How to access to all parameters
 
 *** still a draft ***
 
-This article is complementary to the [--> command line use <--]({{ site.baseurl }}{% /_posts/Using CAVIAR/2020-04-23-caviar-cmdline.md %}) of CAVIAR.  
+This article is complementary to the [--> command line use <--]({{ site.baseurl }}{% link _posts/Using CAVIAR/2020-04-23-caviar-cmdline.md %}) of CAVIAR.  
 We describe here all the parameters that can be used in a configuration file with the -custom_config option.  
 
 ### Custom configuration file for CAVIAR  
@@ -27,7 +27,7 @@ Parameters will now be described in this order:
  - [Segmentation into subcavities](#segmentation)
  - [General default configuration file](#default)
 
-The parameters can be in any order, and see [--> this article <--]({{ site.baseurl }}{% /_posts/Using CAVIAR/2020-04-23-caviar-cmdline.md %}) for more details.  
+The parameters can be in any order, and see [--> this article <--]({{ site.baseurl }}{% link _posts/Using CAVIAR/2020-04-23-caviar-cmdline.md %}) for more details.  
 
 <A href="#input">#### Input ####</A>
 

@@ -8,7 +8,7 @@ short-description: Quick walkthrough of the GUI
 
 -----
 
-First, make sure you have installed CAVIAR and activated the environment ([--> installation <--]({{ site.baseurl }}{% /_posts/Using CAVIAR/2020-04-24-installation.md %})).  
+First, make sure you have installed CAVIAR and activated the environment ([--> installation <--]({{ site.baseurl }}{% link _posts/Using CAVIAR/2020-04-24-installation.md %})).  
 
 
 ### Calling the GUI  
