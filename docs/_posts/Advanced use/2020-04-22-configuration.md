@@ -18,17 +18,18 @@ We describe here all the parameters that can be used in a configuration file wit
 The general architecture of the configuration file should follow the standard set by [--> configparse <--](https://docs.python.org/3/library/configparser.html#supported-ini-file-structure).  
 The section name in squared brackets does not matter, as it is not parsed for the custom configuration file. However, one section head has to be present, with any title.  
 Parameters will now be described in this order:
- - [Input](#Input)
- - [Output](#Output)
- - [Selection of objects](#Selection of objects)
- - [Identification of cavities](#Identification of cavities)
- - [Filtering of cavities](#Filtering of cavities)
- - [Ligand validation routines](#Ligand validation routines)
- - [Segmentation into subcavities](#Segmentation into subcavities)
+ - [Input](#input)
+ - [Output](#output)
+ - [Selection of objects](#selection)
+ - [Identification of cavities](#id)
+ - [Filtering of cavities](#filtering)
+ - [Ligand validation routines](#lig)
+ - [Segmentation into subcavities](#segmentation)
+ - [General default configuration file](#default)
 
-The parameters can be in any order, and see [--> this article <--]({% link _posts/Using CAVIAR/2020-04-23-caviar-cmdline.md %#Configuration file}) for more details.  
+The parameters can be in any order, and see [--> this article <--]({% link _posts/Using CAVIAR/2020-04-23-caviar-cmdline.md %#config}) for more details.  
 
-#### Input ####
+<A href="#input">#### Input ####</A>
 
   - sourcedir: /home/user/pdb/  
 Source directory of the input PDB files, otherwise downloads from the RCSB PDB  
@@ -60,7 +61,7 @@ Exclude PDB deposited/reviewed before a date (boolean)
   - date: 2010  
 Minimal deposition/revision date (year, 4 digits)  
 
-#### Output ####
+<A href="#output">#### Output ####</A>
 
   - out: ./caviar_out/  
 Path to output folder, containing the PDB files of cavities  
@@ -75,7 +76,7 @@ If a PyMOL session file is written, how to color the cavities: by chain, buriedn
   - print_cav_info: True  
 Print out the table report on cavity identification (boolean)  
 
-#### Selection of objects ####
+<A href="#selection">#### Selection of objects ####</A>
 
   - metal: True  
 Keep metals and consider them part of the protein (boolean)  
@@ -95,7 +96,7 @@ Explicit user-specified chain ID to investigate (Nothing or a letter, or several
   - chainid_in_pdblist: False  
 Same as "chain_id" but implemented in the input list specified in "codeslist". The chain identifier (e.g. A, B...) should be given after an underscore to the PDB code. For example 1AAA_A for chain A of PDB 1AAA. 1AAA_ABC for chains A, B, and C.  
 
-#### Identification of cavities ####
+<A href="#id">#### Identification of cavities ####</A>
 
 All distance values in Angstroms.  
 
@@ -122,7 +123,7 @@ Score for excluding potential cavity points as probably overspanning. Points wit
   - min_degree: 3  
 In the graph representation, each node is a grid point and edges are created between nodes in direct contact (1 grid spacing in one of the 14 cubic directions). Cavity grid points with a node degree below this threshold are excluded, again to avoid overspanning.  
 
-#### Filtering of cavities ####
+<A href="#filtering">#### Filtering of cavities ####</A>
 
   - min_burial_q: 10  
 Minimum buriedness value of grid points at the x-th quantile (strictly greater than) (again between 8 and 14).  
@@ -138,7 +139,7 @@ Exclude cavities that have missing atoms/residues (boolean).
 Exclude cavities that have alternative conformation of residues (boolean).  
 
 
-#### Ligand validation routines ####
+<A href="#lig">#### Ligand validation routines ####</A>
 
 Activated with one of the two first keywords (lig_id or liglist_in_pdblist) 
 
@@ -163,7 +164,7 @@ Minimal size for the ligand if ligsizeflag is activated (in heavy atoms).
   - lig_tocenter: False
 Check if any ligand atom is within 4A of the geometric center of the pocket rather than within 1A of any cavity point (boolean).   
 
-#### Segmentation into subcavities ####
+<A href="#segmentation">#### Segmentation into subcavities ####</A>
 
   - subcavs_decomp: True  
 Activates the subcavities decomposition (boolean).   
@@ -181,7 +182,7 @@ Merge small subcavities enclosed in between other subcavities to prevent overseg
 prints pharmacophore data of the subcavities as a table.  
 
 
-### Default configuration file
+<A href="#default">#### Default configuration file ####</A>
 ```
 [input]
   sourcedir: /db/pdb/ # Source directory, otherwise downloads file
