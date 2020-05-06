@@ -27,7 +27,7 @@ Parameters will now be described in this order:
  - [Segmentation into subcavities](#segmentation)
  - [General default configuration file](#default)
 
-The parameters can be in any order, and see [--> this article <--]({% link _posts/Using CAVIAR/2020-04-23-caviar-cmdline.md %#config}) for more details.  
+The parameters can be in any order, and see [--> this article <--]({% link _posts/Using CAVIAR/2020-04-23-caviar-cmdline.md#config %}) for more details.  
 
 <A href="#input">#### Input ####</A>
 
