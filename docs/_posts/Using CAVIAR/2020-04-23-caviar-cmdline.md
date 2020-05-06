@@ -8,7 +8,7 @@ short-description: Batch use
 
 -----
 
-Once you have installed CAVIAR and activated the environment ([--> installation <--]({% link _posts/Using CAVIAR/2020-04-24-installation.md %})), you can call the command line instance of CAVIAR simply with:  
+Once you have installed CAVIAR and activated the environment ([--> installation <--]({{ site.baseurl }}{% /_posts/Using CAVIAR/2020-04-24-installation.md %})), you can call the command line instance of CAVIAR simply with:  
 ```caviar -h```
 
 This will trigger the presentation of the tool. The most basic use only requires a PDB code:  
