@@ -20,12 +20,12 @@ The section name in squared brackets does not matter, as it is not parsed for th
 Parameters will now be described in this order:
  - [Input](#input)
  - [Output](#output)
- - [Selection of objects](#selection of objects)
- - [Identification of cavities](#identification of cavities)
- - [Filtering of cavities](#filtering of cavities)
- - [Ligand validation routines](#ligand validation routines)
- - [Segmentation into subcavities](#segmentation into subcavities)
- - [General default configuration file](#default configuration file)
+ - [Selection of objects](#selection-of-objects)
+ - [Identification of cavities](#identification-of-cavities)
+ - [Filtering of cavities](#filtering-of-cavities)
+ - [Ligand validation routines](#ligand-validation-routines)
+ - [Segmentation into subcavities](#segmentation-into-subcavities)
+ - [General default configuration file](#default-configuration-file)
 
 The parameters can be in any order, and see [--> this article <--]({{ site.baseurl }}{% link _posts/Using CAVIAR/2020-04-23-caviar-cmdline.md %}) for more details.  
 
