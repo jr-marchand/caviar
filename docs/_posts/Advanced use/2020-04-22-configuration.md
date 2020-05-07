@@ -16,8 +16,8 @@ We describe here all the parameters that can be used in a configuration file wit
 ### Custom configuration file for CAVIAR  
 
 The general architecture of the configuration file should follow the standard set by [--> configparse <--](https://docs.python.org/3/library/configparser.html#supported-ini-file-structure).  
-The section name in squared brackets does not matter, as it is not parsed for the custom configuration file. However, one section head has to be present, with any title.  
-Parameters will now be described in this order:
+The section name in squared brackets does not matter, as it is not parsed for the custom configuration file. However, one section head has to be present, with any title, see [--> this article <--]({{ site.baseurl }}{% link _posts/Using CAVIAR/2020-04-23-caviar-cmdline.md %}#configuration-file) for more details. The parameters can be written in the configuration file in any order.  
+For the sake of the clarity of this article, we sorted the parameters in seven categories, plus at the end the general default configuration file:
  - [Input](#input)
  - [Output](#output)
  - [Selection of objects](#selection-of-objects)
@@ -27,7 +27,6 @@ Parameters will now be described in this order:
  - [Segmentation into subcavities](#segmentation-into-subcavities)
  - [General default configuration file](#default-configuration-file)
 
-The parameters can be in any order, and see [--> this article <--]({{ site.baseurl }}{% link _posts/Using CAVIAR/2020-04-23-caviar-cmdline.md %}#configuration-file) for more details.  
 
 #### Input ####
 
