@@ -249,7 +249,7 @@ prints pharmacophore data of the subcavities as a table.
  &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;# Buriedness ranges from 8 to 14, len(points) from 0 to 12  <br>
  &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;# The maximum value of this score is 3139 (125\*(10\*\*(14/10)). The default is 500  <br>
  &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;# This corresponds roughly to an environement of 50 neighbors (out of 125 maximum, half) and an avg buriedness of 10 <br>
- &nbsp;&nbsp;min_degree: 3    \# Minimum node degree to keep it, ie, minimum number of  connections with other nodes <br> <br>
+ &nbsp;&nbsp;min_degree: 3    # Minimum node degree to keep it, ie, minimum number of  connections with other nodes <br> <br>
 
 [cavity_filtering] <br>
  &nbsp;&nbsp;min_burial_q: 10 # Minimum buriedness value of grid points at the xth quantile (strictly greater than) [parameter -quantile] <br>
@@ -267,13 +267,13 @@ prints pharmacophore data of the subcavities as a table.
   &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;# tabulist_ligand_min_sugars, tabulist_ligand_min_peptides, tabulist_ligand_min_nucleic, respectively for minimal exclusion + sugars or peptids or nucleic <br>
   &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;# tabulist_ligand_min_peptides_sugars tabulist_ligand_min_peptides_nucleic, tabulist_ligand_min_nucleic_sugars <br>
   &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;# tabulist_ligand_min_peptides_nucleic_sugars and tabulist_ligand_maximal <br>
-  &nbsp;&nbsp;ligsizeflag: False \# Flag to define a minimal size for the ligand.  <br>
-  &nbsp;&nbsp;ligminsize: 8    \# Minimal size for the ligand if ligsizeflag is activated.  <br>
-  &nbsp;&nbsp;lig_id:          \# Ligand 3 letters ID code in the PDB file, to check for presence in cavities (no default) <br>
+  &nbsp;&nbsp;ligsizeflag: False # Flag to define a minimal size for the ligand.  <br>
+  &nbsp;&nbsp;ligminsize: 8    # Minimal size for the ligand if ligsizeflag is activated.  <br>
+  &nbsp;&nbsp;lig_id:          # Ligand 3 letters ID code in the PDB file, to check for presence in cavities (no default) <br>
   &nbsp;&nbsp;liglist_in_pdblist: False # Specify ligand 3 letters ID code in the second in the second column <br>
-  &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;\# of the PDB list file (to check for presence in cavities), eg, "1dwc_H MIT" "PDB_chainID LIG" <br>
-  &nbsp;&nbsp;lig_tocenter: False \# Check if a ligand atom is within 4A of the geometric center of the pocket  <br>
-  &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;\# rather than within 1A of any cavity point  <br> <br>
+  &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;# of the PDB list file (to check for presence in cavities), eg, "1dwc_H MIT" "PDB_chainID LIG" <br>
+  &nbsp;&nbsp;lig_tocenter: False # Check if a ligand atom is within 4A of the geometric center of the pocket  <br>
+  &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;# rather than within 1A of any cavity point  <br> <br>
 
 [subcavity_routines] <br>
  &nbsp;&nbsp;subcavs_decomp: True # Activates the subcavities decomposition  <br>
