@@ -183,105 +183,106 @@ prints pharmacophore data of the subcavities as a table.
 
 
 #### Default configuration file ####
-```
-[input]
-  sourcedir: /db/pdb/ # Source directory, otherwise downloads file
-  code:            # PDB Code (no default)
-  codeslist:       # List of PDB codes to be computed (no default)
-  v: False         # Turn verbosity on
-  onlyxr: False    # Only work with XR structures 
-  resolution_filter: False # Defines a resolution filter 
-  resolution: 3.0  # Value for the resolution filter 
-  pdbversion_filter: False # Define a filter on the PDB version
-  pdbversion: 3.30 # Minimal PDB version
-  caveat: False    # Exclude PDB tagged with CAVEATS
-  obsolete: False  # Exclude PDB tagged with OBSOLETE
-  deposition_date_filter: False # Exclude PDB deposited/reviewed before a date
-  date: 2010       # Minimal deposition/revision date
+<blockquote><p>
+[input] <br>
+ &nbsp;&nbsp;sourcedir: /db/pdb/ # Source directory, otherwise downloads file <br>
+ &nbsp;&nbsp;code:            # PDB Code (no default) <br>
+ &nbsp;&nbsp;codeslist:       # List of PDB codes to be computed (no default) <br>
+ &nbsp;&nbsp;v: False         # Turn verbosity on <br>
+ &nbsp;&nbsp;onlyxr: False    # Only work with XR structures  <br>
+ &nbsp;&nbsp;resolution_filter: False # Defines a resolution filter  <br>
+ &nbsp;&nbsp;resolution: 3.0  # Value for the resolution filter  <br>
+ &nbsp;&nbsp;pdbversion_filter: False # Define a filter on the PDB version <br>
+ &nbsp;&nbsp;pdbversion: 3.30 # Minimal PDB version <br>
+ &nbsp;&nbsp;caveat: False    # Exclude PDB tagged with CAVEATS <br>
+ &nbsp;&nbsp;obsolete: False  # Exclude PDB tagged with OBSOLETE <br>
+ &nbsp;&nbsp;deposition_date_filter: False # Exclude PDB deposited/reviewed before a date <br>
+ &nbsp;&nbsp;date: 2010       # Minimal deposition/revision date <br> <br>
 
-[output]
-  out: ./caviar_out/ # Path/to/outfolder.
-  export_cavities: True # Export PDB files with cavities 
-  withprot: True   # Export it with the protein 
-  write_pml_cavs: True  # Write a pymol session file *pml 
-  color_cavs_by: bychain # and color cavities by chain/buriedness/pharmacophore ("bychain", "buriedness", "pharmacophore")
-  print_cav_info: True # print a report on cavity identification 
+[output] <br>
+ &nbsp;&nbsp;out: ./caviar_out/ # Path/to/outfolder. <br>
+ &nbsp;&nbsp;export_cavities: True # Export PDB files with cavities  <br>
+ &nbsp;&nbsp;withprot: True   # Export it with the protein  <br>
+ &nbsp;&nbsp;write_pml_cavs: True  # Write a pymol session file \*.pml  <br>
+ &nbsp;&nbsp;color_cavs_by: bychain # and color cavities by chain/buriedness/pharmacophore ("bychain", "buriedness", "pharmacophore") <br>
+ &nbsp;&nbsp;print_cav_info: True # print a report on cavity identification  <br> <br>
 
-[selection]
-  metal: True      # Keep metals
-  water: True      # Keep waters molecules that make at least 3 HB with protein atoms
-  structural_ligand: False # Keep a structural ligand (False or ligand 3 letters code)
-  threshold_nres: 30 # Minimum number of residues in a protein chain to keep it 
-  what: allproteins # What protein chains to keep for cavity detection:
-                    # all protein chains (above threshold_nres), just the longest chain 'longestchain'
-                    # or the longest chain plus contacting chains at 5A 'longestandcontacting' 
-  min_contacts: 75 # In case you of longestandcontacting, controls how many contacts between the main chain 
-                    # and the 'contacting' chain should be at minimum present
-                    # These are interatomic  contacts at 5A, so be loose with the number
-                    # The aim is to keep only chains of the PDB that are functionally in contact
-                    # and not simply symmetric chains of the same domain in the crystal unit
-  chain_id:         # User-specified chain ID to investigate (e.g., A). Overseeds -what, unless it's "longestandcontacting"
-  chainid_in_pdblist: False # Same chain_id but implemented in input list 
-                    # rather than passed as explicit argument. Same warning as -chain_id.
-                    # The chain identifier (e.g. A, B...) should be given after an underscore to the
-                    # PDB code. For example 1AAA_A for chain A of PDB 1AAA.
-                    # In case you want to specify more than one chain, just put all of them, e.g.,
-                    # 1AAA_ABC for chains A, B, and C.
+[selection] <br>
+ &nbsp;&nbsp;metal: True      # Keep metals <br>
+ &nbsp;&nbsp;water: True      # Keep waters molecules that make at least 3 HB with protein atoms <br>
+ &nbsp;&nbsp;structural_ligand: False # Keep a structural ligand (False or ligand 3 letters code) <br>
+ &nbsp;&nbsp;threshold_nres: 30 # Minimum number of residues in a protein chain to keep it  <br>
+ &nbsp;&nbsp;what: allproteins # What protein chains to keep for cavity detection: <br>
+ &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;# all protein chains (above threshold_nres), just the longest chain 'longestchain' <br>
+ &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;# or the longest chain plus contacting chains at 5A 'longestandcontacting'  <br>
+ &nbsp;&nbsp;min_contacts: 75 # In case you of longestandcontacting, controls how many contacts between the main chain  <br>
+ &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;# and the 'contacting' chain should be at minimum present <br>
+ &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;# These are interatomic  contacts at 5A, so be loose with the number <br>
+ &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;# The aim is to keep only chains of the PDB that are functionally in contact <br>
+ &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;# and not simply symmetric chains of the same domain in the crystal unit <br>
+ &nbsp;&nbsp;chain_id:         # User-specified chain ID to investigate (e.g., A). Overseeds -what, unless it's  <br>"longestandcontacting" <br>
+ &nbsp;&nbsp;chainid_in_pdblist: False # Same chain_id but implemented in input list  <br>
+ &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;# rather than passed as explicit argument. Same warning as -chain_id. <br>
+ &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;# The chain identifier (e.g. A, B...) should be given after an underscore to the <br>
+ &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;# PDB code. For example 1AAA_A for chain A of PDB 1AAA. <br>
+ &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;# In case you want to specify more than one chain, just put all of them, e.g., <br>
+ &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;# 1AAA_ABC for chains A, B, and C. <br> <br>
 
-[cavity_identification]
-  boxmargin: 2.0   # Margin around the protein 
-  max_distance: 6.0 # Maximum distance for a solvent grid point to the protein 
-  gridspace: 1.0   # Grid spacing 
-  size_probe: 1.0  # Size of the probe for defining protein points. This size is added to the vdW radius from vdw_size_atoms.dat
-  radius_cube: 4   # Size of the cubic solvation shell to investigate burial of cavity points (in number of grid points)
-  min_burial: 8    # Minimum number of grid-protein contacts for a grid point (within -radius_cube) to consider it as potential cavity point
-                    # This number is between 0 and 14 because we scan in the  14 cubic directions
-  radius_cube_enc: 3 # Same as radius_cube, but for the second passto identify buried cavity points
-                    # This second pass aims to find 'middle' cavity pointsthat are not in direct contact with the protein
-                    # [within radius_cube] but surrounded by grid cavity points (middle of a large pocket)
-  min_burial_enc: 8 # Equivalent to min_burial but for the second pass (cf help of radius_cube_enc) 
-  min_points: 40   # Minimum number of points to consider a group of cavity points as an actual cavity
-                    # Is modified by gridspace argument (real value = min_points * 1 / gridspace)
-                    # If gridspace = 0.5, the real value used for min_points is doubled
-  trim_score: 500  # Scoring value for excluding potential cavity points
-                    # Points within 2 grid spacing (in cubic directions, 125 points max) are detected
-                    # The score equals the number of points times 10**(average_buriedness/10)
-                    # Buriedness ranges from 8 to 14, len(points) from 0 to 12 
-                    # The maximum value of this score is 3139 (125*(10**(14/10)). The default is 500 
-                    # This corresponds roughly to an environement of 50 neighbors (out of 125 maximum, half) and an avg buriedness of 10
-  min_degree: 3    # Minimum node degree to keep it, ie, minimum number of  connections with other nodes
+[cavity_identification] <br>
+ &nbsp;&nbsp;boxmargin: 2.0   # Margin around the protein  <br>
+ &nbsp;&nbsp;max_distance: 6.0 # Maximum distance for a solvent grid point to the protein  <br>
+ &nbsp;&nbsp;gridspace: 1.0   # Grid spacing  <br>
+ &nbsp;&nbsp;size_probe: 1.0  # Size of the probe for defining protein points. This size is added to the vdW radius from vdw_size_atoms.dat <br>
+ &nbsp;&nbsp;radius_cube: 4   # Size of the cubic solvation shell to investigate burial of cavity points (in number of grid points) <br>
+ &nbsp;&nbsp;min_burial: 8    # Minimum number of grid-protein contacts for a grid point (within -radius_cube) to consider it as potential cavity point <br>
+ &nbsp;&nbsp;                  # This number is between 0 and 14 because we scan in the  14 cubic directions <br>
+ &nbsp;&nbsp;radius_cube_enc: 3 # Same as radius_cube, but for the second passto identify buried cavity points <br>
+ &nbsp;&nbsp;                  # This second pass aims to find 'middle' cavity pointsthat are not in direct contact with the protein <br>
+ &nbsp;&nbsp;                  # [within radius_cube] but surrounded by grid cavity points (middle of a large pocket) <br>
+ &nbsp;&nbsp;min_burial_enc: 8 # Equivalent to min_burial but for the second pass (cf help of radius_cube_enc)  <br>
+ &nbsp;&nbsp;min_points: 40   # Minimum number of points to consider a group of cavity points as an actual cavity <br>
+ &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; # Is modified by gridspace argument (real value = min_points * 1 / gridspace) <br>
+ &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; # If gridspace = 0.5, the real value used for min_points is doubled <br>
+ &nbsp;&nbsp;trim_score: 500  # Scoring value for excluding potential cavity points <br>
+ &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;# Points within 2 grid spacing (in cubic directions, 125 points max) are detected <br>
+ &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;# The score equals the number of points times 10\*\*(average_buriedness/10) <br>
+ &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;# Buriedness ranges from 8 to 14, len(points) from 0 to 12  <br>
+ &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;# The maximum value of this score is 3139 (125\*(10\*\*(14/10)). The default is 500  <br>
+ &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;# This corresponds roughly to an environement of 50 neighbors (out of 125 maximum, half) and an avg buriedness of 10 <br>
+ &nbsp;&nbsp;min_degree: 3    \# Minimum node degree to keep it, ie, minimum number of  connections with other nodes <br> <br>
 
-[cavity_filtering]
-  min_burial_q: 10 # Minimum buriedness value of grid points at the xth quantile (strictly greater than) [parameter -quantile]
-  quantile: 0.8    # Quantile related to min_burial_q 
-  max_hydrophobicity: 1.0 # Maximum percentage of hydrophobic points in the cavity. 
-  exclude_interchain: False # Exclude all cavities that are in between different protein chains. 
-  exclude_missing: False # Exclude cavities that have missing atoms/residues. 
-  exclude_altlocs: False # Exclude cavities that have alternative conformation of residues. 
+[cavity_filtering] <br>
+ &nbsp;&nbsp;min_burial_q: 10 # Minimum buriedness value of grid points at the xth quantile (strictly greater than) [parameter -quantile] <br>
+ &nbsp;&nbsp;quantile: 0.8    # Quantile related to min_burial_q  <br>
+ &nbsp;&nbsp;max_hydrophobicity: 1.0 # Maximum percentage of hydrophobic points in the cavity.  <br>
+ &nbsp;&nbsp;exclude_interchain: False # Exclude all cavities that are in between different protein chains.  <br>
+ &nbsp;&nbsp;exclude_missing: False # Exclude cavities that have missing atoms/residues.  <br>
+ &nbsp;&nbsp;exclude_altlocs: False # Exclude cavities that have alternative conformation of residues.  <br> <br>
 
-[ligand_check]
-  iflig_print: False # Print what was found if -check_if_lig was activated. 
-  excl_ligs: True  # Activate an explicit the tabu list for the ligand. 
-  lig_tabu_list: tabulist_ligand_maximal # Explicit the tabu list for the ligand
-  # Other options include: tabulist_ligand_minimal for the minimal exclusion list of ligands (eg water, ions)
-  # tabulist_ligand_min_sugars, tabulist_ligand_min_peptides, tabulist_ligand_min_nucleic, respectively for minimal exclusion + sugars or peptids or nucleic
-  # tabulist_ligand_min_peptides_sugars tabulist_ligand_min_peptides_nucleic, tabulist_ligand_min_nucleic_sugars
-  # tabulist_ligand_min_peptides_nucleic_sugars and tabulist_ligand_maximal
-  ligsizeflag: False # Flag to define a minimal size for the ligand. 
-  ligminsize: 8    # Minimal size for the ligand if ligsizeflag is activated. 
-  lig_id:          # Ligand 3 letters ID code in the PDB file, to check for presence in cavities (no default)
-  liglist_in_pdblist: False # Specify ligand 3 letters ID code in the second in the second column
-                    # of the PDB list file (to check for presence in cavities), eg, "1dwc_H MIT" "PDB_chainID LIG"
-  lig_tocenter: False # Check if a ligand atom is within 4A of the geometric center of the pocket 
-                    # rather than within 1A of any cavity point 
+[ligand_check] <br>
+  &nbsp;&nbsp;iflig_print: False # Print what was found if -check_if_lig was activated.  <br>
+  &nbsp;&nbsp;excl_ligs: True  # Activate an explicit the tabu list for the ligand.  <br>
+  &nbsp;&nbsp;lig_tabu_list: tabulist_ligand_maximal # Explicit the tabu list for the ligand <br>
+  &nbsp;&nbsp;# Other options include: tabulist_ligand_minimal for the minimal exclusion list of ligands (eg water, ions) <br>
+  &nbsp;&nbsp;# tabulist_ligand_min_sugars, tabulist_ligand_min_peptides, tabulist_ligand_min_nucleic, respectively for minimal exclusion + sugars or peptids or nucleic <br>
+  &nbsp;&nbsp;# tabulist_ligand_min_peptides_sugars tabulist_ligand_min_peptides_nucleic, tabulist_ligand_min_nucleic_sugars <br>
+  &nbsp;&nbsp;# tabulist_ligand_min_peptides_nucleic_sugars and tabulist_ligand_maximal <br>
+  &nbsp;&nbsp;ligsizeflag: False \# Flag to define a minimal size for the ligand.  <br>
+  &nbsp;&nbsp;ligminsize: 8    \# Minimal size for the ligand if ligsizeflag is activated.  <br>
+  &nbsp;&nbsp;lig_id:          \# Ligand 3 letters ID code in the PDB file, to check for presence in cavities (no default) <br>
+  &nbsp;&nbsp;liglist_in_pdblist: False # Specify ligand 3 letters ID code in the second in the second column <br>
+  &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;\# of the PDB list file (to check for presence in cavities), eg, "1dwc_H MIT" "PDB_chainID LIG" <br>
+  &nbsp;&nbsp;lig_tocenter: False \# Check if a ligand atom is within 4A of the geometric center of the pocket  <br>
+  &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;\# rather than within 1A of any cavity point  <br> <br>
 
-[subcavity_routines]
-  subcavs_decomp: True # Activates the subcavities decomposition 
-  subcavs_lig_only: False # Find subcavities only for liganded cavities 
-  export_subcavs: True # Export subcavities in pdb file 
-  write_pml_subcavs: True # Export a pml pymol session file to open output
-  seeds_mindist: 3 # Minimum distance between seed points in the watershed algorithm 
-  merge_subcavs: True # Merge small subcavities enclosed in between other subcavities (prevent oversegmentation) 
-  print_pphores_subcavs: True # prints pharmacophore data of the subcavities.
+[subcavity_routines] <br>
+ &nbsp;&nbsp;subcavs_decomp: True # Activates the subcavities decomposition  <br>
+ &nbsp;&nbsp;subcavs_lig_only: False # Find subcavities only for liganded cavities  <br>
+ &nbsp;&nbsp;export_subcavs: True # Export subcavities in pdb file  <br>
+ &nbsp;&nbsp;write_pml_subcavs: True # Export a pml pymol session file to open output <br>
+ &nbsp;&nbsp;seeds_mindist: 3 # Minimum distance between seed points in the watershed algorithm  <br>
+ &nbsp;&nbsp;merge_subcavs: True # Merge small subcavities enclosed in between other subcavities (prevent oversegmentation)  <br>
+ &nbsp;&nbsp;print_pphores_subcavs: True # prints pharmacophore data of the subcavities. <br> <br>
 
-```
+</p>
+</blockquote>
