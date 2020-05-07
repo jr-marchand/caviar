@@ -105,7 +105,7 @@ We already saw one command line argument earlier: ```-code``` option to specify 
 - ```-v``` to activate verbosity.  
 - ```-preset_config``` gives the choice between three presets default configuration: search for cavities and decompose them into subcavities (default, "default"), only search for cavities ("cavities_only"), or only export subcavities ("subcavities_only").  
 
-<A href="#config">### Configuration file </A>
+### Configuration file ###
 
 ```caviar``` can take as unique argument, or in addition to command line arguments, a configuration file containing any of the parameters.
 
