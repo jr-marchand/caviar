@@ -220,7 +220,7 @@ prints pharmacophore data of the subcavities as a table.
  &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;# These are interatomic  contacts at 5A, so be loose with the number <br>
  &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;# The aim is to keep only chains of the PDB that are functionally in contact <br>
  &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;# and not simply symmetric chains of the same domain in the crystal unit <br>
- &nbsp;&nbsp;chain_id:         # User-specified chain ID to investigate (e.g., A). Overseeds -what, unless it's  <br>"longestandcontacting" <br>
+ &nbsp;&nbsp;chain_id:         # User-specified chain ID to investigate (e.g., A). Overseeds -what, unless it's "longestandcontacting" <br>
  &nbsp;&nbsp;chainid_in_pdblist: False # Same chain_id but implemented in input list  <br>
  &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;# rather than passed as explicit argument. Same warning as -chain_id. <br>
  &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;# The chain identifier (e.g. A, B...) should be given after an underscore to the <br>
@@ -235,10 +235,10 @@ prints pharmacophore data of the subcavities as a table.
  &nbsp;&nbsp;size_probe: 1.0  # Size of the probe for defining protein points. This size is added to the vdW radius from vdw_size_atoms.dat <br>
  &nbsp;&nbsp;radius_cube: 4   # Size of the cubic solvation shell to investigate burial of cavity points (in number of grid points) <br>
  &nbsp;&nbsp;min_burial: 8    # Minimum number of grid-protein contacts for a grid point (within -radius_cube) to consider it as potential cavity point <br>
- &nbsp;&nbsp;                  # This number is between 0 and 14 because we scan in the  14 cubic directions <br>
+ &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;# This number is between 0 and 14 because we scan in the  14 cubic directions <br>
  &nbsp;&nbsp;radius_cube_enc: 3 # Same as radius_cube, but for the second passto identify buried cavity points <br>
- &nbsp;&nbsp;                  # This second pass aims to find 'middle' cavity pointsthat are not in direct contact with the protein <br>
- &nbsp;&nbsp;                  # [within radius_cube] but surrounded by grid cavity points (middle of a large pocket) <br>
+ &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;# This second pass aims to find 'middle' cavity pointsthat are not in direct contact with the protein <br>
+ &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;# [within radius_cube] but surrounded by grid cavity points (middle of a large pocket) <br>
  &nbsp;&nbsp;min_burial_enc: 8 # Equivalent to min_burial but for the second pass (cf help of radius_cube_enc)  <br>
  &nbsp;&nbsp;min_points: 40   # Minimum number of points to consider a group of cavity points as an actual cavity <br>
  &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; # Is modified by gridspace argument (real value = min_points * 1 / gridspace) <br>
@@ -263,10 +263,10 @@ prints pharmacophore data of the subcavities as a table.
   &nbsp;&nbsp;iflig_print: False # Print what was found if -check_if_lig was activated.  <br>
   &nbsp;&nbsp;excl_ligs: True  # Activate an explicit the tabu list for the ligand.  <br>
   &nbsp;&nbsp;lig_tabu_list: tabulist_ligand_maximal # Explicit the tabu list for the ligand <br>
-  &nbsp;&nbsp;# Other options include: tabulist_ligand_minimal for the minimal exclusion list of ligands (eg water, ions) <br>
-  &nbsp;&nbsp;# tabulist_ligand_min_sugars, tabulist_ligand_min_peptides, tabulist_ligand_min_nucleic, respectively for minimal exclusion + sugars or peptids or nucleic <br>
-  &nbsp;&nbsp;# tabulist_ligand_min_peptides_sugars tabulist_ligand_min_peptides_nucleic, tabulist_ligand_min_nucleic_sugars <br>
-  &nbsp;&nbsp;# tabulist_ligand_min_peptides_nucleic_sugars and tabulist_ligand_maximal <br>
+  &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;# Other options include: tabulist_ligand_minimal for the minimal exclusion list of ligands (eg water, ions) <br>
+  &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;# tabulist_ligand_min_sugars, tabulist_ligand_min_peptides, tabulist_ligand_min_nucleic, respectively for minimal exclusion + sugars or peptids or nucleic <br>
+  &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;# tabulist_ligand_min_peptides_sugars tabulist_ligand_min_peptides_nucleic, tabulist_ligand_min_nucleic_sugars <br>
+  &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;# tabulist_ligand_min_peptides_nucleic_sugars and tabulist_ligand_maximal <br>
   &nbsp;&nbsp;ligsizeflag: False \# Flag to define a minimal size for the ligand.  <br>
   &nbsp;&nbsp;ligminsize: 8    \# Minimal size for the ligand if ligsizeflag is activated.  <br>
   &nbsp;&nbsp;lig_id:          \# Ligand 3 letters ID code in the PDB file, to check for presence in cavities (no default) <br>
