@@ -88,7 +88,7 @@ def get_chains_of_interest(protein_selection, distance = 5, threshold_nres = 30,
 	"""
 
 	if userspecified:
-		chains_selection = protein_selection.select(f"chain {' or chain '.join([x for x in userspecified])}")
+		chains_selection = protein_selection.select(f"chain {' or chain '.join([x.upper() for x in userspecified])}")
 		try:
 			return chains_selection.getCoords(), chains_selection
 		except:
