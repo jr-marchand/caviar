@@ -80,11 +80,15 @@ def main():
 			global data4subcav
 			#try:
 				#print(args)
-			cavity_detect_gui.run(args)
+				# cavity_detect_gui.run(args)
+			#try:
 			report, cavity_file, data4subcav = cavity_detect_gui.run(args)
+			if not cavity_file:
+				self.OutputTextBrowser.setText(report)
+				return None
 			#except:
-			#	report = self.OutputTextBrowser.setText(f"CAVIAR does not detect any cavity in {code[:-4]} with this set of parameters.\n")
-			#	return None
+				#report = self.OutputTextBrowser.setText(f"CAVIAR does not detect any cavity in {code[:-4]} with this set of parameters.\n")
+				#return None
 			# Now write the pml file
 			from caviar.misc_tools.gen_pmlfile import write_pmlfile
 			if self.bypharma.isChecked():

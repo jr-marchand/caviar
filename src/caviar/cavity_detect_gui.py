@@ -290,12 +290,12 @@ def run(arguments):
 			# Download
 			print("PDB " + str(args.code) + " not found in directory, downloading from RCSB PDB")
 			import urllib.request
-			urllib.request.urlretrieve('http://files.rcsb.org/download/'+str(args.code), str(args.code))
 			try:
+				urllib.request.urlretrieve('http://files.rcsb.org/download/'+str(args.code), str(args.code))
 				pdbobject = parsePDB(str(args.code))
 			except:
-				print("PDB " + str(args.code) + " not found on RCSB PDB webservers neither")
-				return buf.getvalue()
+				print("PDB " + str(args.code) + " not found on RCSB PDB webservers neither (mmCIF not supported yet)")
+				return buf.getvalue(), None, None
 		### Read information from the PDB header
 		dict_pdb_info = get_information_header(os.path.join(args.sourcedir,str(args.code)))
 		# Here options to exclude non XR, resolution...
@@ -328,7 +328,7 @@ def run(arguments):
 				selection_coords = selection_protein.getCoords()
 			else:
 				print(f"{args.code[0:-4]} chain(s) {args.chain_id} is/are a wrong input (do they exist?)")
-				return buf.getvalue()
+				return buf.getvalue(), None, None
 		# Original code
 		else:
 			selection = select_objects(pdbobject = pdbobject, metal = args.metal, water = args.water,
@@ -340,7 +340,7 @@ def run(arguments):
 				selection_coords = selection_protein.getCoords()
 			else:
 				print(f"{args.code[0:-4]} was skipped because of composed only of peptides below threshold")
-				return buf.getvalue()
+				return buf.getvalue(), None, None
 	
 	
 		# ------------------------------------------------------------------------------------------- #
@@ -366,8 +366,8 @@ def run(arguments):
 		try:
 			early_cavities[0]
 		except:
-			print(f"{args.code[0:-4]} does not have a cavity")
-			return None
+			print(f"CAVIAR does not detect any cavity in {args.code[0:-4]} with this set of parameters.\n")
+			return buf.getvalue(), None, None
 	
 		# Set pharmacophore properties to cavity grid points
 
@@ -385,8 +385,8 @@ def run(arguments):
 
 		try:
 			if not final_cavities.any():
-				print(f"{args.code[0:-4]} does not have a cavity")
-				return buf.getvalue()
+				print(f"CAVIAR does not detect any cavity in {args.code[0:-4]} with this set of parameters.\n")
+				return buf.getvalue(), None, None
 		except:
 			None
 	
@@ -398,7 +398,6 @@ def run(arguments):
 			grid_decomposition, grid_min, grid_shape, gridspace = args.gridspace) # list_asph
 
 		#from ligandability import calculate_ligandability
-		#print("mais bite??")
 		for cava in range(len(cavities)):
 			ligability = float(calculate_ligandability(cavities, cava))
 			cavities[cava].ligandability = ligability
