@@ -301,21 +301,22 @@ def run(arguments):
 
 	############### Check for ligand presence ########################
 
-	if not args.excl_ligs:
-		args.lig_tabu_list = False
-	if args.lig_id:
-		list_ligands, list_lig_coords = get_ligand(pdbobject, tabu_list = args.lig_tabu_list,
-			lig_id = args.lig_id)
-	else:
-		list_ligands, list_lig_coords = get_ligand(pdbobject, tabu_list = args.lig_tabu_list)
-	if args.iflig_print:
-		dict_coverage = find_ligand_presence(final_cavities, list_ligands, list_lig_coords,
-			pdbcode = args.code[0:-4], printflag = True,
-			ligsizeflag = args.ligsizeflag, ligminsize = args.ligminsize, tocenter = args.lig_tocenter)
-	else:
-		dict_coverage = find_ligand_presence(final_cavities, list_ligands, list_lig_coords,
-			pdbcode = args.code[0:-4], printflag = False,
-			ligsizeflag = args.ligsizeflag, ligminsize = args.ligminsize, tocenter = args.lig_tocenter)
+	if args.check_if_lig:
+		if not args.excl_ligs:
+			args.lig_tabu_list = False
+		if args.lig_id:
+			list_ligands, list_lig_coords = get_ligand(pdbobject, tabu_list = args.lig_tabu_list,
+				lig_id = args.lig_id)
+		else:
+			list_ligands, list_lig_coords = get_ligand(pdbobject, tabu_list = args.lig_tabu_list)
+		if args.iflig_print:
+			dict_coverage = find_ligand_presence(final_cavities, list_ligands, list_lig_coords,
+				pdbcode = args.code[0:-4], printflag = True,
+				ligsizeflag = args.ligsizeflag, ligminsize = args.ligminsize, tocenter = args.lig_tocenter)
+		else:
+			dict_coverage = find_ligand_presence(final_cavities, list_ligands, list_lig_coords,
+				pdbcode = args.code[0:-4], printflag = False,
+				ligsizeflag = args.ligsizeflag, ligminsize = args.ligminsize, tocenter = args.lig_tocenter)
 
 	if args.export_cavities:
 		try:
@@ -329,9 +330,6 @@ def run(arguments):
 		if args.write_pml_cavs:
 			write_pmlfile(cavity_file = os.path.join(args.out, args.code[0:-4] + "_cavs.pdb"), what = args.color_cavs_by, outputfile = str(args.code[0:-4]+"_cavities.pml"))
 
-	# Kills here the process if detection mode
-	if args.detect_only:
-		return None
 
 
 	# Creates cavity object to try to put all of the information

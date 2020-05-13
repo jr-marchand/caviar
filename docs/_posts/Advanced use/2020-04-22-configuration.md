@@ -140,8 +140,8 @@ Exclude cavities that have alternative conformation of residues (boolean).
 
 #### Ligand validation routines ####
 
-Activated with one of the two first keywords (lig_id or liglist_in_pdblist) 
-
+  - check_if_lig: False
+Activates ligand check routines. 
   - lig_id:  
 Ligand 3 letters ID code in the PDB file, to check for presence in cavities (Nothing or 3 letters code, in capital letters, ie LIG, not lig).  
   - liglist_in_pdblist: False    
@@ -259,6 +259,7 @@ prints pharmacophore data of the subcavities as a table.
  &nbsp;&nbsp;exclude_altlocs: False # Exclude cavities that have alternative conformation of residues.  <br> <br>
 
 [ligand_check] <br>
+  &nbsp;&nbsp;check_if_lig: False # Activates ligand check routines. 
   &nbsp;&nbsp;iflig_print: False # Print what was found if -check_if_lig was activated.  <br>
   &nbsp;&nbsp;excl_ligs: True  # Activate an explicit the tabu list for the ligand.  <br>
   &nbsp;&nbsp;lig_tabu_list: tabulist_ligand_maximal # Explicit the tabu list for the ligand <br>
