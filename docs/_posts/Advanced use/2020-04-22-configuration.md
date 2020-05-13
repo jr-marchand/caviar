@@ -140,8 +140,8 @@ Exclude cavities that have alternative conformation of residues (boolean).
 
 #### Ligand validation routines ####
 
-  - check_if_lig: False
-Activates ligand check routines. 
+  - check_if_lig: False  
+Activates ligand check routines.  
   - lig_id:  
 Ligand 3 letters ID code in the PDB file, to check for presence in cavities (Nothing or 3 letters code, in capital letters, ie LIG, not lig).  
   - liglist_in_pdblist: False    
