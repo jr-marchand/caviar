@@ -88,6 +88,8 @@ def arguments():
 	
 	parser.add_argument("-code", type = str, help = ": PDB code of the file to  be computed.\n"
 						"If the file isn't in given directory (-sourcedir), this program will try to download it from RCSB.\n")
+	parser.add_argument("-codeslist", type = str, help = ": List of PDB files (in a file).\n"
+						"If the file isn't in given directory (-sourcedir), this program will try to download it from RCSB.\n")
 	
 	parser.add_argument("-what", type = str, help = ": Keyword defining what protein chains "
 						"to keep for cavity detection: all protein chains (above threshold_nres)\n"

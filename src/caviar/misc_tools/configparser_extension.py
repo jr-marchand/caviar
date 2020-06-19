@@ -43,7 +43,6 @@ def get_default_parameters(preset_choice = "default"):
 	args["write_pml_cavs"] = conffile["output"].getboolean("write_pml_cavs")
 	args["color_cavs_by"] = conffile["output"]["color_cavs_by"]
 	args["print_cav_info"] = conffile["output"].getboolean("print_cav_info")
-	args["detect_only"] = conffile["output"].getboolean("detect_only")
 	args["gen_fp"] = conffile["output"].getboolean("gen_fp")
 	args["db_write"] = conffile["output"].getboolean("db_write")
 	args["db_name"] = conffile["output"]["db_name"]
@@ -77,6 +76,7 @@ def get_default_parameters(preset_choice = "default"):
 	args["exclude_missing"] = conffile["cavity_filtering"].getboolean("exclude_missing")
 	args["exclude_altlocs"] = conffile["cavity_filtering"].getboolean("exclude_altlocs")
 	#Ligand_check section
+	args["check_if_lig"] = conffile["ligand_check"].getboolean("check_if_lig")
 	args["iflig_print"] = conffile["ligand_check"].getboolean("iflig_print")
 	args["excl_ligs"] = conffile["ligand_check"].getboolean("excl_ligs")
 	args["lig_tabu_list"] = conffile["ligand_check"]["lig_tabu_list"]
