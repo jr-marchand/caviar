@@ -302,7 +302,7 @@ def run(arguments):
 
 
 	############### Check for ligand presence ########################
-	list_ligands = None
+
 	if args.check_if_lig:
 		if not args.excl_ligs:
 			args.lig_tabu_list = False
@@ -319,7 +319,11 @@ def run(arguments):
 			dict_coverage = find_ligand_presence(final_cavities, list_ligands, list_lig_coords,
 				pdbcode = args.code[0:-4], printflag = False,
 				ligsizeflag = args.ligsizeflag, ligminsize = args.ligminsize, tocenter = args.lig_tocenter)
-
+	else:
+		dict_coverage = {} # empty
+		list_ligands = []
+		list_lig_coords = []
+		
 	if args.export_cavities:
 		try:
 			os.mkdir(args.out)
