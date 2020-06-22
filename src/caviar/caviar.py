@@ -302,7 +302,7 @@ def run(arguments):
 
 
 	############### Check for ligand presence ########################
-
+	list_ligands = None
 	if args.check_if_lig:
 		if not args.excl_ligs:
 			args.lig_tabu_list = False
