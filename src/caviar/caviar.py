@@ -404,7 +404,7 @@ def run(arguments):
 		print_scores(dict_all_info, args.code[0:-4], cavities, subcavs = args.subcavs_decomp)
 
 	# Print formatted information for subcavities 
-	if args.print_pphores_subcavs:
+	if args.subcavs_decomp and args.print_pphores_subcavs:
 		print(f"{'PDB_chain':<9}{'CavID':^7}{'SubCavID':^8}{'Size':^6}{'Hydrophob.':^10}"
 			f"{'Polar':^7}{'Neg':^6}{'Pos':^6}{'Other':^6}")
 		print(subcavs_table)
