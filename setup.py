@@ -5,7 +5,7 @@ with open("README.MD", "r") as fh:
 
 setup(
 	name="caviar",
-	version="1.0",
+	version="1.0.1",
 	entry_points = {
         'console_scripts': [ 'caviar_gui=caviar.gui:main', 'caviar=caviar.caviar:main']
         },
