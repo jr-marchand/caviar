@@ -1,6 +1,6 @@
 package:
   name: caviar
-  version: "1.0.1"
+  version: "1.1.0"
 
 source:
   git_url: ../
@@ -15,25 +15,30 @@ requirements:
   #build:
   #  - git
   host:
-    - python>=3.7,<3.9 
-    - pyparsing >=2.4,<=2.4.6
-    - numpy >=1.17,<=1.17.3
-    - scipy >=1.3,<=1.4.1
+    - python >=3.6,<3.8
+    - configargparse ==1.2.3
+    - pyparsing >=2.4,<=2.4.7
+    - numpy >=1.17,<=1.19.1
+    - scipy >=1.3.1,<=1.4 # 1.5 has issues with gcc libs
     - networkx >=2.0,<=2.4
     - scikit-image >=0.16,<=0.16.2
-    - pyqt >=5.9.2,<=5.12.13
-    - scikit-learn =0.22.1
+    - pyqt ==5.9.2
+    - scikit-learn >0.22,<=0.22.1
     - setuptools
   run:
-    - python>=3.7,<3.9 # updated code with circular import: needs to be python => 3.7
-    - pyparsing >=2.4,<=2.4.6
-    - numpy >=1.17,<=1.17.3
-    - scipy >=1.3,<=1.4.1
+    - python >=3.6,<3.8
+    - configargparse ==1.2.3
+    - pyparsing >=2.4,<=2.4.7
+    - numpy >=1.17,<=1.19.1
+    - scipy >=1.3.1,<=1.4 # 1.5 has issues with gcc libs
     - networkx >=2.0,<=2.4
     - scikit-image >=0.16,<=0.16.2
-    - pyqt >=5.9.2,<=5.12.13
-    - scikit-learn =0.22.1
-
+    - pyqt ==5.9.2
+    - scikit-learn >0.22,<=0.22.1
+#   - configargparse
+#   - psycopg2
+#   - matplotlib?
+#   - cython?
 
 test:
   commands:
@@ -42,72 +47,5 @@ test:
 about:
   home: https://github.com/jr-marchand/CAVIAR
   license: MIT 
-  description: |
-    # CAVIAR
-    
-    CAVity Identification And Rationalization -- GUI and command line tool
-    
-    CAVIAR is a new open source tool for protein cavity identification and rationalization, written in python and available as command line and as a GUI. It comprises a subcavity segmentation algorithm that produces meaningful decomposition of cavities, fully focused on the protein structure and agnostic of any ligand information. 
-    
-    ## General information
-    
-    This project aims at creating a python platform to:
-    
-     - Download/parse PDB files and fetch as much information from the header as possible
-    
-     - Select interesting protein chains with advanced automatic selection (eg, longest protein chain and contacting chains with more than X contacts, keep metal, well structured structural waters)
-    
-     - Identify cavities (grid based algorithm based on buriedness)
-    
-     - Decompose them in subcavities and print their properties
-    
-     - Much more to come!
-    
-    ## How to install
-    
-    To install it in a brand new environment:
-    conda create -n caviar -c jr-marchand caviar
-    
-    To install it locally from the git repository:
-    python setup.py install
-    
-    /!\ Check that you have the correct dependencies/libraries
-    cf conda.recipe/meta.yaml, requirements section
-    /!\ 
-    
-    ## How to use
-    
-    - GUI
-    
-    Run "caviar_gui" from the command line 
-    
-    The first window that will open is to give the PDB file / PDB code to download from the RCSB PDB. You can also select one or more chains to work on, and decide whether to open pymol with the results and the coloring scheme.
-    
-    Once you click the run button, a second window will open, for subcavity decomposition. You can either decompose all cavities detected earlier, or choose one. Same remark for pymol.
-    
-    - Command line tool
-    
-    The python command line tool is accessible via the command "caviar". More information with the -h option
-    
-    ## Credits
-    
-    Project by Jean-Rémy Marchand, initiated by Joakim Deheuvels (proof of concept)
-    
-    Mentoring from Finton Sirockin
-    
-    Weekly discussions with Peter Ertl and Bernard Pirard
-    
-    
-    This package relies on open source software:
-    
-    * python 3 
-    
-    * argparse and configparser for arguments parsing
-    
-    * scipy, numpy, networkx for cavity identification
-    
-    * skimage (scikit-image) for subcavity decomposition
-    
-    * sklearn for ligandability predictions
-    
-    * PyQt5 for the GUI 
+  #description: |
+  #\# CAVIAR-GUI\n    CAVity Identification And Rationalization GUI\n    \#\# General information\n    This is the user interface that relates to the Caviar / Cavitome project\n    This project aims at creating a python plateform to:\n     - Download/parse PDB files and fetch as much information from the header as possible\n     - Select interesting protein chains with advanced automatic selection (eg, longest protein chain and contacting chains with more than X contacts, keep metal, well structured structural waters)\n     - Identify cavities (grid based algorithm based on buriedness)\n     - Decompose them in subcavities and print their properties\n     - Much more to come!\n    \#\# How to use\n    Run "caviar_gui" from the command line \n    The first window that will open is to give the PDB file / PDB code to download from the RCSB PDB. You can also select one or more chains to work on, and decide whether to open pymol with the results and the coloring scheme.\n    Once you click the run button, a second window will open, for subcavity decomposition. You can either decompose all cavities detected earlier, or choose one. Same remark for pymol.\n    \#\# Credits\n    Project by Jean-Rémy Marchand, initiated by Joakim Deheuvels (proof of concept)\n    Mentoring from Finton Sirockin\n    Weekly discussions with Peter Ertl and Bernard Pirard\n    This package relies on open source software:\n    * python 3 (< 3.8)\n    * pyparse for arguments parsing\n    * scipy, numpy, networkx for cavity identification\n    * skimage (scikit-image) for subcavity decomposition\n    * PyQt5 for the GUI -- restricted to version pyqt 5.9.2

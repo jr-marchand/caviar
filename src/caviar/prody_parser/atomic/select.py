@@ -439,6 +439,7 @@ selection without the keyword *center*.
 Keywords cannot be reserved words (see :func:`.listReservedWords`) and must be
 all alphanumeric characters."""
 
+import sys
 from re import compile as re_compile
 from collections import Iterable
 
@@ -455,7 +456,7 @@ except ImportError:
     from pyparsing import ParseException
 
 
-from caviar.prody_parser import LOGGER, SETTINGS
+from caviar.prody_parser import LOGGER, SETTINGS, PY2K
 
 from .atomic import Atomic
 from .fields import ATOMIC_FIELDS
@@ -470,6 +471,10 @@ from .segment import Segment
 from .atommap import AtomMap
 
 from caviar.prody_parser.utilities import rangeString
+from caviar.prody_parser.kdtree import KDTree
+
+if PY2K:
+    range = xrange
 
 DEBUG = 0
 NUMB = 0 # Select instance will not really evaluate string for the atoms
@@ -996,6 +1001,7 @@ class Select(object):
             tokens = parser(selstr, parseAll=True)
         except pp.ParseException as err:
             self._parsers.pop(self._parser, None)
+            pass
             which = selstr.rfind(' ', 0, err.column)
             if which > -1:
                 if selstr[which + 1] == '(':
@@ -1553,6 +1559,8 @@ class Select(object):
             return self._sameas(sel, loc, tokens)
         elif what[-1] == 'to':
             return self._bondedto(sel, loc, tokens)
+        else:
+            return self._within(sel, loc, tokens)
 
     def _not(self, sel, loc, tokens):
         """Negate selection."""
@@ -1560,6 +1568,107 @@ class Select(object):
         debug(sel, loc, '_not', tokens)
         label, torf = tokens
         return invert(torf, torf), False
+
+    def _within(self, sel, loc, tokens):
+        """Perform distance based selection."""
+
+        if DEBUG: print('_within', tokens)
+        label, which = tokens
+        within = label[1]
+        label = ' '.join(label)
+        try:
+            within = float(within)
+        except Exception as err:
+            return None, SelectionError('could not convert {0} in {1} to '
+                'float ({2})'.format(within, repr(label), str(err)),
+                [label, within])
+        exclude = label.startswith('ex')
+        other = False
+        try:
+            dtype = which.dtype
+        except AttributeError:
+
+            if which in self._kwargs:
+                coords = self._kwargs[which]
+                try:
+                    ndim, shape = coords.ndim, coords.shape
+                except AttributeError:
+                    try:
+                        coords = coords._getCoords()
+                    except AttributeError:
+                        try:
+                            coords = coords.getCoords()
+                        except AttributeError:
+                            return None, SelectionError(sel, loc,
+                                '{0} must be a coordinate array or have '
+                                '`getCoords` method'.format(repr(which)),
+                                [label, which])
+                    if coords is None:
+                        return None, SelectionError(sel, loc,
+                            'coordinates are not set for {0} ({1})'
+                            .format(repr(which), repr(self._kwargs[which])),
+                            [label, which])
+                    else:
+                        ndim, shape = coords.ndim, coords.shape
+                if ndim == 1 and shape[0] == 3:
+                    coords = array([coords])
+                elif not (ndim == 2 and shape[1] == 3):
+                    return None, SelectionError(sel, loc,
+                        '{0} must be a coordinate array or have '
+                        '`getCoords` method'.format(repr(which)),
+                        [label, which])
+                exclude=False
+                self._ss2idx = True
+                which = arange(len(coords))
+                other = True
+        else:
+            if dtype == bool:
+                which = which.nonzero()[0]
+                coords = self._getCoords()
+                if coords is None:
+                    return None, SelectionError(sel, loc, 'coordinates are '
+                                                'not set')
+            else:
+                return None, SelectionError(sel, loc, 'not understood')
+
+        if other or len(which) < 20:
+            kdtree = self._atoms._getKDTree()
+            get_indices = kdtree.getIndices
+            search = kdtree.search
+            get_count = kdtree.getCount
+            torf = zeros(self._ag.numAtoms(), bool)
+            for index in which:
+                search(within, coords[index])
+                if get_count():
+                    torf[get_indices()] = True
+            if self._indices is not None:
+                torf = torf[self._indices]
+            if exclude:
+                torf[which] = False
+
+        else:
+            n_atoms = self._ag.numAtoms()
+            torf = ones(n_atoms, bool)
+            torf[which] = False
+            check = torf.nonzero()[0]
+            torf = zeros(n_atoms, bool)
+
+            cxyz = coords[check]
+            kdtree = KDTree(coords[which])
+            search = kdtree.search
+            get_count = kdtree.getCount
+            select = []
+            append = select.append
+            for i, xyz in enumerate(cxyz):
+                search(within, xyz)
+                if get_count():
+                    append(i)
+
+            torf[check[select]] = True
+            if not exclude:
+                torf[which] = True
+
+        return torf, False
 
     def _sameas(self, sel, loc, tokens):
         """Evaluate ``'same entity as ...'`` expression."""
@@ -2055,7 +2164,7 @@ class Select(object):
         label = tokens.pop(0)
         sn2i = self._ag._getSN2I()
         if sn2i is None:
-            return None, SelectionError(sel, loc, 'serial numbers are not set'
+            return None, SelectionError(sel, loc, 'serial numbers are not set',
                                         ['serial'])
         torf = zeros(len(sn2i), bool)
         for token in tokens:

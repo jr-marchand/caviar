@@ -1,6 +1,14 @@
 """ProDy is a package for Protein Dynamics, Sequence, and Structure Analysis"""
 
+__version__ = '1.11'
+__release__ = __version__ # + '-dev' # comment out '-dev' before a release
+
 import sys
+import warnings
+
+if sys.version_info[:2] < (2, 7):
+    sys.stderr.write('Python 2.6 and older is not supported\n')
+    sys.exit()
 
 if sys.version_info[0] == 3:
     if sys.version_info[1] < 4:
@@ -15,7 +23,40 @@ else:
     if tuple(map(int, np.__version__.split('.')[:2])) < (1, 10):
         raise ImportError('Numpy v1.10 or later is required for ProDy')
 
-__all__ = ['confProDy', 'startLogfile', 'closeLogfile', 'plog']
+DEPRECATION_WARNINGS = False
+
+
+def deprecate(dep, alt, ver=None, sl=3):
+    """Issue a deprecation warning for *dep* and recommend using *alt*."""
+
+    if ver is None:
+        ver = list(__version__.split('.')[:2])
+        ver[1] = str(int(ver[1]) + 1)
+        ver = '.'.join(ver)
+
+    warnings.warn('`{0:s}` is deprecated for removal in v{1:s}, use `{2:s}`.'
+                  .format(dep, ver, alt), DeprecationWarning, stacklevel=sl)
+
+
+def turnonDepracationWarnings(action='always'):
+    """Turn on deprecation warnings for the current session.  By default
+     (``action='always'``), deprecation warnings will be printed every time
+     a function is called to help identification of multiple occurrence
+     of deprecated function and method names.  When ``action='default'``
+     is passed, warning will be issued at the first call of a function.
+     The latter behavior will automatically kick in when v0.9 is released.
+     Until v0.9 is released, restarting the session will turn of warnings.
+     This function must be called as ``prody.turnonDepracationWarnings``."""
+
+    global DEPRECATION_WARNINGS
+    DEPRECATION_WARNINGS = True
+    warnings.filterwarnings(action, category=DeprecationWarning)
+
+
+_PY3K = PY3K = sys.version_info[0] > 2
+PY2K = not PY3K
+
+__all__ = ['checkUpdates', 'confProDy', 'startLogfile', 'closeLogfile', 'plog']
 
 from . import utilities
 from .utilities import *
@@ -28,6 +69,11 @@ LOGGER = PackageLogger('.prody_parser')
 
 SETTINGS = PackageSettings('prody_parser', logger=LOGGER)
 SETTINGS.load()
+
+from . import kdtree
+from .kdtree import *
+__all__.extend(kdtree.__all__)
+__all__.append('kdtree')
 
 from . import atomic
 from .atomic import *
@@ -46,6 +92,21 @@ from .measure import *
 __all__.extend(measure.__all__)
 __all__.append('measure')
 
+from . import ensemble
+from .ensemble import *
+__all__.extend(ensemble.__all__)
+__all__.append('ensemble')
+
+from . import trajectory
+from .trajectory import *
+__all__.extend(trajectory.__all__)
+__all__.append('trajectory')
+
+#from . import comd
+#from .comd import *
+#__all__.extend(comd.__all__)
+#__all__.append('comd')
+
 from caviar import prody_parser
 __all__.append('prody_parser')
 
@@ -58,8 +119,9 @@ CONFIGURATION = {
     'typo_warnings': (True, None, None),
     'check_updates': (0, None, None),
     'auto_secondary': (False, None, None),
+    'auto_bonds': (False, None, None),
     'selection_warning': (True, None, None),
-    'verbosity': ('debug', list(utilities.LOGGING_LEVELS),
+    'verbosity': ('none', list(utilities.LOGGING_LEVELS),
                   LOGGER._setverbosity),
     'pdb_mirror_path': ('', None, proteins.pathPDBMirror),
     'local_pdb_folder': ('', None, proteins.pathPDBFolder),
@@ -160,3 +222,42 @@ def closeLogfile(filename):
 
     LOGGER.close(filename)
 
+
+def checkUpdates():
+    """Check PyPI to see if there is a newer ProDy version available.  Setting
+    ProDy configuration parameter *check_updates* to a positive integer will
+    make ProDy automatically check updates, e.g.::
+
+      confProDy(check_updates=7) # check at most once a week
+      confProDy(check_updates=0) # do not auto check updates
+      confProDy(check_updates=-1) # check at the start of every session"""
+
+    pypi_url = 'https://pypi.python.org/pypi'
+    if PY3K:
+        import xmlrpc.client
+        pypi = xmlrpc.client.Server(pypi_url)
+    else:
+        import xmlrpclib
+        pypi = xmlrpclib.Server(pypi_url)
+    releases = pypi.package_releases('ProDy')
+    if releases[0] == __version__:
+        LOGGER.info('You are using the latest ProDy release (v{0:s}).'
+                    .format(__version__))
+    else:
+        LOGGER.info('ProDy v{0:s} is available, you are using {1:s}.'
+                    .format(releases[0], __version__))
+    if SETTINGS['check_updates']:
+        import time
+        SETTINGS['last_check'] = time.time()
+        SETTINGS.save()
+
+
+if SETTINGS['check_updates']:
+
+    if SETTINGS.get('last_check') is None:
+        SETTINGS['last_check'] = 0
+    import time
+    if ((time.time() - SETTINGS.get('last_check')) / 3600 / 24 >
+            SETTINGS['check_updates']):
+        LOGGER.info('Checking PyPI for ProDy updates:')
+        checkUpdates()

@@ -119,7 +119,13 @@ def set_pharmacophore_type(cavities, selection_protein, selection_coords):
 
 		cav_properties.append(cav_indices)
 
-	return cav_properties
+	if len(cav_properties) > 1: # deprecation with numpy 1.19
+		# https://numpy.org/doc/stable/release/1.19.0-notes.html#deprecate-automatic-dtype-object-for-ragged-input
+		c_p = np.array(cav_properties, dtype=object)
+	else:
+		c_p = np.array(cav_properties)
+
+	return c_p
 
 
 def get_local_asph_point(point, cavity_coords, grid, grid_min, grid_shape, radius = 3):

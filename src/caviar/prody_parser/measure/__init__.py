@@ -1,5 +1,16 @@
 # -*- coding: utf-8 -*-
-"""This module defines classes measuring quantities, transforming coordinates
+"""This module defines classes measuring quantities, transforming coordinates,
+and identifying contacts.
+
+
+Identify contacts
+=================
+
+Following class and functions are for contact identifications:
+
+  * :class:`.Contacts` - identify intermolecular contacts
+  * :func:`.findNeighbors` - identify interacting atom pairs
+  * :func:`.iterNeighbors` - identify interacting atom pairs
 
 Measure quantities
 ==================
@@ -49,6 +60,10 @@ __all__.extend(measure.__all__)
 
 from .measure import getDihedral, getPhiAtoms
 from .measure import getAngle, getCenter, getCentral
+
+from . import contacts
+from .contacts import *
+__all__.extend(contacts.__all__)
 
 from . import transform
 from .transform import *

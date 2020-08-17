@@ -24,7 +24,6 @@
   print_cav_info: True # print a report on cavity identification 
   gen_fp: False    # Generate fingerprints for cavities
   db_write: False   # Turns on database functionalities: name of a database to write the data in, which should already exist
-  db_name: # Name of db to write in
 
 [selection]
   metal: True      # Keep metals
@@ -46,6 +45,11 @@
                     # PDB code. For example 1AAA_A for chain A of PDB 1AAA.
                     # In case you want to specify more than one chain, just put all of them, e.g.,
                     # 1AAA_ABC for chains A, B, and C.
+  size_limit: 10000000 # Size in grid points of the box. Is not really fitting here but in cavity_identification
+                    # However that's a kill switch: if the protein is too big and necessitates more than 10 million
+                    # grid points, it is likely to crash on a normal computer.
+                    # For example, the cryoEM structure 6zme (Nsp1 of covid + Ribosome) takes 24 million grid points
+                    # and run out of memory on a 16gb RAM computer.
 
 [cavity_identification]
   boxmargin: 2.0   # Margin around the protein 
@@ -103,3 +107,4 @@
   seeds_mindist: 3 # Minimum distance between seed points in the watershed algorithm 
   merge_subcavs: True # Merge small subcavities enclosed in between other subcavities (prevent oversegmentation) 
   print_pphores_subcavs: True # prints pharmacophore data of the subcavities.
+

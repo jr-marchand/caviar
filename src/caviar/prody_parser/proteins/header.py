@@ -183,7 +183,8 @@ _PDB_DBREF = {
     'PDB': 'PDB',
     'UNP': 'UniProt',
     'NORINE': 'Norine',
-    'UNIMES': 'UNIMES'
+    'UNIMES': 'UNIMES',
+    'EMDB': 'EMDB'
 }
 
 
@@ -312,7 +313,7 @@ def parsePDBHeader(pdb, *keys):
         else:
             raise IOError('{0} is not a valid filename or a valid PDB '
                           'identifier.'.format(pdb))
-    pdb = openFile(pdb)
+    pdb = openFile(pdb, 'rt')
     header, _ = getHeaderDict(pdb, *keys)
     pdb.close()
     return header
@@ -501,6 +502,19 @@ def _getMissingAtomsRes(lines):
 ########### END CHANGES ###########
 ########### END CHANGES ###########
 ########### END CHANGES ###########
+
+def _getRelatedEntries(lines):
+    dbrefs = []
+    for i, line in lines['REMARK 900']:
+        if 'RELATED ID' in line:
+            dbref = DBRef()
+            end_of_id = line.find('RELATED DB')
+            dbref.accession = line[23:end_of_id].strip()
+            dbref.dbabbr = line[end_of_id+12:end_of_id+16].strip()
+            dbref.database = _PDB_DBREF.get(dbref.dbabbr, 'Unknown')
+            
+            dbrefs.append(dbref)
+    return dbrefs
 
 def _getSpaceGroup(lines):
 
@@ -1018,6 +1032,7 @@ _PDB_HEADER_MAP = {
                    ) if lines['MDLTYP'] else None,
     'n_models': _getNumModels,
     'space_group': _getSpaceGroup,
+    'related_entries': _getRelatedEntries,
 }
 
 mapHelix = {
@@ -1091,7 +1106,8 @@ def assignSecstr(header, atoms, coil=False):
     helix = header.get('helix', {})
     sheet = header.get('sheet', {})
     if len(helix) == 0 and len(sheet) == 0:
-        raise ValueError('header does not contain secondary structure data')
+        LOGGER.warn('header does not contain secondary structure data')
+        return atoms
 
     ssa = atoms.getSecstrs()
     if ssa is None:
@@ -1108,7 +1124,9 @@ def assignSecstr(header, atoms, coil=False):
         ag.setSecindices(np.zeros(ag.numAtoms(),
                       ATOMIC_FIELDS['secindex'].dtype))  
 
-    atoms.select('protein').setSecstrs('C')
+    prot = atoms.select('protein')
+    if prot is not None:
+        prot.setSecstrs('C')
     hierview = atoms.getHierView()
     count = 0
     getResidue = hierview.getResidue
@@ -1167,7 +1185,8 @@ def buildBiomolecules(header, atoms, biomol=None):
 
     biomt = header.get('biomoltrans')
     if not isinstance(biomt, dict) or len(biomt) == 0:
-        raise ValueError("header doesn't contain biomolecular transformations")
+        LOGGER.warn("no biomolecular transformations found so original structure was used")
+        return atoms
 
     if not isinstance(atoms, AtomGroup):
         atoms = atoms.copy()
@@ -1211,7 +1230,7 @@ def buildBiomolecules(header, atoms, biomol=None):
             translation[2] = line2[3]
             t = Transformation(rotation, translation)
 
-            newag = atoms.select('chain ' + ' '.join(mt[0])).copy()
+            newag = atoms.select('chain ' + ' '.join(mt[times*4+0])).copy()
             if newag is None:
                 continue
             newag.all.setSegnames(segnm.pop(0))

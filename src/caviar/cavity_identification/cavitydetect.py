@@ -249,8 +249,11 @@ def get_large_cavities_from_graph(G, cav, min_points = 60):
 	for cavity in large_cavities:
 		list_cavs_coords.append(np.take(a = cav, indices = list(cavity), axis = 0))
 	
-	array_cavs_coords = np.array(list_cavs_coords)
-	
+	if len(list_cavs_coords) > 1: # deprecation with numpy 1.19
+		# https://numpy.org/doc/stable/release/1.19.0-notes.html#deprecate-automatic-dtype-object-for-ragged-input
+		array_cavs_coords = np.array(list_cavs_coords, dtype=object)
+	else:
+		array_cavs_coords = np.array(list_cavs_coords)
 	return array_cavs_coords
 
 def filter_cavities(array_cavs_coords, grid_decomposition, grid_min, grid_shape, gridspace = 1.0,
@@ -276,7 +279,14 @@ def filter_cavities(array_cavs_coords, grid_decomposition, grid_min, grid_shape,
 			#print(median_bur)
 			cavid += 1
 
-	return np.array(cavs_curated), cavs_info
+	if len(cavs_curated) > 1: # deprecation with numpy 1.19
+		# https://numpy.org/doc/stable/release/1.19.0-notes.html#deprecate-automatic-dtype-object-for-ragged-input
+		cavs_cur = np.array(cavs_curated, dtype=object)
+	else:
+		cavs_cur = np.array(cavs_curated)
+
+
+	return cavs_cur, cavs_info
 
 
 def wrapper_early_cav_identif(grid, grid_min, grid_shape, selection_protein, selection_coords,

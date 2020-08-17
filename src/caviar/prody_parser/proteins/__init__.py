@@ -1,27 +1,13 @@
 # -*- coding: utf-8 -*-
-"""
-This module defines classes and functions to fetch, parse, and write
+"""This module defines classes and functions to fetch, parse, and write
 structural data files, execute structural analysis programs, and to access
 and search structural databases, e.g. `ProteinDataBank <http://wwpdb.org>`_.
-
-The code was borrowed and adapted from ProDy: http://prody_parser.csb.pitt.edu
-
-## DELETED functionalities: ##
-BLAST
-PQR
-mmCIF
-DSSP
-STRIDE
-EMD
-alignment/comparison
-pdbclusters
-showProtein
 
 PDB resources
 =============
 
   * :func:`.fetchPDB` - retrieve PDB files
-  * :func:`.fetchPDBviaFTP` - download PDB
+  * :func:`.fetchPDBviaFTP` - download PDB/PDBML/mmCIF files
   * :func:`.fetchPDBviaHTTP` - download PDB files
 
 You can use following functions to manage PDB file resources:
@@ -36,6 +22,22 @@ Following functions can be used to handle local PDB files:
   * :func:`.iterPDBFilenames` - yield file names in a path or local PDB mirror
 
 
+Blast search PDB
+================
+
+The following are for blast searching PDB content.
+
+  * :func:`.blastPDB` - blast search NCBI PDB database
+  * :class:`.PDBBlastRecord` - store/evaluate NCBI PDB blast search results
+
+PDB clusters biopolymer chains using blast weekly.  These clusters can be
+retrieved using the following functions.  Using cluster data is as good
+as blast searching PDB most of the time and incredibly faster always.
+
+  * :func:`.listPDBCluster` - get list of identifiers in a PDB sequence cluster
+  * :func:`.loadPDBClusters` - load PDB clusters into memory
+  * :func:`.fetchPDBClusters` - retrieve PDB sequence cluster data from wwPDB
+
 Parse/write PDB files
 =====================
 
@@ -46,12 +48,38 @@ Following ProDy functions are for parsing and writing :file:`.pdb` files:
   * :func:`.writePDB` - write :file:`.pdb` formatted file
   * :func:`.writePDBStream`  write :file:`.pdb` formated stream
 
+Since :file:`.pqr` format is similar to :file:`.pdb` format, following
+functions come as bonus features:
+
+  * :func:`.writePQR` - write atomic data to a file in :file:`.pqr` format
+  * :func:`.parsePQR` - parse atomic data from files in :file:`.pqr` format
+
+
 .. seealso::
 
    Atom data (coordinates, atom names, residue names, etc.) parsed from
-   PDB files are stored in :class:`~.AtomGroup` instances.
-   See :mod:`~prody_parser.atomic` module documentation for more details.
+   PDB/PSF/PQR/mmCIF files are stored in :class:`~.AtomGroup` instances.
+   See :mod:`~prody.atomic` module documentation for more details.
 
+Parse mmCIF files
+=====================
+
+Following ProDy functions are for parsing :file:`.cif` files:
+
+  * :func:`.parseMMCIF` - parse :file:`.cif` formated file
+  * :func:`.parseMMCIFStream` - parse :file:`.cif` formated stream
+
+.. seealso::
+
+   Atom data (coordinates, atom names, residue names, etc.) parsed from
+   PDB/PSF/PQR/mmCIF files are stored in :class:`~.AtomGroup` instances.
+   See :mod:`~prody.atomic` module documentation for more details.
+
+Quick visualization
+===================
+
+:func:`.showProtein` function can be used to take a quick look at protein
+structures.
 
 Edit structures
 ===============
@@ -80,9 +108,61 @@ Following function can be used to fetch meta data on PDB ligands:
 
   * :func:`.fetchPDBLigand` - retrieve ligand from Ligand-Expo
 
+Compare/align chains
+====================
+
+Following functions can be used to match, align, and map polypeptide chains:
+
+  * :func:`.matchChains` - finds matching chains in two protein structures
+  * :func:`.matchAlign` - finds best matching chains and aligns structures
+  * :func:`.mapOntoChain` - maps chains in a structure onto a reference chain
+
+Following functions can be used to adjust alignment parameters:
+
+  * :func:`.getAlignmentMethod`, :func:`.setAlignmentMethod`
+  * :func:`.getMatchScore`, :func:`.setMatchScore`
+  * :func:`.getMismatchScore`, :func:`.setMismatchScore`
+  * :func:`.getGapPenalty`, :func:`.setGapPenalty`
+  * :func:`.getGapExtPenalty`, :func:`.setGapExtPenalty`
+
+
+
+Execute DSSP
+============
+
+Following functions can be used to execute DSSP structural analysis program
+and/or parse results:
+
+  * :func:`.execDSSP` - execute :program:`dssp`
+  * :func:`.performDSSP` - execute :program:`dssp` and parse results
+  * :func:`.parseDSSP` - parse structural data from :program:`dssp` output
+
+Execute STRIDE
+==============
+
+Following functions can be used to execute STRIDE structural analysis program
+and/or parse results:
+
+  * :func:`.execSTRIDE` - execute :program:`stride`
+  * :func:`.performSTRIDE` - execute :program:`stride` and parse results
+  * :func:`.parseSTRIDE` - parse structural data from :program:`stride` output
+
+Execute EMD
+===========
+
+Use the following to parse and access header data in EMD files:
+
+  * :func:`.parseEMD` - parse structural data from :file:`.emd` files
+  * :class:`.EMDMAP` - access structural data from :file:`.emd` files
+  * :class:`.TRNET` - fit pseudoatoms to EM density maps using the TRN algorithm
+
 """
 
 __all__ = []
+
+from . import compare
+from .compare import *
+__all__.extend(compare.__all__)
 
 from . import localpdb
 from .localpdb import *
@@ -96,13 +176,37 @@ from . import pdbligands
 from .pdbligands import *
 __all__.extend(pdbligands.__all__)
 
+from . import functions
+from .functions import *
+__all__.extend(functions.__all__)
+
 from . import header
 from .header import *
 __all__.extend(header.__all__)
 
+from . import dssp
+from .dssp import *
+__all__.extend(dssp.__all__)
+
+from . import stride
+from .stride import *
+__all__.extend(stride.__all__)
+
 from . import pdbfile
 from .pdbfile import *
 __all__.extend(pdbfile.__all__)
+
+from . import emdfile
+from .emdfile import *
+__all__.extend(emdfile.__all__)
+
+from . import ciffile
+from .ciffile import *
+__all__.extend(ciffile.__all__)
+
+from . import starfile
+from .starfile import *
+__all__.extend(starfile.__all__)
 
 from .pdbfile import PDBParseError
 

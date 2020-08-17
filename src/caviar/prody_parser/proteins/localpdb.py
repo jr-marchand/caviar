@@ -12,7 +12,6 @@ from caviar.prody_parser.utilities import sympath
 from . import wwpdb
 from .wwpdb import checkIdentifiers, fetchPDBviaFTP, fetchPDBviaHTTP
 
-## MIGHT BE USEFUL TO GET RID ALL FORMAT RELATED LINES
 
 __all__ = ['pathPDBFolder', 'pathPDBMirror',
            'fetchPDB', 'fetchPDBfromMirror',
@@ -105,10 +104,13 @@ def pathPDBMirror(path=None, format=None):
 
 
 def fetchPDBfromMirror(*pdb, **kwargs):
-    """Returns path(s) to PDB (default) for specified *pdb* identifier(s).
-    If a *folder* is specified, files will be copied
+    """Returns path(s) to PDB (default), PDBML, or mmCIF file(s) for specified
+    *pdb* identifier(s).  If a *folder* is specified, files will be copied
     into this folder.  If *compressed* is **False**, files will decompressed.
-    """
+    *format* argument can be used to get `PDBML <http://pdbml.pdb.org/>`_ and
+    `mmCIF <http://mmcif.pdb.org/>`_ files: ``format='cif'`` will fetch an
+    mmCIF file, and ``format='xml'`` will fetch a PDBML file.  If PDBML header
+    file is desired, ``noatom=True`` argument will do the job."""
 
     mirror = pathPDBMirror()
     if mirror is None:
@@ -127,10 +129,32 @@ def fetchPDBfromMirror(*pdb, **kwargs):
     else:
         identifiers = list(pdb)
 
-    ftp_divided = 'data/structures/divided/pdb'
-    ftp_pdbext = '.ent.gz'
-    ftp_prefix = 'pdb'
-    extension = '.pdb'
+    if format == 'pdb':
+        ftp_divided = 'data/structures/divided/pdb'
+        ftp_pdbext = '.ent.gz'
+        ftp_prefix = 'pdb'
+        extension = '.pdb'
+    elif format == 'xml':
+        if bool(kwargs.pop('noatom', False)):
+            ftp_divided = 'data/structures/divided/XML-noatom'
+            ftp_pdbext = '-noatom.xml.gz'
+            extension = '-noatom.xml'
+        else:
+            ftp_divided = 'data/structures/divided/XML'
+            ftp_pdbext = '.xml.gz'
+            extension = '.xml'
+        ftp_prefix = ''
+    elif format == 'cif':
+        ftp_divided = 'data/structures/divided/mmCIF'
+        ftp_pdbext = '.cif.gz'
+        ftp_prefix = ''
+        extension = '.cif'
+    else:
+        if format:
+            raise ValueError('{0} is not a recognized format'
+                             .format(repr(format)))
+        else:
+            raise ValueError('please specify a valid format')
 
     if mirror_format:
         if mirror_format.lower() != format:
@@ -177,15 +201,18 @@ def fetchPDBfromMirror(*pdb, **kwargs):
 
 def fetchPDB(*pdb, **kwargs):
     """Returns path(s) to PDB file(s) for specified *pdb* identifier(s).  Files
-    will be sought in user specified *folder* or current working director, and
+    will be sought in user specified *folder* or current working directory, and
     then in local PDB folder and mirror, if they are available.  If *copy*
     is set **True**, files will be copied into *folder*.  If *compressed* is
-    **False**, all files will be decompressed.  See :func:`pathPDBFolder` and
-    :func:`pathPDBMirror` for managing local resources, :func:`.fetchPDBviaFTP`
-    and :func:`.fetchPDBviaFTP` for downloading files from PDB servers."""
+    **False**, all files will be decompressed into *folder*.  See :func:`pathPDBFolder` 
+    and :func:`pathPDBMirror` for managing local resources, :func:`.fetchPDBviaFTP`
+    and :func:`.fetchPDBviaHTTP` for downloading files from PDB servers."""
 
     if len(pdb) == 1 and isinstance(pdb[0], list):
         pdb = pdb[0]
+
+    if 'format' in kwargs and kwargs.get('format') != 'pdb':
+        return fetchPDBviaFTP(*pdb, **kwargs)
 
     identifiers = checkIdentifiers(*pdb)
 
@@ -318,20 +345,20 @@ def fetchPDB(*pdb, **kwargs):
         except Exception as err:
             tryHTTP = True
    
-    if fns is None or isinstance(fns, list) and None in fns:
-        tryHTTP = True
-    elif isinstance(fns, list): 
-        downloads = [not_found[i][1] for i in range(len(fns)) if fns[i] is None]
-        if len(downloads) > 0: 
+        if fns is None or isinstance(fns, list) and None in fns:
             tryHTTP = True
-    if tryHTTP:
-        LOGGER.info('Downloading PDB files via FTP failed, '
-                    'trying HTTP.')
-        try:
-            fns = fetchPDBviaHTTP(*downloads, check=False, **kwargs)
-        except Exception as err:
-            LOGGER.warn('Downloading PDB files via HTTP also failed '
-                        '({0}).'.format(str(err)))
+        elif isinstance(fns, list): 
+            downloads = [not_found[i][1] for i in range(len(fns)) if fns[i] is None]
+            if len(downloads) > 0: 
+                tryHTTP = True
+        if tryHTTP:
+            LOGGER.info('Downloading PDB files via FTP failed, '
+                        'trying HTTP.')
+            try:
+                fns = fetchPDBviaHTTP(*downloads, check=False, **kwargs)
+            except Exception as err:
+                LOGGER.warn('Downloading PDB files via HTTP also failed '
+                            '({0}).'.format(str(err)))
     
     if len(downloads) == 1: fns = [fns]
     if fns:

@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Main wrapper of the cavitome program
-Contains: str2bool(), arguments(), printv(), and run()
+Main wrapper of CAVIAR
 """
 
 import sys, os
@@ -9,8 +8,6 @@ from caviar.prody_parser import *
 from caviar.cavity_identification import *
 from caviar.cavity_characterization import *
 from caviar.misc_tools import *
-#from caviar.cavity_comparisons import *
-#from caviar.database_functions import *
 import time
 import argparse
 
@@ -84,6 +81,12 @@ def arguments():
 
 
 	# Add other parameters from command line 
+	parser.add_argument("-cif", type = str2bool, help = ": Parse a mmCIF file rather than a PDB file \n(default = False)\n",
+							default = False)
+	parser.add_argument("-dcd", type = str, help = ": Parse a trajectory file in DCD format IN ADDITION to a PDB file"
+							"(reference)\n This is the full path to the DCD file \n(default = None)\n",
+							default = None)
+
 	parser.add_argument("-sourcedir", type = str, help = ": Path of the directory where the pdb files are.\n")
 	
 	parser.add_argument("-code", type = str, help = ": PDB code of the file to  be computed.\n"
@@ -127,8 +130,9 @@ def arguments():
 	if not args.code and not args.codeslist:
 		print("Fatal Error: need a pdb code")
 		#sys.exit(-1)
-	if args.code and not "pdb" in args.code:
-		args.code = args.code + ".pdb"
+	if args.code:
+		if not "pdb" in args.code:
+			args.code = args.code + ".pdb"
 
 	return args
 
@@ -142,18 +146,11 @@ def printv(msg):
 		print(msg)
 
 
-def run(arguments):
+def parse_run(arguments):
 	"""
-	Main running function
-	It contains annotations about the different routines
-	
-	1- The program starts by reading the input and killing the process if some kill switches are
-	activated (eg, only XR structures)
-	2- Then the cavity identification routines are going on
-	3- Followed by some cavity cleaning and filtering passes
-	3bis- If needed, ligand-based cavity validation is performed
-	4- Cavities are decomposed into subcavities
-	
+	First function, parsing the data: PDB, PDB header... and killing before running cavity
+	identification if needed.
+
 	"""
 
 
@@ -167,31 +164,64 @@ def run(arguments):
 	# ===== RUN ===== #
 	printv("> verbose on")
 
-	### Read PDB file
-	try:
-		pdbobject = parsePDB(os.path.join(args.sourcedir, args.code))
-	except:
-		# Download
-		print("PDB " + str(args.code) + " not found in -sourcedir, downloading from RCSB PDB")
-		import urllib.request
-		urllib.request.urlretrieve('http://files.rcsb.org/download/'+str(args.code), str(args.code))
+	if args.cif:
+		print("Attention! The CIF parser does not parse CIF(PDB) header metadata for the time being.")
 		try:
-			pdbobject = parsePDB(str(args.code))
-			args.sourcedir = "./"
+			args.code = str(args.code).replace(".pdb", ".cif")
+			pdbobject = parseMMCIF(os.path.join(args.sourcedir, args.code))
 		except:
-			print("PDB " + str(args.code) + " not found on RCSB PDB webservers neither")
-			return None
+			args.sourcedir = "./"
+			try:
+				# Download
+				print("mmCIF " + str(args.code) + " not found in -sourcedir, downloading from RCSB PDB")
+				import urllib.request
+				urllib.request.urlretrieve('http://files.rcsb.org/download/'+str(args.code), str(args.code))
+				pdbobject = parseMMCIF(os.path.join(args.sourcedir, args.code))
+			except:
+				print("mmCIF " + str(args.code) + " not found on RCSB PDB webservers neither.")
+				return None
+	else:
+		### Read PDB file
+		try:
+			pdbobject = parsePDB(os.path.join(args.sourcedir, args.code))
+		except:
+			# Download
+			args.sourcedir = "./"
+			print("PDB " + str(args.code) + " not found in -sourcedir, downloading from RCSB PDB")
+			try:
+				import urllib.request
+				urllib.request.urlretrieve('http://files.rcsb.org/download/'+str(args.code), str(args.code))
+				pdbobject = parsePDB(os.path.join(args.sourcedir, args.code))
+			except:
+				print("PDB " + str(args.code) + " not found on RCSB PDB webservers neither. Checking CIF files on RCSB PDB...")
+				try:
+					args.code = str(args.code).replace(".pdb", ".cif")
+					urllib.request.urlretrieve('http://files.rcsb.org/download/'+str(args.code), str(args.code))
+					pdbobject = parseMMCIF(os.path.join(args.sourcedir, args.code))
+					args.cif = True
+					print("PDB " + str(args.code) + " was found as mmCIF format!")
+					print("Attention! The CIF parser does not parse PDB header metadata for the time being.")
+				except:
+					print("mmCIF " + str(args.code) + " not found on RCSB PDB webservers neither.")
+					return None
+	
 	### Read information from the PDB header
-	dict_pdb_info = get_information_header(os.path.join(args.sourcedir, args.code))
-	# Here options to exclude non XR, resolution...
-	killswitch = kill_from_header(dict_pdb_info, onlyxr = args.onlyxr,
-		resolution_filter = args.resolution_filter,	resolution = args.resolution,
-		pdbversion_filter = args.pdbversion_filter, pdbversion = args.pdbversion,
-		caveat = args.caveat, obsolete = args.obsolete,	deposition_date_filter = args.deposition_date_filter,
-		date = args.date)
-	if killswitch:
-		print(f"{args.code[0:-4]} was skipped because of a kill switch (e.g., not XR, resolution, caveat...)")
-		return None
+	# Don't try to parse the header if it's a CIF file
+	# I did not implement a CIF header parser yet
+	dict_pdb_info = {}
+	dict_pdb_info["experiment"] = "NA" # to avoid crash later on with nonexistent dictionary
+	if not args.cif:
+		dict_pdb_info = get_information_header(os.path.join(args.sourcedir, args.code), cif = args.cif)
+
+		# Here options to exclude non XR, resolution...
+		killswitch = kill_from_header(dict_pdb_info, onlyxr = args.onlyxr,
+			resolution_filter = args.resolution_filter,	resolution = args.resolution,
+			pdbversion_filter = args.pdbversion_filter, pdbversion = args.pdbversion,
+			caveat = args.caveat, obsolete = args.obsolete,	deposition_date_filter = args.deposition_date_filter,
+			date = args.date)
+		if killswitch:
+			print(f"{args.code[0:-4]} was skipped because of a kill switch (e.g., not XR, resolution, caveat...)")
+			return None
 
 	### Get selection objects from the PDB object
 	### from arguments sourcedir, code. Can include or not metals, waters,
@@ -231,14 +261,78 @@ def run(arguments):
 			return None
 
 
+	# Exception case: dcd MD trajectory => one PDB code
+	# can hold more than one atom group.
+	# we'll run the cavity identification on all MD frames
+	frame = None
+	if args.dcd:
+		print("We are going into DCD trajectory analysis. Several tables and PDBs will be printed, corresponding to each frame")
+		print("Take care, that might write a lot of stuff and take a lot of memory")
+		_dcd = DCDFile(args.dcd)
+		_dcd.setCoords(pdbobject) # the data in dcd and in the pdb need to be consistent
+		_dcd.link(pdbobject) # the data in dcd and in the pdb need to be consistent
+		_dcd.setAtoms(selection_protein) # here we restrict to the subset of interest
+		#ensemble.setAtoms(selection_protein) # the data in dcd and in the pdb need to be consistent
+		#ensemble.setCoords(pdbobject) # the data in dcd and in the pdb need to be consistent
+		#print(repr(ensemble))
+		#ensemble.setAtoms(selection_protein) # here we restrict to the subset of interest
+		print(repr(_dcd))
+		#ensemble.addCoordset(selection_protein.getCoordsets())
+		frame = 1
+		for conformation in _dcd.iterCoordsets():
+			# CAV ROUTINES
+			frm_txt = "f"+str(frame)
+			run(args, conformation, selection_protein, pdbobject, dict_pdb_info, frm_txt)
+			frame += 1
+
+	# Exception case: NMR structures => one PDB code
+	# can hold more than one atom group.
+	# we'll run the cavity identification on all NMR models
+	# frame will hold the MODEL number, or frame number in the DCD file
+	elif dict_pdb_info["experiment"] and "NMR" in dict_pdb_info["experiment"]:
+		print("That's an NMR structure. Several tables and PDBs will be printed, corresponding to each MODEL entry")
+		ensemble = Ensemble("nmr struc")
+		ensemble.setCoords(selection_protein)
+		ensemble.addCoordset(selection_protein.getCoordsets())
+		frame = 1
+		for conformation in ensemble._confs:
+			# CAV ROUTINES
+			frm_txt = "f"+str(frame)
+			run(args, conformation, selection_protein, pdbobject, dict_pdb_info, frm_txt)
+			frame += 1
+	# Main use case: XR structure, or mmCIF
+	else:
+		run(args, selection_coords, selection_protein, pdbobject, dict_pdb_info, frame)
+
+
+
 	# ------------------------------------------------------------------------------------------- #
 	# ----------------------------- CAVITY IDENTIFICATION ROUTINES ------------------------------ #
 	# ------------------------------------------------------------------------------------------- #
 
+def run(args, selection_coords, selection_protein, pdbobject, dict_pdb_info, frame):
+	"""
+	Main running function
+	It contains annotations about the different routines
+	
+	1- Cavity identification routines are going on
+	2- Followed by some cavity cleaning and filtering passes
+	2bis- If needed, ligand-based cavity validation is performed
+	3- Cavities are decomposed into subcavities
+	
+	"""
+
+	# ===== RUN ===== #
 
 	# Build a grid around the protein
 	grid, grid_shape, grid_min = build_grid(selection_coords, boxmargin = args.boxmargin,
-		gridspace = args.gridspace)
+		gridspace = args.gridspace, size_limit = args.size_limit)
+	try:
+		grid.any()
+	except:	
+		print(f"{args.code[0:-4]} was killed because it is too big! The grid size is above the threshold: {args.size_limit}"
+			f"\n Please change this parameter if you really want to investigate this structure. You'll need *a lot* of RAM!")
+		return None
 	grid_set = SetOfPoints(grid)
 	size = len(grid)
 
@@ -258,7 +352,10 @@ def run(arguments):
 	try:
 		early_cavities[0]
 	except:
-		print(f"{args.code[0:-4]} does not have a cavity")
+		if frame:
+			print(f"{args.code[0:-4]}_{frame} does not have a cavity")
+		else:
+			print(f"{args.code[0:-4]} does not have a cavity")
 		return None
 	
 	end = time.time()
@@ -323,16 +420,23 @@ def run(arguments):
 		dict_coverage = {} # empty
 		list_ligands = []
 		list_lig_coords = []
-		
 	if args.export_cavities:
 		try:
 			os.mkdir(args.out)
 		except:
 			pass
-		export_pdb_cavity(final_cavities, final_pharma, args.code[0:-4], grid_min, grid_shape,
+		if frame:
+			export_pdb_cavity(final_cavities, final_pharma, args.code[0:-4]+"_"+str(frame), grid_min, grid_shape,
 			grid_decomposition, selection_protein = selection_protein,
-		gridspace = args.gridspace, outdir = args.out, withprot = args.withprot, listlig = list_ligands,
-		oridir = args.sourcedir)
+			gridspace = args.gridspace, outdir = args.out, withprot = args.withprot, listlig = list_ligands,
+			oridir = args.sourcedir)
+		else:
+			export_pdb_cavity(final_cavities, final_pharma, args.code[0:-4], grid_min, grid_shape,
+			grid_decomposition, selection_protein = selection_protein,
+			gridspace = args.gridspace, outdir = args.out, withprot = args.withprot, listlig = list_ligands,
+			oridir = args.sourcedir)
+
+		# Works only if XR/mmCIF, not with NMR/DCD
 		if args.write_pml_cavs:
 			write_pmlfile(cavity_file = os.path.join(args.out, args.code[0:-4] + "_cavs.pdb"), what = args.color_cavs_by, outputfile = str(args.code[0:-4]+"_cavities.pml"))
 
@@ -348,6 +452,7 @@ def run(arguments):
 		cavities[cava].ligandability = ligandability
 
 	# Updates the cavities also with presence/absence of ligand
+		
 	list_covered_ligands, dict_cavid_lig_bool = export_clean_cav_ligand_info(dict_coverage,
 		list_ligands, list_lig_coords, cavities)
 
@@ -363,7 +468,10 @@ def run(arguments):
 				os.mkdir(args.out)
 			except:
 				pass
-			writePDB(os.path.join(args.out, args.code[:-4] + "_subcavs.pdb"), selection_protein)
+			if frame:
+				writePDB(os.path.join(args.out, args.code[:-4]+"_"+str(frame) + "_subcavs.pdb"), selection_protein)
+			else:
+				writePDB(os.path.join(args.out, args.code[:-4] + "_subcavs.pdb"), selection_protein)
 			if args.write_pml_subcavs:
 				write_pmlsubcavs(os.path.join(args.out, args.code[:-4] + "_subcavs.pdb"), outputfile = str(args.code[0:-4]+"_subcavities.pml"))
 				
@@ -373,7 +481,7 @@ def run(arguments):
 			cavities, args.code, args.out, args.sourcedir, list_ligands,
 			seeds_mindist = args.seeds_mindist, merge_subcavs = args.merge_subcavs, minsize_subcavs = 50,
 			min_contacts = 0.667, v = False, export_subcavs = args.export_subcavs,
-			gridspace = args.gridspace)
+			gridspace = args.gridspace, frame = frame)
 		# Iterate over liganded cavities only 
 		elif args.subcavs_lig_only:
 			try: #Could be activated without ligand
@@ -383,7 +491,7 @@ def run(arguments):
 					cavities, args.code, args.out, args.sourcedir, list_ligands,
 					seeds_mindist = args.seeds_mindist, merge_subcavs = args.merge_subcavs, minsize_subcavs = 50,
 					min_contacts = 0.667, v = False, export_subcavs = args.export_subcavs,
-					gridspace = args.gridspace)
+					gridspace = args.gridspace, frame = frame)
 
 			except:
 				print(f"{args.code[0:-4]} does not have a liganded cavity for subcavity decomposition"
@@ -395,19 +503,20 @@ def run(arguments):
 				cavities, args.code, args.out, args.sourcedir, list_ligands,
 				seeds_mindist = args.seeds_mindist, merge_subcavs = args.merge_subcavs, minsize_subcavs = 50,
 				min_contacts = 0.667, v = False, export_subcavs = args.export_subcavs,
-				gridspace = args.gridspace)
+				gridspace = args.gridspace, frame = frame)
 
 
 	# Print formatted information
 	if args.print_cav_info:
 		# print with subcavities information if subcavs_decomp was activated
-		print_scores(dict_all_info, args.code[0:-4], cavities, subcavs = args.subcavs_decomp)
+		print_scores(dict_all_info, args.code[0:-4], cavities, subcavs = args.subcavs_decomp, frame = frame)
 
 	# Print formatted information for subcavities 
 	if args.subcavs_decomp and args.print_pphores_subcavs:
-		print(f"{'PDB_chain':<9}{'CavID':^7}{'SubCavID':^8}{'Size':^6}{'Hydrophob.':^10}"
+		print(f"{'PDB_chain':<12}{'CavID':^7}{'SubCavID':^8}{'Size':^6}{'Hydrophob.':^10}"
 			f"{'Polar':^7}{'Neg':^6}{'Pos':^6}{'Other':^6}")
 		print(subcavs_table)
+
 
 	# ------------------------------------------------------------------------------------------- #
 	# ----------------------------------- THIS IS THE END! -------------------------------------- #
@@ -432,7 +541,7 @@ def main():
 					if not ".pdb" in tmppdb:
 						args.code = f"{tmppdb.split()[0].split(sep = '_')[0]}.pdb"
 					else:
-						args.code = tmppdb.split()[0].split(sep = "_")[0]
+						args.code = tmppdb.split()[0]
 					if args.liglist_in_pdblist:
 						try:
 							args.lig_id = tmppdb.split()[1][0:3]
@@ -446,9 +555,9 @@ def main():
 				if not os.path.isfile(str(args.sourcedir)+str(args.code)):
 					print(f"{args.code} is not a valid filename or a valid PDB identifier.")
 					continue
-				run(args)
+				parse_run(args)
 	else:
-		run(args)
+		parse_run(args)
 	sys.exit()
 
 

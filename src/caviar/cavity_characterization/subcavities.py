@@ -18,7 +18,7 @@ __all__ = ['wrapper_subcavities']
 
 def wrapper_subcavities(final_cavities, cav_of_interest, grid_min, grid_shape, cavities, code, out, sourcedir, list_ligands,
 	seeds_mindist = 3, merge_subcavs = True, minsize_subcavs = 50, min_contacts = 0.667, v = False,
-	printv = False, print_pphores_subcavs = False, export_subcavs = False, gridspace = 1.0):
+	printv = False, print_pphores_subcavs = False, export_subcavs = False, gridspace = 1.0, frame = None):
 	"""
 	Wraps transform_cav2im3d, find_subcav_watershed, map_subcav_in_cav
 	merge_small_enclosed_subcavs, print_subcavs_pphores and export_pdb_subcavities
@@ -36,7 +36,7 @@ def wrapper_subcavities(final_cavities, cav_of_interest, grid_min, grid_shape, c
 	if merge_subcavs == True:
 		subcavs = merge_small_enclosed_subcavs(subcavs, minsize_subcavs = minsize_subcavs,
 			min_contacts = min_contacts, v = v)
-	subcavs_table = print_subcavs_pphores(cavities, subcavs, cav_of_interest, code, grid_min, grid_shape)
+	subcavs_table = print_subcavs_pphores(cavities, subcavs, cav_of_interest, code, grid_min, grid_shape, frame)
 	
 	# Export
 	if export_subcavs:
@@ -44,9 +44,14 @@ def wrapper_subcavities(final_cavities, cav_of_interest, grid_min, grid_shape, c
 			os.mkdir(out)
 		except:
 			pass
-		export_pdb_subcavities(subcavs, code[:-4], grid_min, grid_shape,
-			cavid = cav_of_interest, gridspace = gridspace, outdir = out,
-			listlig = list_ligands, oridir = sourcedir)
+		if frame:
+			export_pdb_subcavities(subcavs, code[:-4]+"_"+str(frame), grid_min, grid_shape,
+				cavid = cav_of_interest, gridspace = gridspace, outdir = out,
+				listlig = list_ligands, oridir = sourcedir)
+		else:
+			export_pdb_subcavities(subcavs, code[:-4], grid_min, grid_shape,
+				cavid = cav_of_interest, gridspace = gridspace, outdir = out,
+				listlig = list_ligands, oridir = sourcedir)
 
 	return subcavs_table
 
@@ -68,8 +73,8 @@ def transform_cav2im3d(cavity_coords, grid_min, grid_shape):
 	# Align the cavity to zero and convert the silly floats to ints
 	aligned_cav = cavity_coords - grid_min
 	# np.around because stupid python cant broadcast from floats to ints because floating point error
-	# I am lsoing so much time with this kind of stupid behavior, seriously, WTF is this?
-	newtypes_cav = np.around(aligned_cav).astype(int)
+	# I am losing so much time with this kind of stupid behavior, seriously, WTF is this?
+	newtypes_cav = np.around(np.array(aligned_cav, dtype=np.float)).astype(int)
 	# Set as 1 the indices corresponding to cavity grid points in the im3d
 	im3d[newtypes_cav[:,0], newtypes_cav[:,1], newtypes_cav[:,2]] = True
 	# np.flatnonzero(im3d) should give the same result as
@@ -186,7 +191,7 @@ def merge_small_enclosed_subcavs(subcavs, minsize_subcavs = 50, min_contacts = 0
 	or on their surface.
 	"""
 	# Create a copy of the subcavs array to not change in place, in case
-	_subcavs = np.copy(subcavs)
+	_subcavs = subcavs.copy()
 	# lengths of each subcavity
 	lengths = [len(x) for x in subcavs]
 	#Smaller ones than min_contacts
@@ -219,20 +224,36 @@ def merge_small_enclosed_subcavs(subcavs, minsize_subcavs = 50, min_contacts = 0
 		if total_contact >= min_contacts:
 			if v == True: print(f"Subcavity {small[0]} is small and enclosed {total_contact*100:.2f}% in other subcavs.\nIt will be added to subcavity {np.argmax(contacts)} (original numbering of subcavs from 0)")
 			to_del[small[0]] = np.argmax(contacts)
+	# to_del is dict which contains key = index of subcav to delete; value = index of subcav to merge it with
 	# If there's any subcavities to merge
 	# It's a mess because it's not easy to merge different array elements together and/or delete some...
 	if to_del:
 		dels = []
 		for index in range(0, len(subcavs)):
 			if index in to_del.keys():
-				_tmp = np.concatenate((_subcavs[to_del[index]], _subcavs[index]), axis = 0)
-				_subcavs[to_del[index]] = _tmp
+				# original version: works generally, except in some cases in which we merge and replace 2 equally sized small arrays (memory issue?)
+				try:
+					# _tmp contains the merged subcavity 
+					_tmp = np.concatenate((_subcavs[to_del[index]], _subcavs[index]), axis = 0)
+					# now we assign the merged subcavity to the index of the main subcav
+					_subcavs[to_del[index]] = _tmp
+				# dirty work around: change to lists, and play with lists, and come back to array...
+				except:
+					_tmp = np.array(_subcavs[to_del[index]]).tolist() + np.array(_subcavs[index]).tolist()
+					_subcavs[to_del[index]] = np.array(_tmp)
 				dels.append(index)
-		subcavlist = [x.tolist() for x in _subcavs]
+		subcavlist = []
+		for x in _subcavs:
+			# there is also here a mix of lists and arrays. Why?
+			try:
+				subcavlist.append(x.tolist())
+			except:
+				subcavlist.append(x)
 		for _del in sorted(dels, reverse=True):
 			del subcavlist[_del]
 		merged_subcavs = [np.array(x) for x in subcavlist]
 		return merged_subcavs
+
 	else:
 		return subcavs
 
@@ -261,7 +282,7 @@ def transform_im3d2cav(im3d, grid):
 	return cav_coor
 
 
-def print_subcavs_pphores(cavities, subcavs, cav_of_interest, pdbcode, grid_min, grid_shape):
+def print_subcavs_pphores(cavities, subcavs, cav_of_interest, pdbcode, grid_min, grid_shape, frame = None):
 	"""
 	print information about PP environment
 	and in particular, set in cavities object (class) the subcavity indices
@@ -308,8 +329,11 @@ def print_subcavs_pphores(cavities, subcavs, cav_of_interest, pdbcode, grid_min,
 
 		# create the table with subcavs information, that we may print or not
 		# Will be: PDB_chain cav_id subcav_id size hydroph polar neg pos other
-		name = str(pdbcode[0:-4] + "_" + cavities[cav_of_interest].chains)
-		subcavs_table += f"{name:<9}"
+		if frame:
+			name = str(pdbcode[0:-4] + "_" + cavities[cav_of_interest].chains + "_" + str(frame))
+		else:
+			name = str(pdbcode[0:-4] + "_" + cavities[cav_of_interest].chains)
+		subcavs_table += f"{name:<12}"
 		subcavs_table += f"{cav_of_interest+1:^7d}{i+1:^8d}{len(oricav_indices):^6d}"
 		subcavs_table += f"{str(int(np.around(dico[1]*100)))+'%':^10}{str(int(np.around(dico[3]*100)))+'%':^7}"
 		subcavs_table += f"{str(int(np.around(dico[6]*100)))+'%':^6}{str(int(np.around(dico[7]*100)))+'%':^6}{str(int(np.around(dico[8]*100)))+'%':^6}"

@@ -8,8 +8,8 @@ import pickle as pypickle
 import zipfile
 import platform
 import os.path
-from os.path import isdir, isfile, join, splitext
-from os.path import abspath, exists
+from os.path import isfile, isdir, join, split, splitext
+from os.path import getsize, isabs, exists, abspath
 from shutil import copy, Error as shError
 
 PLATFORM = platform.system()
@@ -117,7 +117,8 @@ else:
             return gzip.GzipFile(filename, *args, **kwargs)
 
 if (major, minor) >= (3, 2):
-    pass
+    from gzip import compress as gzip_compress
+    from gzip import decompress as gzip_decompress
 
 OPEN = {
     '.gz': gzip_open,

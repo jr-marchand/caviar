@@ -2,12 +2,15 @@
 """This module defines a class and methods and for comparing coordinate data
 and measuring quantities."""
 
-from numpy import ndarray, power, sqrt, array, zeros, arccos
+from numpy import ndarray, power, sqrt, array, zeros, arccos, dot
 from numpy import sign, tile, concatenate, pi, cross, subtract, var
 
 from caviar.prody_parser.atomic import Atomic, Residue, Atom
-from caviar.prody_parser.utilities import importLA, checkCoords, getDistance
-from caviar.prody_parser import LOGGER
+from caviar.prody_parser.utilities import importLA, solveEig, checkCoords, getDistance
+from caviar.prody_parser import LOGGER, PY2K
+
+if PY2K:
+    range = xrange
 
 __all__ = ['buildDistMatrix', 'calcDistance',
            'calcCenter', 'calcGyradius', 'calcAngle',
@@ -15,7 +18,8 @@ __all__ = ['buildDistMatrix', 'calcDistance',
            'calcMSF', 'calcRMSF',
            'calcDeformVector',
            'buildADPMatrix', 'calcADPAxes', 'calcADPs',
-           'pickCentral', 'pickCentralAtom', 'pickCentralConf', 'getWeights']
+           'pickCentral', 'pickCentralAtom', 'pickCentralConf', 'getWeights',
+           'calcInertiaTensor', 'calcPrincAxes']
 
 RAD2DEG = 180 / pi
 
@@ -58,6 +62,10 @@ def buildDistMatrix(atoms1, atoms2=None, unitcell=None, format='mat'):
                 atoms2 = atoms2._getCoords()
             except AttributeError:
                 raise TypeError('atoms2 must be Atomic instance or an array')
+
+        if atoms2.ndim == 1:
+            atoms2 = atoms2.reshape((1,3))
+
     if atoms1.shape[-1] != 3 or atoms2.shape[-1] != 3:
         raise ValueError('one and two must have shape ([M,]N,3)')
 
@@ -145,8 +153,8 @@ def calcAngle(atoms1, atoms2, atoms3, radian=False):
                     atoms3._getCoords(), radian)
 
 
-def getAngle(coords1, coords2, coords3, radian):
-    """Returns bond angle in degrees."""
+def getAngle(coords1, coords2, coords3, radian=False):
+    """Returns bond angle in degrees unless ``radian=True``"""
 
     v1 = coords1 - coords2
     v2 = coords3 - coords2
@@ -178,7 +186,7 @@ def calcDihedral(atoms1, atoms2, atoms3, atoms4, radian=False):
 
 
 def getDihedral(coords1, coords2, coords3, coords4, radian=False):
-    """Returns the dihedral angle in degrees."""
+    """Returns the dihedral angle in degrees unless ``radian=True``."""
 
     a1 = coords2 - coords1
     a2 = coords3 - coords2
@@ -481,6 +489,7 @@ def calcGyradius(atoms, weights=None):
             raise ValueError('coords must have shape ([n_csets,]n_atoms,3)')
     if weights is not None:
         weights = weights.flatten()
+        weights = weights.reshape(weights.shape[0], 1)
         if len(weights) != coords.shape[-2]:
             raise ValueError('length of weights must match number of atoms')
         wsum = weights.sum()
@@ -492,9 +501,8 @@ def calcGyradius(atoms, weights=None):
             com = coords.mean(0)
             d2sum = ((coords - com)**2).sum()
         else:
-
-            com = (coords * weights).mean(0) / wsum
-            d2sum = (((coords - com)**2).sum(1) * weights).sum()
+            com = (coords * weights).sum(0) / wsum
+            d2sum = (((coords - com)**2) * weights).sum()
     else:
         rgyr = []
         for coords in coords:
@@ -503,9 +511,8 @@ def calcGyradius(atoms, weights=None):
                 d2sum = ((coords - com)**2).sum()
                 rgyr.append(d2sum)
             else:
-
-                com = (coords * weights).mean(0) / wsum
-                d2sum = (((coords - com)**2).sum(1) * weights).sum()
+                com = (coords * weights).sum(0) / wsum
+                d2sum = (((coords - com)**2) * weights).sum()
                 rgyr.append(d2sum)
         d2sum = array(rgyr)
     return (d2sum / wsum) ** 0.5
@@ -550,7 +557,7 @@ def calcMSF(coordsets):
 
         LOGGER.progress('Evaluating {0} frames from {1}:'
                         .format(ncsets, str(coordsets)), ncsets,
-                        '_prody_parser_calcMSF')
+                        '_prody_calcMSF')
         ncsets = 0
         coordsets.reset()
         for frame in coordsets:
@@ -559,7 +566,7 @@ def calcMSF(coordsets):
             total += coords
             sqsum += coords ** 2
             ncsets += 1
-            LOGGER.update(ncsets, label='_prody_parser_calcMSF')
+            LOGGER.update(ncsets, label='_prody_calcMSF')
         LOGGER.finish()
         msf = (sqsum/ncsets - (total/ncsets)**2).sum(1)
         coordsets.goto(nfi)
@@ -576,15 +583,29 @@ def calcRMSF(coordsets):
 calcRMSF.__doc__ += _MSF_DOCSTRING
 
 
-def calcDeformVector(from_atoms, to_atoms):
+def calcDeformVector(from_atoms, to_atoms, weights=None):
     """Returns deformation from *from_atoms* to *atoms_to* as a :class:`.Vector`
     instance."""
+
+    from caviar.prody_parser.dynamics import Vector
 
     name = '{0} => {1}'.format(repr(from_atoms), repr(to_atoms))
     if len(name) > 30:
         name = 'Deformation'
-    arr = (to_atoms.getCoords() - from_atoms.getCoords()).flatten()
-    from caviar.prody_parser.dynamics import Vector
+    
+    from_coords = getCoords(from_atoms)
+    to_coords = getCoords(to_atoms)
+
+    arr = to_coords - from_coords
+    if weights is not None:
+        if weights.ndim > 1:
+            weights = weights.flatten()
+        if len(weights) != len(arr):
+            raise ValueError('weights must have the same length as from_atoms and to_atoms')
+        arr = (arr.T * weights).T
+    
+    arr = arr.flatten()
+    
     return Vector(arr, name)
 
 
@@ -778,3 +799,19 @@ def buildADPMatrix(atoms):
         element[1, 2] = element[2, 1] = anisou[5]
         adp[i*3:(i+1)*3, i*3:(i+1)*3] = element
     return adp
+
+
+def calcInertiaTensor(coords):
+    """"Calculate inertia tensor from coords"""
+    coords = getCoords(coords)
+
+    center = calcCenter(coords)
+    coords = coords - center
+    return dot(coords.transpose(), coords)
+
+
+def calcPrincAxes(coords, turbo=True):
+    """Calculate principal axes from coords"""
+    M = calcInertiaTensor(coords)
+    _, vectors = solveEig(M, 3)
+    return vectors

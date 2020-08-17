@@ -1,11 +1,43 @@
-from setuptools import setup, find_namespace_packages
+from setuptools import setup, find_namespace_packages, Extension
+from os.path import join, isfile
+import platform, os
+
 
 with open("README.MD", "r") as fh:
 	long_description = fh.read()
 
+
+
+
+####### FROM ProDy ######
+from glob import glob
+tntDir = join('src', 'caviar', 'prody_parser', 'utilities', 'tnt')
+
+# extra arguments for compiling C++ extensions on MacOSX
+if platform.system() == 'Darwin':
+    os_ver = platform.mac_ver()[0]
+    os.environ['MACOSX_DEPLOYMENT_TARGET'] = os_ver
+    os.environ['CC'] = 'clang'
+    os.environ['CXX'] = 'clang++'
+    #extra_compile_args.append('-stdlib=libc++')
+import numpy as np
+
+EXTENSIONS = [
+    Extension('caviar.prody_parser.kdtree._CKDTree',
+              sources = [join('src', 'caviar', 'prody_parser', 'kdtree', 'KDTree.c'),
+              join('src', 'caviar', 'prody_parser', 'kdtree', 'KDTreemodule.c')],
+              include_dirs=[join(np.get_include(), 'numpy'), np.get_include()]),
+    Extension('caviar.prody_parser.proteins.ccealign',
+              sources = [join('src', 'caviar', 'prody_parser', 'proteins', 'ccealign', 'ccealignmodule.cpp')],
+              include_dirs=[tntDir], language='c++')
+]
+
+
+####### END ProDy ######
+
 setup(
 	name="caviar",
-	version="1.0.1",
+	version="1.1.0",
 	entry_points = {
         'console_scripts': [ 'caviar_gui=caviar.gui:main', 'caviar=caviar.caviar:main']
         },
@@ -30,9 +62,10 @@ setup(
 	#	py_modules=["my_module"],
 	packages=find_namespace_packages(where='src'), # include all packages under caviar_gui
 
-	#package_data={'':['caviar_gui/*ui', "caviar_gui/prody_parser/utilities/datafiles/mod_res_map.dat",
+	#package_data={'':['caviar_gui/*ui', "caviar_gui/caviar.prody_parser_parser/utilities/datafiles/mod_res_map.dat",
 	#"caviar_gui/misc_tools/tabu_lists/tabu*", 'caviar_gui/cavity_identification/vdw_size_atoms.dat']},
 	include_package_data=True,
+	ext_modules=EXTENSIONS,
 
 	#install_requires=['numpy>=1.17.3',
 	#'scipy>=1.3.1',

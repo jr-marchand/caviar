@@ -3,7 +3,8 @@
 
 from os import getcwd
 from glob import glob
-from os.path import join, normpath
+from os.path import sep as pathsep
+from os.path import isdir, isfile, join, split, splitext, normpath
 
 from caviar.prody_parser import LOGGER, SETTINGS
 from caviar.prody_parser.utilities import makePath, gunzip, relpath, copyFile, openURL
@@ -109,13 +110,18 @@ def checkIdentifiers(*pdb):
 
 
 def fetchPDBviaFTP(*pdb, **kwargs):
-    """Retrieve PDB (default) for specified *pdb*
+    """Retrieve PDB (default), PDBML, mmCIF, or EMD file(s) for specified *pdb*
     identifier(s) and return path(s).  Downloaded files will be stored in
     local PDB folder, if one is set using :meth:`.pathPDBFolder`, and copied
     into *folder*, if specified by the user.  If no destination folder is
     specified, files will be saved in the current working directory.  If
     *compressed* is **False**, decompressed files will be copied into
-    *folder*."""
+    *folder*.  *format* keyword argument can be used to retrieve
+    `PDBML <http://pdbml.pdb.org/>`_, `mmCIF <http://mmcif.pdb.org/>`_
+    and `PDBML <ftp://ftp.wwpdb.org/pub/emdb/doc/Map-format/current/EMDB_map_format.pdf>`_ 
+    files: ``format='cif'`` will fetch an mmCIF file, ``format='emd'`` will fetch an EMD file,
+    and ``format='xml'`` will fetch a PDBML file. 
+    If PDBML header file is desired, ``noatom=True`` argument will do the job."""
 
     if kwargs.get('check', True):
         identifiers = checkIdentifiers(*pdb)
@@ -124,15 +130,40 @@ def fetchPDBviaFTP(*pdb, **kwargs):
 
     output_folder = kwargs.pop('folder', None)
     compressed = bool(kwargs.pop('compressed', True))
+    format = str(kwargs.pop('format', 'pdb')).lower()
+    noatom = bool(kwargs.pop('noatom', False))
 
-    ftp_divided = 'pdb/data/structures/divided/pdb'
-    ftp_pdbext = '.ent.gz'
-    ftp_prefix = 'pdb'
-    extension = '.pdb'
+    if format == 'pdb':
+        ftp_divided = 'pdb/data/structures/divided/pdb'
+        ftp_pdbext = '.ent.gz'
+        ftp_prefix = 'pdb'
+        extension = '.pdb'
+    elif format == 'xml':
+        if noatom:
+            ftp_divided = 'pdb/data/structures/divided/XML-noatom'
+            ftp_pdbext = '-noatom.xml.gz'
+            extension = '-noatom.xml'
+        else:
+            ftp_divided = 'pdb/data/structures/divided/XML'
+            ftp_pdbext = '.xml.gz'
+            extension = '.xml'
+        ftp_prefix = ''
+    elif format == 'cif':
+        ftp_divided = 'pdb/data/structures/divided/mmCIF'
+        ftp_pdbext = '.cif.gz'
+        ftp_prefix = ''
+        extension = '.cif'
+    elif format == 'emd' or format == 'map':
+        ftp_divided = 'emdb/structures'
+        ftp_pdbext = '.map.gz'
+        ftp_prefix = 'emd_'
+        extension = '.map'
+    else:
+        raise ValueError(repr(format) + ' is not valid format')
 
     local_folder = pathPDBFolder()
 
-    if local_folder:
+    if format == 'pdb' and local_folder:
         local_folder, is_divided = local_folder
         if is_divided:
             getPath = lambda pdb: join(makePath(join(local_folder, pdb[1:3])),
@@ -183,7 +214,10 @@ def fetchPDBviaFTP(*pdb, **kwargs):
             try:
                 ftp.cwd(ftp_path)
                 ftp.cwd(ftp_divided)
-                ftp.cwd(pdb[1:3])
+                if format == 'emd':
+                    ftp.cwd('EMD-{0}/map'.format(pdb))
+                else:
+                    ftp.cwd(pdb[1:3])
                 ftp.retrbinary('RETR ' + ftp_fn, data.append)
             except Exception as error:
                 if ftp_fn in ftp.nlst():
@@ -317,6 +351,10 @@ if __name__ == '__main__':
 
     for gzip in [False, True]:
         fetchPDBviaFTP(*pdbids, compressed=gzip, folder='.')
+        fetchPDBviaFTP(*pdbids, compressed=gzip, folder='.', format='cif')
+        fetchPDBviaFTP(*pdbids, compressed=gzip, folder='.', format='xml')
+        fetchPDBviaFTP(*pdbids, compressed=gzip, folder='.', format='xml',
+                       noatom=1)
         fetchPDBviaHTTP(*pdbids, compressed=gzip, folder='.')
     from glob import glob
     from os import remove

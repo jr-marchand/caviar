@@ -1,19 +1,29 @@
 """This module defines miscellaneous utility functions."""
 import re
 
-from numpy import unique, linalg, diag, sqrt, dot, chararray
-from numpy import diff, where, insert, nan, loadtxt, array, round
-from numpy import sign, arange, asarray, ndarray, subtract, power
+from numpy import unique, linalg, diag, sqrt, dot, chararray, divide, zeros_like, zeros, allclose, ceil
+from numpy import diff, where, insert, nan, isnan, loadtxt, array, round, average, min, max, delete, vstack
+from numpy import sign, arange, asarray, ndarray, subtract, power, sum, isscalar, empty, triu, tril
 from collections import Counter
+import numbers
+
+from caviar.prody_parser import PY3K
+
+from . import iupacdata
 
 from xml.etree.ElementTree import Element
 
-__all__ = ['Everything', 'rangeString', 'alnum', 'importLA', 'dictElement',
+DTYPE = array(['a']).dtype.char  # 'S' for PY2K and 'U' for PY3K
+
+__all__ = ['Everything', 'Cursor', 'ImageCursor', 'rangeString', 'alnum', 'importLA', 'dictElement',
            'intorfloat', 'startswith', 'showFigure', 'countBytes', 'sqrtm',
-           'saxsWater', 'count', 'addEnds', 'copy', 'dictElementLoop', 
-           'getDataPath', 'openData', 'chr2', 'toChararray', 'interpY', 'cmp',
-           'getValue', 'indentElement', 'isPDB', 'isURL', 'isListLike',
-           'getDistance', 'fastin', 'createStringIO']
+           'saxsWater', 'count', 'addEnds', 'copy', 'dictElementLoop', 'index',
+           'getDataPath', 'openData', 'chr2', 'toChararray', 'interpY', 'cmp', 'pystr',
+           'getValue', 'indentElement', 'isPDB', 'isURL', 'isListLike', 'isSymmetric', 'makeSymmetric',
+           'getDistance', 'fastin', 'createStringIO', 'div0', 'wmean', 'bin2dec', 'wrapModes', 
+           'fixArraySize', 'DTYPE', 'solveEig']
+
+CURSORS = []
 
 # Note that the chain id can be blank (space). Examples:
 # 3TT1, 3tt1A, 3tt1:A, 3tt1_A, 3tt1-A, 3tt1 A
@@ -35,6 +45,113 @@ class Everything(object):
 
         return True
 
+class Cursor(object):
+    def __init__(self, ax):
+        import matplotlib.patheffects as PathEffects
+
+        self.ax = ax
+        self.lx = ax.axhline(color='k', linestyle='--', linewidth=0.)  # the horiz line
+        self.ly = ax.axvline(color='k', linestyle='--', linewidth=0.)  # the vert line
+
+        # text location in axes coords
+        self.txt = ax.text(0., 1., '', color='k', verticalalignment='bottom')
+        self.txt.set_path_effects([PathEffects.withStroke(linewidth=3, foreground='w')])
+        
+        # preserve the cursor reference
+        global CURSORS
+        CURSORS.append(self)
+
+    def onClick(self, event):
+        from matplotlib.pyplot import draw
+
+        if event.inaxes != self.ax:
+            return
+
+        if event.button == 1:
+            self.show(event)
+        elif event.button == 3:
+            self.clear(event)
+
+        draw()
+
+    def show(self, event):
+        x, y = event.xdata, event.ydata
+        # update the line positions
+        self.lx.set_ydata(y)
+        self.ly.set_xdata(x)
+
+        self.lx.set_linewidth(.75)
+        self.ly.set_linewidth(.75)
+
+        self.txt.set_text(' x=%1.2f, y=%1.2f' % (x, y))
+        self.txt.set_position((x, y))
+
+    def clear(self, event):
+        self.lx.set_linewidth(0.)
+        self.ly.set_linewidth(0.)
+
+        self.txt.set_text('')
+
+class ImageCursor(Cursor):
+    def __init__(self, ax, image, atoms=None):
+        super(ImageCursor, self).__init__(ax)
+        self.image = image
+        self.atoms = atoms
+    
+    def show(self, event):
+        x, y = event.xdata, event.ydata
+        # update the line positions
+        self.lx.set_ydata(y)
+        self.ly.set_xdata(x)
+
+        self.lx.set_linewidth(1.)
+        self.ly.set_linewidth(1.)
+
+        data = self.get_cursor_data(event)
+        if data is None:
+            return
+            
+        i, j, v = data
+
+        if v > 1e-4 and v < 1e4:
+            template = ' x=%s, y=%s [%s]'
+        else:
+            template = ' x=%s, y=%s [%s]'
+        if self.atoms is None:
+            self.txt.set_text(template % (j, i, v)) 
+        else:
+            seq = self.atoms.getSequence()
+            resnums = self.atoms.getResnums()
+
+            a = seq[j] + str(resnums[j])
+            b = seq[i] + str(resnums[i])
+            self.txt.set_text(template % (a, b, str(v)))
+        self.txt.set_position((x, y))
+
+    def get_cursor_data(self, event):
+        """Get the cursor data for a given event"""
+        from matplotlib.transforms import Bbox, BboxTransform
+
+        aximg = self.image
+        xmin, xmax, ymin, ymax = aximg.get_extent()
+        if aximg.origin == 'upper':
+            ymin, ymax = ymax, ymin
+
+        arr = aximg.get_array()
+        data_extent = Bbox([[ymin, xmin], [ymax, xmax]])
+        array_extent = Bbox([[0, 0], arr.shape[:2]])
+        trans = BboxTransform(boxin=data_extent, boxout=array_extent)
+        y, x = event.ydata, event.xdata
+        point = trans.transform_point([y, x])
+        if any(isnan(point)):
+            return None
+        i, j = point.astype(int)
+        # Clip the coordinates at array bounds
+        if not (0 <= i < arr.shape[0]) or not (0 <= j < arr.shape[1]):
+            return None
+        else:
+            return i, j, arr[i, j]
+
 def rangeString(lint, sep=' ', rng=' to ', exc=False, pos=True):
     """Returns a structured string for a given list of integers.
 
@@ -53,6 +170,8 @@ def rangeString(lint, sep=' ', rng=' to ', exc=False, pos=True):
        rangeString(lint, ',', ':', exc=True)"""
 
     ints = unique(lint)
+    if len(ints) == 0:
+        return ''
     if pos and ints[0] < 0:
         ints = ints[ints > -1]
 
@@ -104,8 +223,44 @@ def importLA():
                               'NMA and structure alignment calculations')
     return linalg
 
+
+def solveEig(M, n_modes, turbo=True):
+    """Simple eigensolver based on PCA eigensolver"""
+    dof = M.shape[0]
+
+    linalg = importLA()
+    if str(n_modes).lower() == 'all':
+        n_modes = None
+    if linalg.__package__.startswith('scipy'):
+        if n_modes is None:
+            eigvals = None
+            n_modes = dof
+        else:
+            n_modes = int(n_modes)
+            if n_modes >= dof:
+                eigvals = None
+                n_modes = dof
+            else:
+                eigvals = (dof - n_modes, dof - 1)
+        values, vectors = linalg.eigh(M, turbo=turbo,
+                                      eigvals=eigvals)
+    else:
+        LOGGER.info('Scipy is not found, all modes are calculated.')
+        values, vectors = linalg.eigh(M)
+
+    # Order by descending SV
+    revert = list(range(len(values)-1, -1, -1))
+    values = values[revert]
+    vectors = vectors[:, revert]
+
+    return values, vectors
+
+
 def createStringIO():
-    from io import StringIO
+    if PY3K:
+        from io import StringIO
+    else:
+        from StringIO import StringIO
     return StringIO()
 
 def dictElement(element, prefix=None, number_multiples=False):
@@ -229,15 +384,16 @@ def getMasses(elements):
     """Gets the mass atom. """
     
     import numpy as np
-    mass_dict = {'C':12,'N':14,'S':32,'O':16,'H':1}
+    # mass_dict = {'C':12,'N':14,'S':32,'O':16,'H':1}
+    mass_dict = iupacdata.atom_weights
 
     if isinstance(elements, str):
-        return mass_dict[elements]
+        return mass_dict[elements.capitalize()]
     else:
         masses = np.zeros(len(elements))
         for i,element in enumerate(elements):
-            if element in mass_dict:
-                masses[i] = mass_dict[element]
+            if element.capitalize() in mass_dict:
+                masses[i] = mass_dict[element.capitalize()]
             else:
                 masses[i] = 0.
         return masses
@@ -264,11 +420,30 @@ def addEnds(x, y, axis=0):
 def copy(x):
     if x is None:
         return None
-    return x.copy()
+    elif isinstance(x, list):
+        x = list(x)
+    else:
+        try:
+            x = x.copy()
+        except AttributeError:
+            from copy import copy as shallow_copy
+            
+            x = shallow_copy(x)
+    return x
+
+def pystr(a):
+    b = a
+    if PY3K:
+        if hasattr(a, 'decode'):
+            b = a.decode() 
+    else:
+        if hasattr(a, 'encode'):
+            b = a.encode() 
+    return b
 
 def getDataPath(filename):
-    import os
-    return os.path.dirname(os.path.abspath(__file__))+'/datafiles/%s'%filename
+    import pkg_resources
+    return pkg_resources.resource_filename('caviar.prody_parser.utilities', 'datafiles/%s'%filename)
 
 def openData(filename, mode='r'):
     return open(getDataPath(filename), mode)
@@ -341,6 +516,12 @@ def getValue(dict_, attr, default=None):
     value = default
     if attr in dict_:
         value = dict_[attr]
+        if default is not None:
+            try:
+                if value.ndim == 0:
+                    value = type(default)(value)
+            except:
+                pass
     return value
 
 def indentElement(elem, level=0):
@@ -375,3 +556,107 @@ def fastin(a, B):
         if a is b:
             return True
     return False
+
+def div0(a, b, defval=0.):
+    """ Performs ``true_divide`` but ignores the error when division by zero 
+    (result is set to zero instead). """
+
+    from numpy import errstate, true_divide, isfinite, isscalar
+    
+    with errstate(divide='ignore', invalid='ignore'):
+        c = true_divide(a, b)
+        if isscalar(c):
+            if not isfinite(c):
+                c = defval
+        else:
+            c[~isfinite(c)] = defval  # -inf inf NaN
+    return c
+
+def wmean(array, weights, axis=None):
+    """Calculates the weighted average of *array* given *axis*."""
+
+    try:
+        avg = average(array, axis=axis, weights=weights)
+    except ZeroDivisionError:
+        numer = sum(array*weights, axis=axis)
+        denom = sum(weights, axis=axis)
+        avg = div0(numer, denom, nan)
+    return avg
+
+def bin2dec(x):
+    """Converts the binary array to decimal."""
+
+    y = 0
+    for i,j in enumerate(x):
+        if j: y += 1<<i
+    return y
+
+
+def wrapModes(modes):
+    if hasattr(modes, 'getArray'):
+        try:
+            modes = [mode for mode in modes]
+        except TypeError:
+            modes = [modes]
+    else:
+        if isscalar(modes[0]):
+            modes = [modes]
+    return modes
+
+def fixArraySize(arr, sizes, value=0):
+    """Makes sure that **arr** is of **sizes**. If not, pad with **value**."""
+
+    if not isinstance(arr, ndarray):
+        raise TypeError('arr has to be a numpy ndarray')
+
+    if not isinstance(sizes, tuple):
+        raise TypeError('sizes has to be a tuple')
+
+    shapes = arr.shape
+    if shapes == sizes:
+        return arr
+
+    arr2 = empty(sizes, dtype=arr.dtype)
+    arr2.fill(value)
+
+    common_sizes = [min((a, b)) for a, b in zip(sizes, shapes)]
+    slices = tuple(slice(s) for s in common_sizes)
+    arr2[slices] = arr[slices]
+
+    return arr2
+
+def isSymmetric(M, rtol=1e-05, atol=1e-08):
+    """Checks if the matrix is symmetric."""
+    if M.shape != M.T.shape:
+        return False
+    return allclose(M, M.T, rtol=rtol, atol=atol)
+
+def makeSymmetric(M):
+    """Makes sure the matrix is symmetric."""
+    
+    if isSymmetric(M):
+        return M
+
+    # make square 
+    n, m = M.shape
+    l = max((n, m))
+    M = fixArraySize(M, (l, l))
+
+    # determine which part of the matrix has values
+    U = triu(M, k=1)
+    L = tril(M, k=-1)
+
+    if U.sum() == 0:
+        M += L.T
+    elif L.sum() == 0:
+        M += U.T
+    else:
+        M = (M + M.T) / 2.
+    return M
+
+def index(A, a):
+    if isinstance(A, list):
+        return A.index(a)
+    else:
+        A = asarray(A)
+        return where(A==a)[0][0]

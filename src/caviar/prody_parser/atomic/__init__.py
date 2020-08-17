@@ -128,7 +128,7 @@ based on a given property:
   * :func:`.sortAtoms`
 
 Following function can be used check whether a word is reserved because
-it is used internally by :mod:`.prody_parser.atomic` classes:
+it is used internally by :mod:`.prody.atomic` classes:
 
   * :func:`.isReserved`
   * :func:`.listReservedWords`"""

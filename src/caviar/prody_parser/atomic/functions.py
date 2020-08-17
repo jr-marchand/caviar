@@ -21,8 +21,8 @@ from .selection import Selection
 from .hierview import HierView
 
 __all__ = ['iterFragments', 'findFragments', 'loadAtoms', 'saveAtoms',
-           'isReserved', 'listReservedWords', 'sortAtoms', 'sliceAtoms', 
-           'extendAtoms', 'sliceAtomicData', 'extendAtomicData']
+           'isReserved', 'listReservedWords', 'sortAtoms', 
+           'sliceAtoms', 'extendAtoms', 'sliceAtomicData', 'extendAtomicData']
 
 
 SAVE_SKIP_ATOMGROUP = set(['numbonds', 'fragindex'])
@@ -106,7 +106,7 @@ def loadAtoms(filename):
     """Returns :class:`.AtomGroup` instance loaded from *filename* using
     :func:`numpy.load` function.  See also :func:`saveAtoms`."""
 
-    LOGGER.timeit('_prody_parser_loadatoms')
+    LOGGER.timeit('_prody_loadatoms')
     attr_dict = load(filename)
     files = set(attr_dict.files)
 
@@ -154,7 +154,7 @@ def loadAtoms(filename):
     if 'cslabels' in files:
         ag.setCSLabels(list(attr_dict['cslabels']))
 
-    LOGGER.report('Atom group was loaded in %.2fs.', '_prody_parser_loadatoms')
+    LOGGER.report('Atom group was loaded in %.2fs.', '_prody_loadatoms')
     return ag
 
 
@@ -320,7 +320,7 @@ def sliceAtoms(atoms, select):
 def extendAtoms(nodes, atoms, is3d=False):
     """Returns extended mapping indices and an :class:`.AtomMap`."""
 
-    #LOGGER.timeit('_prody_parser_extendAtoms')
+    #LOGGER.timeit('_prody_extendAtoms')
     try:
         i_nodes = nodes.iterAtoms()
         n_nodes = nodes.numAtoms()
@@ -336,9 +336,11 @@ def extendAtoms(nodes, atoms, is3d=False):
     get = HierView(atoms).getResidue
     residues = []
 
-    #LOGGER.progress('Extending atoms...', n_nodes, '_prody_parser_extendAtoms_extend')
+    #LOGGER.progress('Extending atoms...', n_nodes, '_prody_extendAtoms_extend')
     for i, node in enumerate(i_nodes):
-        #LOGGER.update(i, label='_prody_parser_extendAtoms')
+        #LOGGER.update(i, label='_prody_extendAtoms')
+        if node is None:
+            continue
         res = get(node.getChid() or None, node.getResnum(),
                   node.getIcode() or None, node.getSegname() or None)
         if res is None:
@@ -380,11 +382,11 @@ def extendAtoms(nodes, atoms, is3d=False):
         i = argmin(D)
         return B[i]
     #LOGGER.finish()
-    #LOGGER.report('Atoms was extended in %2.fs.', label='_prody_parser_extendAtoms_extend')
+    #LOGGER.report('Atoms was extended in %2.fs.', label='_prody_extendAtoms_extend')
 
-    #LOGGER.progress('Removing possible redundant atoms...', len(real_indices), '_prody_parser_extendAtoms_remove')
+    #LOGGER.progress('Removing possible redundant atoms...', len(real_indices), '_prody_extendAtoms_remove')
     for i, res_real_indices in enumerate(real_indices):
-        #LOGGER.update(i, label='_prody_parser_extendAtoms_remove')
+        #LOGGER.update(i, label='_prody_extendAtoms_remove')
         arr = array(res_real_indices)
         # this residue is represented by one node, so no correction is needed
         if sum(arr >= 0) == 1: 
@@ -414,7 +416,7 @@ def extendAtoms(nodes, atoms, is3d=False):
     indices = concatenate(indices)
 
     #LOGGER.finish()
-    #LOGGER.report('Redundant atoms was removed in %2.fs.', label='_prody_parser_extendAtoms_remove')
+    #LOGGER.report('Redundant atoms was removed in %2.fs.', label='_prody_extendAtoms_remove')
 
     try:
         ag = atoms.getAtomGroup()
@@ -423,7 +425,7 @@ def extendAtoms(nodes, atoms, is3d=False):
     atommap = AtomMap(ag, atom_indices, atoms.getACSIndex(),
                       title=str(atoms), intarrays=True)
     
-    #LOGGER.report('Full atoms was extended in %2.fs.', label='_prody_parser_extendAtoms')
+    #LOGGER.report('Full atoms was extended in %2.fs.', label='_prody_extendAtoms')
 
     return indices, atommap
 
@@ -431,7 +433,7 @@ def sliceAtomicData(data, atoms, select, axis=None):
     """Slice a matrix using indices extracted using :func:`sliceAtoms`.
 
     :arg data: any data array
-    :type data: `~numpy.ndarray`
+    :type data: :class:`~numpy.ndarray`
 
     :arg atoms: atoms to be selected from
     :type atoms: :class:`Atomic`
@@ -457,12 +459,19 @@ def sliceAtomicData(data, atoms, select, axis=None):
 
     natoms = atoms.numAtoms()
 
+    if axis is None:
+        axes = list(range(data.ndim))
+    else:
+        axes = [axis]
+
     is3d = False
-    if len(data) != natoms:
-        if data.shape[0] == natoms * 3:
-            is3d = True
-        else:
-            raise ValueError('data and atoms must have the same size')
+    for ax in axes:
+        if data.shape[ax] != natoms:
+            if data.shape[ax] == natoms * 3:
+                is3d = True
+                break
+            else:
+                raise ValueError('data and atoms must have the same size along all chosen axes')
 
     indices, _ = sliceAtoms(atoms, select)
     if is3d:
@@ -488,11 +497,11 @@ def extendAtomicData(data, nodes, atoms, axis=None):
     """Extend a coarse grained data obtained for *nodes* to *atoms*.
 
     :arg data: any data array
-    :type data: `~numpy.ndarray`
+    :type data: :class:`~numpy.ndarray`
 
     :arg nodes: a set of atoms that has been used
         as nodes in data generation
-    :type nodes: :class:`
+    :type nodes: :class:`Atomic`
 
     :arg atoms: atoms to be selected from
     :type atoms: :class:`Atomic`

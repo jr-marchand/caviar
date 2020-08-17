@@ -1,0 +1,45 @@
+Updates based on prody 1.10.10 - 10/08/2020
+CAVIAR modifications of ProDy:
+
+ + keep parsing capacities
+ - delete everything else
+ + small modifications of pdb header parser
+
+ - basically, we want to keep prody.proteins and supporting functionalities
+proteins import atomic, measure, sequence, utilities, trajectory
+and external exports: KDTree and CEAlign (cpp in code to compile)
+and external exports: Biopython, blastpdb
+
+Originally we took out almost everything except the PDB and PDB header parser
+On next release, we want the mmcif parser, which in turn requires adding few stuff, especially since the code evolved since 2018
+Maybe some other functionalities could be relevant: secondary structure assignment, trajectory parser, alignment
+
+
+atomic is OK, but imports KDTree
+measure could be ok, but imports KDTree and trajectory
+sequence is horrible, imports too much, better to get rid of it
+utilities is OK, but needs to be trimmed out because some fishy imports
+See if we need CEAlign?
+
+
+
+ - all the *blast* from proteins
+ - also compare.py from proteins: these functions all relate to proteins with different sequences, we dont need or want that
+and theres spurious circular imports
+=> Actually compare.py can be useful, so we reintegrate it while trying to inactivate (sequence.py) MSA calls
+ - same with pdbclusters.py
+
+=> we can eliminate "sequence"
+we're left with atomic, measure, utilities, trajectory
+
+Atomic: we keep everything. We need KDTree for it.
+Measure: we keep everything. It needs trajectory!
+Utilities: get rid of catchall (philogenetic trees), TreeConstructio: both use Biopython
+also took out drawtree function in drawtools.py
+and imported iupacdata from biopython https://raw.githubusercontent.com/biopython/biopython/master/Bio/Data/IUPACData.py
+as iupacdata.py in utilties
+
+
+Now comes the hard part:
+If we want trajectory module, we also need the ensemble module.
+Ensemble has calls to MSA and Sequence in pdbensemble.py... Let's try to delete these components and see if that works

@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 """This module defines base class :class:`Atomic` that all other
-:mod:`~prody_parser.atomic` classes are derived from."""
+:mod:`~prody.atomic` classes are derived from."""
 
 from numpy import all, arange
+from os import path
 from caviar.prody_parser import LOGGER, __path__
 from caviar.prody_parser.utilities import openData
 

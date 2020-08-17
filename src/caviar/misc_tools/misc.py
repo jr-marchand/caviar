@@ -22,7 +22,7 @@ __all__ = ['get_information_header', 'kill_from_header', 'get_residues_fromsel',
 			'export_clean_cav_ligand_info', 'export_pdb_subcavities']
 
 
-def get_information_header(pdbfile):
+def get_information_header(pdbfile, cif = False):
 	"""
 	This function aims at storing data from the PDB header
 	Notably: B factors, missing residues, missing atoms,
@@ -35,28 +35,36 @@ def get_information_header(pdbfile):
 
 	dict_pdb_info = {}
 
-	try:
-		header_info = parsePDBHeader(pdbfile)
-	except:
-		print(pdbfile, "does not exist")
-		return None
+	if cif == True:
+		try:
+			header_info = parseMMCIF(pdbfile, header=True)
+			print(header_info)
+		except:
+			print(pdbfile, "does not exist")
+			return None
+	else:
+		try:
+			header_info = parsePDBHeader(pdbfile)
+		except:
+			print(pdbfile, "does not exist")
+			return None
 
 	try:
 		dict_pdb_info["experiment"] = header_info["experiment"]
 	except:
-		dict_pdb_info["experiment"] = "absent"
+		dict_pdb_info["experiment"] = None
 	try:
 		dict_pdb_info["resolution"] = header_info["resolution"]
 	except:
-		dict_pdb_info["resolution"] = "absent"
+		dict_pdb_info["resolution"] = None
 	try:
 		dict_pdb_info["pdbversion"] = header_info["version"]
 	except:
-		dict_pdb_info["pdbversion"] = "absent"
+		dict_pdb_info["pdbversion"] = None
 	try:
 		dict_pdb_info["doi"] = header_info["reference"]["doi"]
 	except:
-		dict_pdb_info["doi"] = "absent"
+		dict_pdb_info["doi"] = None
 	
 	# These information are bool values (presence/absence)
 	try:
@@ -69,13 +77,19 @@ def get_information_header(pdbfile):
 		dict_pdb_info["obsolete"] = 0
 	# Not bool but there's already an except
 	try:
-		dict_pdb_info["MissingRes"] = header_info["MissingRes"]
+		if len(header_info["MissingRes"]) > 0:
+			dict_pdb_info["MissingRes"] = header_info["MissingRes"]
+		else:
+			dict_pdb_info["MissingRes"] = None
 	except:
-		dict_pdb_info["MissingRes"] = 0
+		dict_pdb_info["MissingRes"] = None
 	try:
-		dict_pdb_info["MissingAtomsRes"] = header_info["MissingAtomsRes"]
+		if len(header_info["MissingAtomsRes"]) > 0:
+			dict_pdb_info["MissingAtomsRes"] = header_info["MissingAtomsRes"]
+		else:
+			dict_pdb_info["MissingAtomsRes"] = None
 	except:
-		dict_pdb_info["MissingAtomsRes"] = 0
+		dict_pdb_info["MissingAtomsRes"] = None
 	
 	# This returns a dictionary of dictionaries
 	# eg, dict_pdb_info["source"]["1"]["orga_sci"]
@@ -83,30 +97,33 @@ def get_information_header(pdbfile):
 	try:
 		dict_pdb_info["revision"] = header_info["revision"]
 	except:
-		dict_pdb_info["revision"] = "absent"
+		dict_pdb_info["revision"] = None
 	
 	# This returns a list with R free and R value
 	try:
-		dict_pdb_info["Rvalues"] = header_info["Rvalues"]
+		if len(header_info["Rvalues"][0] > 0):
+			dict_pdb_info["Rvalues"] = header_info["Rvalues"]
+		else:
+			header_info["Rvalues"]
 	except:
-		dict_pdb_info["Rvalues"] = "absent"
+		dict_pdb_info["Rvalues"] = [None, None]
 	try:
 		dict_pdb_info["deposition_date"] = header_info["deposition_date"]
 	except:
-		dict_pdb_info["deposition_date"] = "absent"
+		dict_pdb_info["deposition_date"] = None
 	try:
 		dict_pdb_info["title"] = header_info["title"]
 	except:
-		dict_pdb_info["title"] = "absent"
+		dict_pdb_info["title"] = None
 	try:
 		dict_pdb_info["space_group"] = header_info["space_group"]
 	except:
-		dict_pdb_info["space_group"] = "absent"
+		dict_pdb_info["space_group"] = None
 	try:
 		dict_pdb_info["classification"] = header_info["classification"]
 	except:
-		dict_pdb_info["classification"] = "absent"
-	
+		dict_pdb_info["classification"] = None
+	#print(dict_pdb_info)
 	# Information about heteroatoms
 	# The key returns a list of lists, with resname, number of atoms, chain ID, residue number
 	dict_pdb_info["chemicals"] = []
@@ -114,7 +131,7 @@ def get_information_header(pdbfile):
 		for el in header_info["chemicals"]:
    			dict_pdb_info["chemicals"].insert(0, [el.resname, el.natoms, el.chain, el.resnum])
 	except:
-		dict_pdb_info["chemicals"] = "absent"
+		dict_pdb_info["chemicals"] = None
 	
 	# Information about polymers
 	dict_pdb_info["polymer_chain_info"] = {}
@@ -144,7 +161,7 @@ def get_information_header(pdbfile):
 					dict_pdb_info["polymer_chain_info"][el.chid]["uniprot"] = ref.accession
 					flag = True
 			if flag == False:
-				dict_pdb_info["polymer_chain_info"][el.chid]["uniprot"] = "absent"
+				dict_pdb_info["polymer_chain_info"][el.chid]["uniprot"] = None
 
 	return dict_pdb_info
 
@@ -292,7 +309,7 @@ def find_ligand_presence(final_cavities, list_ligands, list_lig_coords, pdbcode,
 	if not list_lig_coords:
 		if printflag:
 			print(f"{pdbcode} : does not have the specified ligand")
-		return None
+		return dict_coverage
 	for ligand in list_lig_coords:
 		howbig.append(len(ligand))
 		if ligsizeflag:
@@ -345,6 +362,23 @@ def export_clean_cav_ligand_info(dict_coverage, list_ligands, list_lig_coords, c
 			# 3 letters code, cavity chain ID, chain ID, residue number, lig size, coverage % 
 			list_covered_ligands.append([resname, value[0], chid, resnb, ligsize, value[1]])
 			cavities[int(value[0])].liganded = resname
+			# Get ligand smiles from epdb API
+			try:
+				from urllib.request import urlopen
+				from json import loads
+				import ssl
+				# That's a heavy load of imports, but we somehow need to create
+				# also a ssl certificate otherwise it crashes
+				ssl._create_default_https_context = ssl._create_unverified_context
+				with urlopen(f'https://www.ebi.ac.uk/pdbe/api/pdb/compound/summary/{resname}') as response:
+					data = loads(response.read().decode('utf8'))
+				cavities[int(value[0])].ligsmi = data[resname][0]["smiles"][0]["name"] # 0 is cactvs
+				try:
+					cavities[int(value[0])].ligsmiOE = data[resname][0]["smiles"][1]["name"] # 1 is openeye
+				except:
+					cavities[int(value[0])].ligsmiOE = None
+			except:
+				cavities[int(value[0])].ligsmi = None
 			cavities[int(value[0])].sizelig = ligsize
 			cavities[int(value[0])].cavcov = value[2]
 			cavities[int(value[0])].ligcov = value[1]
@@ -355,30 +389,39 @@ def export_clean_cav_ligand_info(dict_coverage, list_ligands, list_lig_coords, c
 
 	return list_covered_ligands, dict_cavid_lig_bool
 
-def print_scores(dict_all_info, pdbcode, cavities, subcavs = False):
+def print_scores(dict_all_info, pdbcode, cavities, subcavs = False, frame = None):
 	"""
 	Returns the information with the order for export (final_cavities)
 	"""
+	# Frame is in case of an NMR with more than one model or DCD file with an MD trajectory
+	#  It just appends "_FRAME" with FRAME = model/frame number to the PDB code
+
 	if subcavs:
-		print(f"{'PDB_chain':<9}{'CavID':^7}{'Ligab.':^6}{'Score':^7}{'Size':^6}{'Hydrophob.':^10}"
-			f"{'InterChain':^12}{'AltLoc':^6}{'Miss':^6}{'Subcavs':^9}")
+		print(f"{'PDB_chain':<12}{'CavID':^7}{'Ligab':^6}{'Score':^7}{'Size':^6}{'Hydrophob':^9}"
+			f"{'InterCh':^10}{'AltLoc':^6}{'Miss':^6}{'Subcavs':^9}")
 		for cav in range(len(cavities)):
-			name = str(pdbcode + "_" + dict_all_info[cav]["chains"])
-			print(f'{name:<9}{cav+1:^7d}{cavities[cav].ligandability:^6.1f}'
+			if frame:
+				name = str(pdbcode + "_" + dict_all_info[cav]["chains"] + "_"+str(frame))
+			else:
+				name = str(pdbcode + "_" + dict_all_info[cav]["chains"])
+			print(f'{name:<12}{cav+1:^7d}{cavities[cav].ligandability:^6.1f}'
 				f'{dict_all_info[cav]["score"]:^7.1f}{dict_all_info[cav]["size"]:^6d}'
-				f'{str(int(np.around(dict_all_info[cav]["hydrophobicity"]*100)))+"%":^10}'
-				f'{dict_all_info[cav]["interchain"]:^12d}{dict_all_info[cav]["altlocs"]:^6d}'
+				f'{str(int(np.around(dict_all_info[cav]["hydrophobicity"]*100)))+"%":^9}'
+				f'{dict_all_info[cav]["interchain"]:^10d}{dict_all_info[cav]["altlocs"]:^6d}'
 				f'{dict_all_info[cav]["missingatoms"]+dict_all_info[cav]["missingres"]:^6d}'
 				f'{len(cavities[cav].subcavities):^9d}')
 	else:
-		print(f"{'PDB_chain':<9}{'CavID':^7}{'Ligab.':^6}{'Score':^7}{'Size':^6}{'Hydrophob.':^10}"
-			f"{'InterChain':^12}{'AltLoc':^6}{'Miss':^6}")
+		print(f"{'PDB_chain':<12}{'CavID':^7}{'Ligab':^6}{'Score':^7}{'Size':^6}{'Hydrophob':^9}"
+			f"{'InterCh':^10}{'AltLoc':^6}{'Miss':^6}")
 		for cav in range(len(cavities)):
-			name = str(pdbcode + "_" + dict_all_info[cav]["chains"])
-			print(f'{name:<9}{cav+1:^7d}{cavities[cav].ligandability:^6.1f}'
+			if frame:
+				name = str(pdbcode + "_" + dict_all_info[cav]["chains"] + "_"+str(frame))
+			else:
+				name = str(pdbcode + "_" + dict_all_info[cav]["chains"])
+			print(f'{name:<12}{cav+1:^7d}{cavities[cav].ligandability:^6.1f}'
 				f'{dict_all_info[cav]["score"]:^7.1f}{dict_all_info[cav]["size"]:^6d}'
-				f'{str(int(np.around(dict_all_info[cav]["hydrophobicity"]*100)))+"%":^10}'
-				f'{dict_all_info[cav]["interchain"]:^12d}{dict_all_info[cav]["altlocs"]:^6d}'
+				f'{str(int(np.around(dict_all_info[cav]["hydrophobicity"]*100)))+"%":^9}'
+				f'{dict_all_info[cav]["interchain"]:^10d}{dict_all_info[cav]["altlocs"]:^6d}'
 				f'{dict_all_info[cav]["missingatoms"]+dict_all_info[cav]["missingres"]:^6d}')
 
 	return None
