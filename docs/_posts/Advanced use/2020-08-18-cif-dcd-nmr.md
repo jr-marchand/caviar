@@ -23,8 +23,8 @@ Metadata is not parsed (yet) for mmCIF files.
 Example usage:  
 ```caviar -cif True -code 4qsr```  
 will work on 4qsr with the mmCIF file format rather than the PDB format. The value of this is actually lower than using the PDB format, as long as I did not implement a mmCIF header metadata parser.  
-```caviar -cif True -code 6zme -custom_config conf.cfg```
-  will work on 6zme, which exists only in mmCIF format. The file ```conf.cfg``` needs to contain ```size_limit: 30000000```, and the computer on which calculations happen need to have probably more than 30 gb of RAM for such a huge structure (size of the box of roughly 300\*300\*300 Angstroms!!).  
+```caviar -cif True -code 6zme -custom_config conf.cfg```  
+will work on 6zme, which exists only in mmCIF format. The file ```conf.cfg``` needs to contain ```size_limit: 30000000```, and the computer on which calculations happen need to have probably more than 30 gb of RAM for such a huge structure (size of the box of roughly 300\*300\*300 Angstroms!!).  
 
 ##### DCD molecular dynamics trajectories
 All frames of a DCD trajectory file can be processed iteratively. Each frame gets its own report and its own PDB file containing its cavities/subcavities. That can take a lot of disk space, so be sure to preprocess the trajectory files beforehand! CAVIAR does not, and may never, contain advanced functionalities for MD trajectories. For easing the analysis, it is advisable to align the frames beforehand and filter them in some ways. For example, one can cluster the frame and limit the analysis to the cluster representatives. I can also heavily recommend the wonderful methods of Vitalis and coworkers to identify metastable states in MD trajectories and plot them as so-called "SAPPHIRE plots" ([ref 1, figures 1 and 2](https://www.nature.com/articles/srep06264), [ref 2, figures 6, 8 and 10](https://pubs.acs.org/doi/10.1021/acs.jctc.5b00618), and [tutorial](http://campari.sourceforge.net/V3/tutorial11.html)).  
@@ -32,24 +32,33 @@ All frames of a DCD trajectory file can be processed iteratively. Each frame get
 Two arguments are needed for DCD trajectory files: the pdb file needs to be given (via -code) as reference coordinates, and -dcd is used to input the DCD file containing the frames (with path, if in another directory).  
 
 Example usage:  
-```caviar caviar -dcd mdm2.dcd -code mdm2.pdb -sourcedir ./``` will use the structure file mdm2.pdb in the local working directory as template for the frames of mdm2.dcd (also, in that case in the local working directory, otherwise the path needs to be specified alongside the file name). The two example files mdm2.dcd and mdm2.pdb can be found on [ProDy servers](http://prody.csb.pitt.edu/tutorials/trajectory_analysis/trajectory_analysis_files.tgz).
+```caviar caviar -dcd mdm2.dcd -code mdm2.pdb -sourcedir ./```  
+will use the structure file mdm2.pdb in the local working directory as template for the frames of mdm2.dcd (also, in that case in the local working directory, otherwise the path needs to be specified alongside the file name). The two example files mdm2.dcd and mdm2.pdb can be found on [ProDy servers](http://prody.csb.pitt.edu/tutorials/trajectory_analysis/trajectory_analysis_files.tgz).
 
 The output tables will now contain an additional tag for easing the analysis in the PDB_chain field. In this case, it contains PDBname_chain_f{nb}, where {nb} is the frame number starting from 1.  
 Example:   
-<blockquote>
-PDB_chain    CavID Ligab  Score  Size Hydrophob InterCh  AltLoc Miss  Subcavs<br>
-mdm2_P_f1      1    0.8    0.4    44     84%       0       0     0       1<br>
-PDB_chain    CavID SubCavID Size Hydrophob. Polar  Neg   Pos  Other<br>
-mdm2_P_f1      1      1      44     84%      9%     0%    0%    7%<br>
+| PDB_chain |  CavID | Ligab   | Score  | Size  | Hydrophob |  InterCh   | AltLoc  |  Miss  | Subcavs |
+| --------- |------- | ------- | ------ | ----- | --------- | ---------- | ------- | ------ | ------- |
+| mdm2_P_f1 | 1 | 0.8 |  0.4 | 44 | 84% | 0 | 0 | 0 | 1 |
+{:.table.table-scroll}
 
-mdm2_f2 does not have a cavity<br>
-mdm2_f3 does not have a cavity<br>
-PDB_chain    CavID Ligab  Score  Size Hydrophob InterCh  AltLoc Miss  Subcavs<br>
-mdm2_P_f4      1    0.8    1.4   125     74%       0       0     0       2<br>
-PDB_chain    CavID SubCavID Size Hydrophob. Polar  Neg   Pos  Other<br>
-mdm2_P_f4      1      1      32     78%      22%    0%    0%    0%<br>
-mdm2_P_f4      1      2      93     73%      18%    0%    0%    9%<br>
-</blockquote>
+| PDB_chain | CavID  | SubCavID | Size  | Hydrophob. | Polar | Neg       | Pos     | Other  |
+| --------- |------- | ------- | ------ | ----- | --------- | ---------- | ------- | ------ | 
+| mdm2_P_f1   | 1      |1        | 44     | 84%    | 9%  | 0% | 0% | 7% |
+{:.table.table-scroll}
+mdm2_f2 does not have a cavity  
+mdm2_f3 does not have a cavity  
+| PDB_chain |  CavID | Ligab   | Score  | Size  | Hydrophob |  InterCh   | AltLoc  |  Miss  | Subcavs |
+| --------- |------- | ------- | ------ | ----- | --------- | ---------- | ------- | ------ | ------- |
+| mdm2_P_f4 | 1  | 0.8 | 1.4 | 125 | 74% | 0 | 0 | 0 | 2 |
+{:.table.table-scroll}
+
+| PDB_chain | CavID  | SubCavID | Size  | Hydrophob. | Polar | Neg       | Pos     | Other  |
+| --------- |------- | ------- | ------ | ----- | --------- | ---------- | ------- | ------ | 
+| mdm2_P_f4 | 1 | 1 | 32 | 78% | 22% | 0% |  0% | 0% |
+| mdm2_P_f4 | 1 | 2 | 93 | 73% | 18% | 0% |  0% | 9% |
+{:.table.table-scroll}
+
 <br>
 The DCD file parser was developped by the ProDy team and tested for 32-bit DCD files (CHARMM format DCD file, also NAMD 2.1 and later, but not X-PLOR format DCD files or NAMD 2.0 and earlier).  
 
