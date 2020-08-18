@@ -19,14 +19,13 @@ Once Anaconda is installed, create a new environment in your terminal for CAVIAR
 Activate your environment (*always activate it* in the terminal you're lauching CAVIAR from):
 ```conda activate caviar ```
 
-And that is it! CAVIAR is accessible with the ```caviar``` command, and the user interface via the ```caviar-gui``` command.
+And that is it! CAVIAR is accessible with the ```caviar``` command, and the user interface via the ```caviar_gui``` command.
 
 ### Notes  
 
 - PyMOL and visualization: if you want to use the PyMOL functionalities for vizualising cavities in the GUI, please make sure that you have a PyMOL executable accessible as ```pymol``` in the command line.
 In case you do not have PyMOL yet, you can install a version (accessible in the caviar conda environment) with:
 > ```conda install -n caviar -c schrodinger pymol```  
-
 
 - Architecture: CAVIAR is fully written in python and should be compatible with any OS. However, it was developped on a Linux system, and is restricted to the limitations of the external libraries it relies on (especially PyQT for the GUI). We expect it to work on any Linux or MacOS architecture supporting conda, but it does not function yet on Windows.
 
