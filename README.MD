@@ -1,5 +1,4 @@
-![CAVIAR banner](https://github.com/jr-marchand/caviar/blob/master/docs/assets/toc.png=250x)
-<img src="https://github.com/jr-marchand/caviar/blob/master/docs/assets/toc.png" alt="CAVIAR banner" width="250"/>
+<img src="https://github.com/jr-marchand/caviar/blob/master/docs/assets/toc.png" alt="CAVIAR banner" width="600"/>
 ## CAVIAR - CAVity Identification And Rationalization -- GUI and command line tool
 
 [![ChemRxiv shield](https://img.shields.io/badge/ChemRxiv-10.26434%2Fchemrxiv.12806819-red)](https://doi.org/10.26434/chemrxiv.12806819)
