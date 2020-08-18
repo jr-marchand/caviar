@@ -9,6 +9,6 @@ using-caviar:
 advanced-use:
   name: Advanced usage
   description: Let's get our hands dirty
-cite:
-  name: Citing CAVIAR
-  description: Cite CAVIAR
+news-cite:
+  name: News and references
+  description: Release notes and miscellaneous news

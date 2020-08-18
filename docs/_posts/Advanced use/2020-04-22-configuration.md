@@ -94,13 +94,16 @@ In case of choosing "longestandcontacting" for the option "what", this controls 
 Explicit user-specified chain ID to investigate (Nothing or a letter, or several letters, e.g. A or ABC). Overseeds "what", unless "what" is "longestandcontacting". 
   - chainid_in_pdblist: False  
 Same as "chain_id" but implemented in the input list specified in "codeslist". The chain identifier (e.g. A, B...) should be given after an underscore to the PDB code. For example 1AAA_A for chain A of PDB 1AAA. 1AAA_ABC for chains A, B, and C.  
+  - size_limit: 10000000  
+Size in grid points of the grid box surrounding the protein. That is a kill switch: if the protein is too big and necessitates more than 10 million grid points, it is likely to crash on a normal computer. For example, the cryoEM structure 6zme (Nsp1 of covid + Ribosome) takes 24 million grid points and run out of memory on a 16gb RAM computer. 10 million grid points already amounts to about 12 gb of RAM.  
+
 
 #### Identification of cavities ####
 
 All distance values in Angstroms.  
 
   - boxmargin: 2.0  
-The first step of the algorithm is to put a cubic box around the protein. This keyword controls the box margin around the protein.  
+The first step of the algorithm is to put a cubic box around the protein. This keyword controls the box margin around the protein.    
   - max_distance: 6.0  
 Maximum distance between a solvent grid point and any protein atom. This is useful for computational efficiency. Since the box is cubic, in some directions, there are many spurious grid points that are far away from the protein. Prunes out box grid points that are further than the threshold.    
   - gridspace: 1.0  
@@ -226,6 +229,12 @@ prints pharmacophore data of the subcavities as a table.
  &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;# PDB code. For example 1AAA_A for chain A of PDB 1AAA. <br>
  &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;# In case you want to specify more than one chain, just put all of them, e.g., <br>
  &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;# 1AAA_ABC for chains A, B, and C. <br> <br>
+
+ &nbsp;&nbsp;size_limit: 10000000      # Size in grid points of the grid box surrounding the protein. That is a kill switch: <br>
+ &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;#if the protein is too big and necessitates more than 10 million grid points, it is <br>
+ &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;#likely to crash on a normal computer. For example, the cryoEM structure 6zme (Nsp1 <br>
+ &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;# of covid + Ribosome) takes 24 million grid points and run out of memory on a 16gb RAM <br>
+ &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;#computer. 10 million grid points already amounts to about 12 gb of RAM. <br> <br>
 
 [cavity_identification] <br>
  &nbsp;&nbsp;boxmargin: 2.0   # Margin around the protein  <br>
