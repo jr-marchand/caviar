@@ -1,4 +1,6 @@
-<img align="center" src="https://github.com/jr-marchand/caviar/blob/master/docs/assets/toc.png" alt="CAVIAR banner" width="600"/>
+<p align="center>
+	<img src="https://github.com/jr-marchand/caviar/blob/master/docs/assets/toc.png" alt="CAVIAR banner" width="500"/>
+</p>
 
 ## CAVIAR - CAVity Identification And Rationalization -- GUI and command line tool
 
