@@ -1,5 +1,5 @@
-![CAVIAR banner](https://github.com/jr-marchand/caviar/blob/master/docs/assets/toc.png =250x)
-
+![CAVIAR banner](https://github.com/jr-marchand/caviar/blob/master/docs/assets/toc.png=250x)
+<img src="https://github.com/jr-marchand/caviar/blob/master/docs/assets/toc.png" alt="CAVIAR banner" width="250"/>
 ## CAVIAR - CAVity Identification And Rationalization -- GUI and command line tool
 
 [![ChemRxiv shield](https://img.shields.io/badge/ChemRxiv-10.26434%2Fchemrxiv.12806819-red)](https://doi.org/10.26434/chemrxiv.12806819)
@@ -12,7 +12,7 @@ CAVIAR is an open source tool for protein cavity identification and rationalizat
 https://jr-marchand.github.io/caviar contains extended information about installation, usage, and an extended manual.   
 
 
-## Main functionalities
+### Main functionalities
 
 1. Advanced parsing of structure files: PDB file format (including metadata retrieval from header), mmCIF files from cryoEM, DCD trajectory files from molecular dynamics simulations.
 2. Selection of interesting objects (one or more specific chains)
@@ -24,12 +24,13 @@ https://jr-marchand.github.io/caviar contains extended information about install
 Current development efforts are focused on:
  - automatic comparison of cavities, similarity estimation
  - storage in database format (SQL/postgresql)
- - 
+ - ... let's keep some surprises for the future :)
 
-## How to install
+### How to install
 
-This package is hosted on anaconda.org
+Detailed information on [dedicated website](https://jr-marchand.github.io/caviar/using-caviar/installation).
 
+This package is hosted on anaconda.org. 
 To install it, simply run:
 conda -c jr-marchand caviar
 
@@ -45,7 +46,9 @@ python setup.py install
 cf conda.recipe/meta.yaml, requirements section
 /!\ 
 
-## How to use
+### How to use
+
+Detailed information on the dedicated website [for the GUI](https://jr-marchand.github.io/caviar/using-caviar/caviar-gui) and [for the command line use](https://jr-marchand.github.io/caviar/using-caviar/caviar-cmdline).
 
 - GUI
 
@@ -59,7 +62,7 @@ Once you click the run button, a second window will open, for subcavity decompos
 
 The python command line tool is accessible via the command "caviar". More information with the -h option
 
-## Credits
+### Credits
 
 Project led by Jean-Rémy Marchand
 Collaboration with **Finton Sirockin**, Peter Ertl and Bernard Pirard
