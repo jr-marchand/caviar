@@ -37,17 +37,20 @@ will use the structure file mdm2.pdb in the local working directory as template 
 
 The output tables will now contain an additional tag for easing the analysis in the PDB_chain field. In this case, it contains PDBname_chain_f{nb}, where {nb} is the frame number starting from 1.  
 Example:   
+
 | PDB_chain |  CavID | Ligab   | Score  | Size  | Hydrophob |  InterCh   | AltLoc  |  Miss  | Subcavs |
 | --------- |------- | ------- | ------ | ----- | --------- | ---------- | ------- | ------ | ------- |
-| mdm2_P_f1 | 1 | 0.8 |  0.4 | 44 | 84% | 0 | 0 | 0 | 1 |
+| mdm2_P_f1 | 1      |     0.8 |    0.4 |  44   |  84%      |      0     |      0  |    0   |      1  |
 {:.table.table-scroll}
 
-| PDB_chain | CavID  | SubCavID | Size  | Hydrophob. | Polar | Neg       | Pos     | Other  |
-| --------- |------- | ------- | ------ | ----- | --------- | ---------- | ------- | ------ | 
-| mdm2_P_f1   | 1      |1        | 44     | 84%    | 9%  | 0% | 0% | 7% |
+| PDB_chain | CavID  | SubCavID | Size  | Hydrophob. | Polar | Neg   | Pos | Other  |
+| --------- |------- | ------- | ------ | ---------- | ----- | ----- | --- | ------ | 
+| mdm2_P_f1 | 1      | 1       |   44   |  84%       |   9%  |   0%  |  0% |   7%   |
 {:.table.table-scroll}
+
 mdm2_f2 does not have a cavity  
 mdm2_f3 does not have a cavity  
+
 | PDB_chain |  CavID | Ligab   | Score  | Size  | Hydrophob |  InterCh   | AltLoc  |  Miss  | Subcavs |
 | --------- |------- | ------- | ------ | ----- | --------- | ---------- | ------- | ------ | ------- |
 | mdm2_P_f4 | 1  | 0.8 | 1.4 | 125 | 74% | 0 | 0 | 0 | 2 |
