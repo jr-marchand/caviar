@@ -101,9 +101,10 @@ def check_protein_res(cavities, selection_coords, selection_protein, dict_pdb_in
 		# Store cavity surroundings, in case it's useful
 		cav_dict[cavid]["cavity_residues"] = uniq_prot_vicinity
 		# If there's an intersection between the two lists, flag the cavity
-		if (uniq_prot_vicinity & set(dict_pdb_info["MissingAtomsRes"])):
+		try:
+			(uniq_prot_vicinity & set(dict_pdb_info["MissingAtomsRes"]))
 			cav_dict[cavid]["missingatoms"] = 1
-		else:
+		except:
 			cav_dict[cavid]["missingatoms"] = 0
 		
 		# flag if missing atom, check +/- 1 position of missing residues?
@@ -113,9 +114,10 @@ def check_protein_res(cavities, selection_coords, selection_protein, dict_pdb_in
 		curres_plusminusone = [[f'{x[0]}{int(x[1:])-1:>4d}', f'{x[0]}{int(x[1:])+1:>4d}']
 					for x in currres_noname]
 		flat_list = [item for sublist in curres_plusminusone for item in sublist]
-		if (set(flat_list) & set(missres_noname)):
+		try:
+			(set(flat_list) & set(missres_noname))
 			cav_dict[cavid]["missingres"] = 1
-		else:
+		except:
 			cav_dict[cavid]["missingres"] = 0
 
 

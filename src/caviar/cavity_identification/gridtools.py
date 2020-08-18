@@ -11,7 +11,7 @@ __all__ = ['build_grid', 'get_index_of_coor', 'get_index_of_coor_list', 'list_tr
 			'get_transformation_vectors']
 
 
-def build_grid(atomgroup, boxmargin = 2.0, gridspace = 1.0):
+def build_grid(atomgroup, boxmargin = 2.0, gridspace = 1.0, size_limit = 10000000):
 	"""
 	Build the grid around the chains of interest within
 	boxmargin (5A) and a gridspace (1A)
@@ -32,6 +32,12 @@ def build_grid(atomgroup, boxmargin = 2.0, gridspace = 1.0):
 	grid_y = np.arange(grid_min[1], np.ceil(grid_max[1]), gridspace) # np.ceil to get a value slightly above and get the last one
 	grid_z = np.arange(grid_min[2], np.ceil(grid_max[2]), gridspace) # np.ceil to get a value slightly above and get the last one
 	grid_shape = (len(grid_x), len(grid_y), len(grid_z))
+	if size_limit: # kill everything is the protein is too big: that may happen with some cryoEM structures
+	# it's not really relevant to work on multi protein complexes blindly
+	# 10m grid points is about 13 gb in memory max use
+		grid_size = len(grid_x)*len(grid_y)*len(grid_z)
+		if grid_size > int(size_limit):
+			return None, None, None
 	# Combine the 3 lists into a grid
 	grid_noform = np.meshgrid(grid_x, grid_y, grid_z, indexing = "ij")
 	# There may be a better way to do this

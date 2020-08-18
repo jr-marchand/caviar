@@ -43,9 +43,7 @@ def get_default_parameters(preset_choice = "default"):
 	args["write_pml_cavs"] = conffile["output"].getboolean("write_pml_cavs")
 	args["color_cavs_by"] = conffile["output"]["color_cavs_by"]
 	args["print_cav_info"] = conffile["output"].getboolean("print_cav_info")
-	args["gen_fp"] = conffile["output"].getboolean("gen_fp")
-	args["db_write"] = conffile["output"].getboolean("db_write")
-	args["db_name"] = conffile["output"]["db_name"]
+	args["detect_only"] = conffile["output"].getboolean("detect_only")
 	#Selection section
 	args["metal"] = conffile["selection"].getboolean("metal")
 	args["water"] = conffile["selection"].getboolean("water")
@@ -55,6 +53,7 @@ def get_default_parameters(preset_choice = "default"):
 	args["min_contacts"] = conffile["selection"].getint("min_contacts")
 	args["chain_id"] = conffile["selection"]["chain_id"]
 	args["chainid_in_pdblist"] = conffile["selection"].getboolean("chainid_in_pdblist")
+	args["size_limit"] = conffile["selection"].getint("size_limit")
 	#Cavity_identification section
 	args["boxmargin"] = conffile["cavity_identification"].getfloat("boxmargin")
 	args["max_distance"] = conffile["cavity_identification"].getfloat("max_distance")
