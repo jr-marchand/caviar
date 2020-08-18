@@ -1,22 +1,30 @@
-# CAVIAR
+![CAVIAR banner](https://github.com/jr-marchand/caviar/blob/master/docs/assets/toc.png =250x)
 
-CAVity Identification And Rationalization -- GUI and command line tool
+## CAVIAR - CAVity Identification And Rationalization -- GUI and command line tool
 
-CAVIAR is a new open source tool for protein cavity identification and rationalization, written in python and available as command line and as a GUI. It comprises a subcavity segmentation algorithm that produces meaningful decomposition of cavities, fully focused on the protein structure and agnostic of any ligand information. 
+[![ChemRxiv shield](https://img.shields.io/badge/ChemRxiv-10.26434%2Fchemrxiv.12806819-red)](https://doi.org/10.26434/chemrxiv.12806819)
+
+
+CAVIAR is an open source tool for protein cavity identification and rationalization, written in python and available as command line and as a GUI. It comprises a subcavity segmentation algorithm that produces meaningful decomposition of cavities, fully focused on the protein structure and agnostic of any ligand information. These subcavities reproduce subpockets as defined empirically with medicinal chemistry knowledge.
 
 ### Website and manual
 
 https://jr-marchand.github.io/caviar contains extended information about installation, usage, and an extended manual.   
 
 
-## General information
+## Main functionalities
 
-This project aims at creating a python platform to:
- - Download/parse PDB files and fetch as much information from the header as possible
- - Select interesting protein chains with advanced automatic selection (eg, longest protein chain and contacting chains with more than X contacts, keep metal, well structured structural waters)
- - Identify cavities (grid based algorithm based on buriedness)
- - Decompose them in subcavities and print their properties
- - Much more to come!
+1. Advanced parsing of structure files: PDB file format (including metadata retrieval from header), mmCIF files from cryoEM, DCD trajectory files from molecular dynamics simulations.
+2. Selection of interesting objects (one or more specific chains)
+3. Fast and reliable identification of protein cavities
+4. Decomposition of cavities into subpockets, which may be used for engineering potency or selectivity of a ligand
+5. Printing out of tables summing up information of cavities and subcavities (hydrophobicity, size, pharmacophore types...)
+6. Outputing files containing the cavities/subcavities in a simple PDB format, alongside pymol pml files to visualize the cavities/subcavities painlessly.
+
+Current development efforts are focused on:
+ - automatic comparison of cavities, similarity estimation
+ - storage in database format (SQL/postgresql)
+ - 
 
 ## How to install
 
@@ -31,6 +39,7 @@ conda create -n caviar -c jr-marchand caviar
 
 To install it locally from the git repository:
 
+python setup.py build
 python setup.py install
 /!\ Check that you have the correct dependencies/libraries
 cf conda.recipe/meta.yaml, requirements section
@@ -52,17 +61,16 @@ The python command line tool is accessible via the command "caviar". More inform
 
 ## Credits
 
-Project by Jean-Rémy Marchand, initiated by Joakim Deheuvels (proof of concept)
-
-Mentoring from Finton Sirockin
-
-Weekly discussions with Peter Ertl and Bernard Pirard
+Project led by Jean-Rémy Marchand
+Collaboration with **Finton Sirockin**, Peter Ertl and Bernard Pirard
 
 
-This package relies on open source software:
+This package relies on external open source software and libraries:
 * python 3 
-* pyparse for arguments parsing
+* pyparse and configargparse for arguments parsing
 * scipy, numpy, networkx for cavity identification
-* skimage (scikit-image) for subcavity decomposition
-* sklearn for ligandability predictions
+* scikit-image for subcavity decomposition
+* scikit-learn for ligandability predictions
 * PyQt5 for the GUI 
+
+File parsing is based on the parsers provided by the ProDy team: https://github.com/prody/ProDy a huge thank you for their amazing work!
