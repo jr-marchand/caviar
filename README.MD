@@ -1,4 +1,4 @@
-<p align="center>
+<p align="center">
 	<img src="https://github.com/jr-marchand/caviar/blob/master/docs/assets/toc.png" alt="CAVIAR banner" width="500"/>
 </p>
 
