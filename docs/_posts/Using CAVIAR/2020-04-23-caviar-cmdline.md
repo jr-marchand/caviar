@@ -95,12 +95,14 @@ The first cavity (resname GRI, chain A, resid 1) contains 4 subcavities. These 4
 ```caviar``` handles both command line arguments and the use of parameter/configuration files.  
 We already saw one command line argument earlier: ```-code``` option to specify a PDB code.  
 
-- ```-code``` will download the file from the RCSB PDB if it is not present in ```-sourcedir```.  
+- ```-code``` will download the file from the RCSB PDB if it is not present in ```-sourcedir```. Can be a custom PDB filename, but then has to be in the corresponding sourcedir!  
 - ```-sourcedir``` is the folder in which the PDB file is, in case you already downloaded it.  
+- ```-cif``` sets up mmCIF file parsing rather than PDB. It will download the file from the RCSB PDB as mmCIF if it is not present in ```-sourcedir```. (True/False, default: False)  
+- ```-dcd``` to parse a MD trajectory as DCD file format. Requires the PDB to be given in ```-code``` as template for the coordinates (requires the file path if not in current working directory).     
 - ```-what``` defines what objects to select from the PDB file: all protein chains (keyword "allproteins"), just the longest chain ("longestchain"), or the longest chain plus contacting chains at 5A (longestandcontacting).   
 - ```-chain_id``` permits to select a priori a certain protein chain or more than one protein chains. For example, if you want to select the chain A, simply define ```-chain_id A```, but if you want to investigate chains A and B, specify both as ```-chain_id AB```.  
 - ```-color_cavs_by``` defines the coloring scheme mentioned a bit before. Generates a pymol \*.pml file that colors cavity by cavity ID (default, "bychain"), by buriedness ("buriedness"), or by corresponding protein pharmacophore type ("pharmacophore").  
-- ```-subcavs_decomp``` to inactivate the subcavities decomposition (boolean).  
+- ```-subcavs_decomp``` to inactivate the subcavities decomposition (True/False, default = True).  
 - ```-out``` to define an output path (default: ./caviar_out/).  
 - ```-v``` to activate verbosity.  
 - ```-preset_config``` gives the choice between three presets default configuration: search for cavities and decompose them into subcavities (default, "default"), only search for cavities ("cavities_only"), or only export subcavities ("subcavities_only").  
