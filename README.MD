@@ -11,7 +11,7 @@ CAVIAR is an open source tool for protein cavity identification and rationalizat
 
 ### Website and manual
 
-[https://jr-marchand.github.io/caviar](https://jr-marchand.github.io/caviar) contains extended information about installation, usage, and an extended manual.   
+[https://jr-marchand.github.io/caviar](https://jr-marchand.github.io/caviar) contains extended information about installation, usage and news/changelog.   
 
 
 ### Main functionalities
