@@ -30,7 +30,7 @@ EXTENSIONS = [
 
 setup(
 	name="caviar",
-	version="1.1.0",
+	version="1.1.1",
 	entry_points = {
         'console_scripts': [ 'caviar_gui=caviar.gui:main', 'caviar=caviar.caviar:main']
         },
