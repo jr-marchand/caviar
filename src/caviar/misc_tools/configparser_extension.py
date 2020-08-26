@@ -92,6 +92,10 @@ def get_default_parameters(preset_choice = "default"):
 	args["seeds_mindist"] = conffile["subcavity_routines"].getfloat("seeds_mindist")
 	args["merge_subcavs"] = conffile["subcavity_routines"].getboolean("merge_subcavs")
 	args["print_pphores_subcavs"] = conffile["subcavity_routines"].getboolean("print_pphores_subcavs")
+	# Traj section
+	args["agglo_function"] = conffile["traj"]["agglo_function"]
+	args["dist_threshold"] = conffile["traj"].getfloat("dist_threshold")
+	args["min_occu"] = conffile["traj"].getfloat("min_occu")
 
 	return args
 

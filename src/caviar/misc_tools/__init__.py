@@ -3,7 +3,7 @@
 This module defines support classes and functions.
 """
 
-__all__ = ['misc', 'cavity_cleaning', 'gen_pmlfile', 'configparser_extension']
+__all__ = ['misc', 'cavity_cleaning', 'gen_pmlfile', 'configparser_extension', 'traj_analysis']
 
 from . import misc
 from .misc import *
@@ -21,3 +21,6 @@ from . import configparser_extension
 from .configparser_extension import *
 __all__.extend(configparser_extension.__all__)
 
+from . import traj_analysis
+from .traj_analysis import *
+__all__.extend(traj_analysis.__all__)

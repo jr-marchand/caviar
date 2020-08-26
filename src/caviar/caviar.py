@@ -279,11 +279,16 @@ def parse_run(arguments):
 		print(repr(_dcd))
 		#ensemble.addCoordset(selection_protein.getCoordsets())
 		frame = 1
+		allcavs_resids = []
 		for conformation in _dcd.iterCoordsets():
 			# CAV ROUTINES
 			frm_txt = "f"+str(frame)
-			run(args, conformation, selection_protein, pdbobject, dict_pdb_info, frm_txt)
+			# Object that will be parser to cluster pockets and determine cluster centers
+			allcavs_resids.append(run(args, conformation, selection_protein, pdbobject, dict_pdb_info, frm_txt))
 			frame += 1
+
+		# Cluster pockets and print centroids / occupancy
+		dummy = wrapper_traj_anal(allcavs_resids, nframe = frame, agglo_function = args.agglo_function, dist_threshold = args.dist_threshold, min_occu = args.min_occu)
 
 	# Exception case: NMR structures => one PDB code
 	# can hold more than one atom group.
@@ -522,6 +527,13 @@ def run(args, selection_coords, selection_protein, pdbobject, dict_pdb_info, fra
 	# ----------------------------------- THIS IS THE END! -------------------------------------- #
 	# ------------------------------------------------------------------------------------------- #
 
+	# If trajectory, return a string containing sets of cavity residues
+	if args.dcd:
+		cavs_inthisframe = []
+		for cava in range(len(cavities)):
+			cavs_inthisframe.append(cavities[cava].residues)
+
+		return cavs_inthisframe
 
 	return None
 
