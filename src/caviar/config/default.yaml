@@ -108,3 +108,10 @@
   merge_subcavs: True # Merge small subcavities enclosed in between other subcavities (prevent oversegmentation) 
   print_pphores_subcavs: True # prints pharmacophore data of the subcavities.
 
+[traj]
+  agglo_function: average # hierarchical clustering function: docs at https://docs.scipy.org/doc/scipy/reference/generated/scipy.cluster.hierarchy.linkage.html#scipy.cluster.hierarchy.linkage
+                          # values = single (not recommended), complete, average, weighted, centroid, median or ward (not recommended)
+                          # experimental! can also perform dbscan and optics, with sklearn. Does not work well but can replace this keyword. https://scikit-learn.org/stable/modules/clustering.html
+  dist_threshold: 0.4 # distance threshold for the aforementioned functions, cf the docs in scipy
+  min_occu: 5.0 # When printing results, threshold of minimal occupancy (within x frames) to be printed out. May be >100% when clustering doesn't behave well, ie,
+                # when it clusters together points with a distance of 1 together (same frame points). Observed with agglo "single".
