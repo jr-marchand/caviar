@@ -13,13 +13,6 @@ with open("README.MD", "r") as fh:
 from glob import glob
 tntDir = join('src', 'caviar', 'prody_parser', 'utilities', 'tnt')
 
-# extra arguments for compiling C++ extensions on MacOSX
-if platform.system() == 'Darwin':
-    os_ver = platform.mac_ver()[0]
-    os.environ['MACOSX_DEPLOYMENT_TARGET'] = os_ver
-    os.environ['CC'] = 'clang'
-    os.environ['CXX'] = 'clang++'
-    #extra_compile_args.append('-stdlib=libc++')
 import numpy as np
 
 EXTENSIONS = [
