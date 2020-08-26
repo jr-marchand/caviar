@@ -115,3 +115,4 @@
   dist_threshold: 0.4 # distance threshold for the aforementioned functions, cf the docs in scipy
   min_occu: 5.0 # When printing results, threshold of minimal occupancy (within x frames) to be printed out. May be >100% when clustering doesn't behave well, ie,
                 # when it clusters together points with a distance of 1 together (same frame points). Observed with agglo "single".
+  print_clusters: False # Print the dictionary of correspondance frame/cavity number to cluster number

@@ -288,8 +288,10 @@ def parse_run(arguments):
 			frame += 1
 
 		# Cluster pockets and print centroids / occupancy
-		dummy = wrapper_traj_anal(allcavs_resids, nframe = frame, agglo_function = args.agglo_function, dist_threshold = args.dist_threshold, min_occu = args.min_occu)
-
+		dict_clusters = wrapper_traj_anal(allcavs_resids, nframe = frame, agglo_function = args.agglo_function, dist_threshold = args.dist_threshold, min_occu = args.min_occu)
+		if args.print_clusters:
+			print(dict_clusters)
+			
 	# Exception case: NMR structures => one PDB code
 	# can hold more than one atom group.
 	# we'll run the cavity identification on all NMR models

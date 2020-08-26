@@ -96,6 +96,7 @@ def get_default_parameters(preset_choice = "default"):
 	args["agglo_function"] = conffile["traj"]["agglo_function"]
 	args["dist_threshold"] = conffile["traj"].getfloat("dist_threshold")
 	args["min_occu"] = conffile["traj"].getfloat("min_occu")
+	args["print_clusters"] = conffile["traj"].getboolean("print_clusters")
 
 	return args
 

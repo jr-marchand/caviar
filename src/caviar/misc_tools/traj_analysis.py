@@ -64,7 +64,12 @@ def wrapper_traj_anal(file_cav_res, nframe, agglo_function = "average", dist_thr
 	else:
 		clusters = cluster_print(list_distances, matrix_distances, dict_corresp, n_fr, dist_threshold = dist_threshold, agglo_function=agglo_function, min_occu = min_occu)
 	
-	return clusters, list_distances
+	# Generate dictionary of frame/cav number to cluster number
+	dict_clusters = dict()
+	for i in range(len(clusters)):
+		dict_clusters[dict_corresp[i]] = clusters[i]
+		
+	return dict_clusters
 	
 def get_dict_conversion(cav_res):
 	"""
