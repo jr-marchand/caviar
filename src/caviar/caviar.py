@@ -208,8 +208,6 @@ def parse_run(arguments):
 	### Read information from the PDB header
 	# Don't try to parse the header if it's a CIF file
 	# I did not implement a CIF header parser yet
-	dict_pdb_info = {}
-	dict_pdb_info["experiment"] = "NA" # to avoid crash later on with nonexistent dictionary
 	if not args.cif:
 		dict_pdb_info = get_information_header(os.path.join(args.sourcedir, args.code), cif = args.cif)
 
@@ -565,7 +563,7 @@ def main():
 						try:
 							args.chain_id = tmppdb.split()[0].split(sep = "_")[1]
 						except:
-							printv("Something wrong with chainid_in_pdblist")
+							print("Something wrong with chainid_in_pdblist")
 				if not os.path.isfile(str(args.sourcedir)+str(args.code)):
 					print(f"{args.code} is not a valid filename or a valid PDB identifier.")
 					continue

@@ -33,7 +33,10 @@ def get_information_header(pdbfile, cif = False):
 	Keywords are self explanatory
 	"""
 
-	dict_pdb_info = {}
+	dict_pdb_info = {"experiment": None, "resolution": None, "pdbversion": None, "doi": None, "caveat": None,
+	"obsolete": None, "MissingRes": None, "MissingAtomsRes": None, "revision": None, "Rvalues": [None, None],
+	"deposition_date": None, "title": None, "space_group": None, "classification": None, "chemicals": None, 
+	"polymer_chain_info": {}, "modifications": []}
 
 	if cif == True:
 		try:
@@ -41,13 +44,13 @@ def get_information_header(pdbfile, cif = False):
 			print(header_info)
 		except:
 			print(pdbfile, "does not exist")
-			return None
+			return dict_pdb_info
 	else:
 		try:
 			header_info = parsePDBHeader(pdbfile)
 		except:
 			print(pdbfile, "does not exist")
-			return None
+			return dict_pdb_info
 
 	try:
 		dict_pdb_info["experiment"] = header_info["experiment"]
@@ -457,7 +460,10 @@ def export_pdb_cavity(final_cavities, final_pharma, pdbcode, grid_min, grid_shap
 		writePDB(os.path.join(outdir, pdbcode + "_cavs.pdb"), selection_protein)
 		if listlig:
 			ligs = ""
-			a = open(os.path.join(oridir, pdbcode+".pdb"), "r")
+			if "_f" in pdbcode:
+				a = open(os.path.join(oridir, pdbcode.split("_f")[0]+".pdb"), "r")
+			else:
+				a = open(os.path.join(oridir, pdbcode+".pdb"), "r")
 			file = a.readlines()
 			for lig in listlig:
 				ligs+="".join([x for x in file if lig in x])
@@ -545,7 +551,10 @@ def export_pdb_subcavities(subcavs, pdbcode, grid_min, grid_shape, cavid = 1, gr
 
 	if listlig:
 		ligs = ""
-		a = open(os.path.join(oridir, pdbcode+".pdb"), "r")
+		if "_f" in pdbcode:
+			a = open(os.path.join(oridir, pdbcode.split("_f")[0]+".pdb"), "r")
+		else:
+			a = open(os.path.join(oridir, pdbcode+".pdb"), "r")
 		file = a.readlines()
 		for lig in listlig:
 			ligs+="".join([x for x in file if lig in x])
