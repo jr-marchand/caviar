@@ -465,10 +465,10 @@ def _getRValues(lines):
 
     try:
         for i, line in lines['REMARK   3']:
-            if ' FREE R VALUE                     :' in line:
+            if '  FREE R VALUE                   ' in line:
                 rfree = line.split()[6]
                 break
-            if '  R VALUE            (WORKING SET) :' in line:
+            if ' R VALUE            (WORKING SET) ' in line:
                 rworkingset = line.split()[7]
         return [rfree, rworkingset]
     except:

@@ -206,20 +206,18 @@ def parse_run(arguments):
 					return None
 	
 	### Read information from the PDB header
-	# Don't try to parse the header if it's a CIF file
-	# I did not implement a CIF header parser yet
-	if not args.cif:
-		dict_pdb_info = get_information_header(os.path.join(args.sourcedir, args.code), cif = args.cif)
+	dict_pdb_info = get_information_header(os.path.join(args.sourcedir, args.code), cif = args.cif)
 
-		# Here options to exclude non XR, resolution...
-		killswitch = kill_from_header(dict_pdb_info, onlyxr = args.onlyxr,
-			resolution_filter = args.resolution_filter,	resolution = args.resolution,
-			pdbversion_filter = args.pdbversion_filter, pdbversion = args.pdbversion,
-			caveat = args.caveat, obsolete = args.obsolete,	deposition_date_filter = args.deposition_date_filter,
-			date = args.date)
-		if killswitch:
-			print(f"{args.code[0:-4]} was skipped because of a kill switch (e.g., not XR, resolution, caveat...)")
-			return None
+	# Here options to exclude non XR, resolution...
+	killswitch = kill_from_header(dict_pdb_info, onlyxr = args.onlyxr,
+		resolution_filter = args.resolution_filter,	resolution = args.resolution,
+		pdbversion_filter = args.pdbversion_filter, pdbversion = args.pdbversion,
+		caveat = args.caveat, obsolete = args.obsolete,	deposition_date_filter = args.deposition_date_filter,
+		date = args.date)
+	if killswitch:
+		print(f"{args.code[0:-4]} was skipped because of a kill switch (e.g., not XR, resolution, caveat...)")
+		return None
+	print(dict_pdb_info)
 
 	### Get selection objects from the PDB object
 	### from arguments sourcedir, code. Can include or not metals, waters,

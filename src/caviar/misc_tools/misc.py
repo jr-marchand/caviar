@@ -11,6 +11,7 @@ The last function exports cavities as a PDB file for vizualisation
 """
 
 from caviar.prody_parser.proteins import pdbfile
+#from caviar.prody_parser.proteins.ciffile import parseMMCIF
 from caviar.prody_parser.proteins.header import parsePDBHeader
 from caviar.cavity_identification.gridtools import get_index_of_coor_list
 import numpy as np
@@ -36,14 +37,77 @@ def get_information_header(pdbfile, cif = False):
 	dict_pdb_info = {"experiment": None, "resolution": None, "pdbversion": None, "doi": None, "caveat": None,
 	"obsolete": None, "MissingRes": None, "MissingAtomsRes": None, "revision": None, "Rvalues": [None, None],
 	"deposition_date": None, "title": None, "space_group": None, "classification": None, "chemicals": None, 
-	"polymer_chain_info": {}, "modifications": []}
+	"polymer_chain_info": {}, "modifications": [], "resolutionEM": None, "pdbxversion": None}
 
 	if cif == True:
-		try:
-			header_info = parseMMCIF(pdbfile, header=True)
-			print(header_info)
-		except:
-			print(pdbfile, "does not exist")
+			cif_dico = MMCIF2Dict(pdbfile)
+			try:
+				dict_pdb_info["experiment"] = "".join(cif_dico["_exptl.method"])
+			except:
+				None
+			if "X-R" in dict_pdb_info["experiment"]:
+				try:
+					dict_pdb_info["resolution"] = "".join(cif_dico["_reflns.d_resolution_high"])
+				except:
+					None
+			else:
+				try:
+					dict_pdb_info["resolutionEM"] = "".join(cif_dico["_em_3d_reconstruction.resolution"])
+				except:
+					None
+			try:
+				dict_pdb_info["pdbxversion"] = "".join(cif_dico['_audit_conform.dict_version'])
+			except:
+				None
+			try:
+				dict_pdb_info["doi"] = cif_dico["_citation.pdbx_database_id_DOI"]
+			except:
+				None
+			try:
+				dict_pdb_info["caveat"] = cif_dico["_database_PDB_caveat.id"]
+			except:
+				None				
+			try:
+				if "obsolete" in str(cif_dico["_pdbx_audit_revision_details.description"]).lower():
+					dict_pdb_info["obsolete"] = True
+			except:
+				None				
+			try:
+				dict_pdb_info["MissingRes"] = cif_dico["pdbx_missing_residue_list"]
+			except:
+				None				
+			try:
+				dict_pdb_info["MissingAtomsRes"] = cif_dico["_rcsb_missing_atom_poly.atom_name"]
+			except:
+				None				
+			try:
+				_tmp = cif_dico["_pdbx_audit_revision_history.revision_date"]
+				if type(_tmp) == list:
+					dict_pdb_info["revision"]  = "".join(_tmp[-1])
+				else:
+					dict_pdb_info["revision"]  = "".join(_tmp)
+			except:
+				None				
+			try:
+				dict_pdb_info["Rvalues"] = ["".join(cif_dico["_refine.ls_R_factor_R_free"]), "".join(cif_dico["_refine.ls_R_factor_R_work"])]
+			except:
+				None				
+			try:
+				dict_pdb_info["deposition_date"] = "".join(cif_dico["_pdbx_database_status.recvd_initial_deposition_date"])
+			except:
+				None				
+			try:
+				dict_pdb_info["title"] = "".join(cif_dico["_struct.title"])
+			except:
+				None				
+			try:
+				dict_pdb_info["space_group"] = "".join(cif_dico["_symmetry.space_group_name_H-M"])
+			except:
+				None				
+			try:
+				dict_pdb_info["classification"] = "".join(cif_dico["_struct_keywords.pdbx_keywords"])
+			except:
+				None				
 			return dict_pdb_info
 	else:
 		try:
@@ -104,10 +168,7 @@ def get_information_header(pdbfile, cif = False):
 	
 	# This returns a list with R free and R value
 	try:
-		if len(header_info["Rvalues"][0] > 0):
-			dict_pdb_info["Rvalues"] = header_info["Rvalues"]
-		else:
-			header_info["Rvalues"]
+		dict_pdb_info["Rvalues"] = header_info["Rvalues"]
 	except:
 		dict_pdb_info["Rvalues"] = [None, None]
 	try:
@@ -481,8 +542,8 @@ def export_pdb_cavity(final_cavities, final_pharma, pdbcode, grid_min, grid_shap
 		cavid += 1
 		idx_ = 0
 		for coordinates in cavity:
-			pdbdummy.append(f"HETATM    1  S   GRI A {cavid:>3}    {coordinates[0]:8.3f}{coordinates[1]:8.3f}{coordinates[2]:8.3f}"
-				f"  {final_pharma[cavid-1][idx_][0]:>3.2f} {grid_decomposition[cav_indices[idx]]:>5.2f}           S\n")
+			pdbdummy.append(f"HETATM	1  S   GRI A {cavid:>3}	{coordinates[0]:8.3f}{coordinates[1]:8.3f}{coordinates[2]:8.3f}"
+				f"  {final_pharma[cavid-1][idx_][0]:>3.2f} {grid_decomposition[cav_indices[idx]]:>5.2f}		   S\n")
 			idx += 1
 			idx_ += 1
 	a = open(os.path.join(outdir, pdbcode + "_cavs.pdb"), "a")
@@ -509,8 +570,8 @@ def simple_export_pdb_noinfo(final_cavities, grid_min, grid_shape, gridspace = 1
 		cavid += 1
 		idx_ = 0
 		for coordinates in cavity:
-			pdbdummy.append(f"HETATM    1  S   GRI A {cavid:>3}    {coordinates[0]:8.3f}{coordinates[1]:8.3f}{coordinates[2]:8.3f}"
-				f"  1.00   1.00           S\n")
+			pdbdummy.append(f"HETATM	1  S   GRI A {cavid:>3}	{coordinates[0]:8.3f}{coordinates[1]:8.3f}{coordinates[2]:8.3f}"
+				f"  1.00   1.00		   S\n")
 			idx += 1
 			idx_ += 1
 	a = open("test_cavs.pdb", "w")
@@ -534,8 +595,8 @@ def simple_export_pdb_onecav(cavity, grid_min, grid_shape, gridspace = 1.0):
 	idx = 0
 	cavid = 1
 	for coordinates in cavity:
-		pdbdummy.append(f"HETATM    1  S   GRI A {cavid:>3}    {coordinates[0]:8.3f}{coordinates[1]:8.3f}{coordinates[2]:8.3f}"
-			f"  1.00   1.00           S\n")
+		pdbdummy.append(f"HETATM	1  S   GRI A {cavid:>3}	{coordinates[0]:8.3f}{coordinates[1]:8.3f}{coordinates[2]:8.3f}"
+			f"  1.00   1.00		   S\n")
 	a = open("test_cavs.pdb", "w")
 	a.write("".join(pdbdummy))
 	a.close()
@@ -567,10 +628,126 @@ def export_pdb_subcavities(subcavs, pdbcode, grid_min, grid_shape, cavid = 1, gr
 	for i in range(0, len(subcavs)):
 		pdbdummy = []
 		for coordinates in subcavs[i]:
-			pdbdummy.append(f"HETATM    1  N   SUB {chr(cavid+96+1).upper()} {i+1:>3}    {coordinates[0]:8.3f}{coordinates[1]:8.3f}"
-				f"{coordinates[2]:8.3f}  1.00   1.00           N\n")
+			pdbdummy.append(f"HETATM	1  N   SUB {chr(cavid+96+1).upper()} {i+1:>3}	{coordinates[0]:8.3f}{coordinates[1]:8.3f}"
+				f"{coordinates[2]:8.3f}  1.00   1.00		   N\n")
 		a = open(os.path.join(outdir, pdbcode + "_subcavs.pdb"), "a")
 		a.write("".join(pdbdummy))
 		a.close()
 
 	return None
+
+
+
+class MMCIF2Dict(dict):
+	"""Parse a mmCIF file and return a dictionary."""
+
+	def __init__(self, filename):
+		"""Parse a mmCIF file and return a dictionary.
+		Arguments:
+		 - file - name of the PDB file OR an open filehandle
+		"""
+		self.quote_chars = ["'", '"']
+		self.whitespace_chars = [" ", "\t"]
+		with open(filename, "r") as handle:
+			loop_flag = False
+			key = None
+			tokens = self._tokenize(handle)
+			try:
+				token = next(tokens)
+			except StopIteration:
+				return  # for Python 3.7 and PEP 479
+			self[token[0:5]] = token[5:]
+			i = 0
+			n = 0
+			for token in tokens:
+				if token.lower() == "loop_":
+					loop_flag = True
+					keys = []
+					i = 0
+					n = 0
+					continue
+				elif loop_flag:
+					# The second condition checks we are in the first column
+					# Some mmCIF files (e.g. 4q9r) have values in later columns
+					# starting with an underscore and we don't want to read
+					# these as keys
+					if token.startswith("_") and (n == 0 or i % n == 0):
+						if i > 0:
+							loop_flag = False
+						else:
+							self[token] = []
+							keys.append(token)
+							n += 1
+							continue
+					else:
+						self[keys[i % n]].append(token)
+						i += 1
+						continue
+				if key is None:
+					key = token
+				else:
+					self[key] = [token]
+					key = None
+
+	# Private methods
+
+	def _splitline(self, line):
+		# See https://www.iucr.org/resources/cif/spec/version1.1/cifsyntax for the syntax
+		in_token = False
+		# quote character of the currently open quote, or None if no quote open
+		quote_open_char = None
+		start_i = 0
+		for (i, c) in enumerate(line):
+			if c in self.whitespace_chars:
+				if in_token and not quote_open_char:
+					in_token = False
+					yield line[start_i:i]
+			elif c in self.quote_chars:
+				if not quote_open_char and not in_token:
+					quote_open_char = c
+					in_token = True
+					start_i = i + 1
+				elif c == quote_open_char and (
+					i + 1 == len(line) or line[i + 1] in self.whitespace_chars
+				):
+					quote_open_char = None
+					in_token = False
+					yield line[start_i:i]
+			elif c == "#" and not in_token:
+				# Skip comments. "#" is a valid non-comment char inside of a
+				# quote and inside of an unquoted token (!?!?), so we need to
+				# check that the current char is not in a token.
+				return
+			elif not in_token:
+				in_token = True
+				start_i = i
+		if in_token:
+			yield line[start_i:]
+		if quote_open_char:
+			raise ValueError("Line ended with quote open: " + line)
+
+	def _tokenize(self, handle):
+		empty = True
+		for line in handle:
+			empty = False
+			if line.startswith("#"):
+				continue
+			elif line.startswith(";"):
+				# The spec says that leading whitespace on each line must be
+				# preserved while trailing whitespace may be stripped.  The
+				# trailing newline must be stripped.
+				token_buffer = [line[1:].rstrip()]
+				for line in handle:
+					line = line.rstrip()
+					if line.startswith(";"):
+						yield "\n".join(token_buffer)
+						line = line[1:]
+						if line and not line[0] in self.whitespace_chars:
+							raise ValueError("Missing whitespace")
+						break
+					token_buffer.append(line)
+				else:
+					raise ValueError("Missing closing semicolon")
+			yield from self._splitline(line.strip())
+		if empty:
+			raise ValueError("Empty file.")
