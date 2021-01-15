@@ -636,7 +636,7 @@ def export_pdb_subcavities(subcavs, pdbcode, grid_min, grid_shape, cavid = 1, gr
 
 	return None
 
-
+# From biopython
 
 class MMCIF2Dict(dict):
 	"""Parse a mmCIF file and return a dictionary."""
