@@ -165,7 +165,6 @@ def parse_run(arguments):
 	printv("> verbose on")
 
 	if args.cif:
-		print("Attention! The CIF parser does not parse CIF(PDB) header metadata for the time being.")
 		try:
 			args.code = str(args.code).replace(".pdb", ".cif")
 			pdbobject = parseMMCIF(os.path.join(args.sourcedir, args.code))
@@ -217,7 +216,6 @@ def parse_run(arguments):
 	if killswitch:
 		print(f"{args.code[0:-4]} was skipped because of a kill switch (e.g., not XR, resolution, caveat...)")
 		return None
-	print(dict_pdb_info)
 
 	### Get selection objects from the PDB object
 	### from arguments sourcedir, code. Can include or not metals, waters,

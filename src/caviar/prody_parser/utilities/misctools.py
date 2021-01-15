@@ -21,7 +21,7 @@ __all__ = ['Everything', 'Cursor', 'ImageCursor', 'rangeString', 'alnum', 'impor
            'getDataPath', 'openData', 'chr2', 'toChararray', 'interpY', 'cmp', 'pystr',
            'getValue', 'indentElement', 'isPDB', 'isURL', 'isListLike', 'isSymmetric', 'makeSymmetric',
            'getDistance', 'fastin', 'createStringIO', 'div0', 'wmean', 'bin2dec', 'wrapModes', 
-           'fixArraySize', 'DTYPE', 'solveEig']
+           'fixArraySize', 'DTYPE', 'solveEig', 'split']
 
 CURSORS = []
 
@@ -660,3 +660,16 @@ def index(A, a):
     else:
         A = asarray(A)
         return where(A==a)[0][0]
+
+
+def split(string, shlex=False):
+    if shlex:
+        try:
+            import shlex
+        except ImportError:
+            raise ImportError('Use of the shlex option requires the '
+                              'installation of the shlex package.')
+        else:
+            return shlex.split(string)
+    else:
+        return string.split()
