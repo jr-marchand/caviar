@@ -542,8 +542,8 @@ def export_pdb_cavity(final_cavities, final_pharma, pdbcode, grid_min, grid_shap
 		cavid += 1
 		idx_ = 0
 		for coordinates in cavity:
-			pdbdummy.append(f"HETATM    1  S   GRI A {cavid:>3}	{coordinates[0]:8.3f}{coordinates[1]:8.3f}{coordinates[2]:8.3f}"
-				f"  {final_pharma[cavid-1][idx_][0]:>3.2f} {grid_decomposition[cav_indices[idx]]:>5.2f}		   S\n")
+			pdbdummy.append(f"HETATM    1  S   GRI A {cavid:>3}    {coordinates[0]:8.3f}{coordinates[1]:8.3f}{coordinates[2]:8.3f}"
+				f"  {final_pharma[cavid-1][idx_][0]:>3.2f} {grid_decomposition[cav_indices[idx]]:>5.2f}           S\n")
 			idx += 1
 			idx_ += 1
 	a = open(os.path.join(outdir, pdbcode + "_cavs.pdb"), "a")
@@ -570,8 +570,8 @@ def simple_export_pdb_noinfo(final_cavities, grid_min, grid_shape, gridspace = 1
 		cavid += 1
 		idx_ = 0
 		for coordinates in cavity:
-			pdbdummy.append(f"HETATM    1  S   GRI A {cavid:>3}	{coordinates[0]:8.3f}{coordinates[1]:8.3f}{coordinates[2]:8.3f}"
-				f"  1.00   1.00		   S\n")
+			pdbdummy.append(f"HETATM    1  S   GRI A {cavid:>3}    {coordinates[0]:8.3f}{coordinates[1]:8.3f}{coordinates[2]:8.3f}"
+				f"  1.00   1.00           S\n")
 			idx += 1
 			idx_ += 1
 	a = open("test_cavs.pdb", "w")
@@ -595,8 +595,8 @@ def simple_export_pdb_onecav(cavity, grid_min, grid_shape, gridspace = 1.0):
 	idx = 0
 	cavid = 1
 	for coordinates in cavity:
-		pdbdummy.append(f"HETATM    1  S   GRI A {cavid:>3}	{coordinates[0]:8.3f}{coordinates[1]:8.3f}{coordinates[2]:8.3f}"
-			f"  1.00   1.00		   S\n")
+		pdbdummy.append(f"HETATM    1  S   GRI A {cavid:>3}    {coordinates[0]:8.3f}{coordinates[1]:8.3f}{coordinates[2]:8.3f}"
+			f"  1.00   1.00           S\n")
 	a = open("test_cavs.pdb", "w")
 	a.write("".join(pdbdummy))
 	a.close()
@@ -628,8 +628,8 @@ def export_pdb_subcavities(subcavs, pdbcode, grid_min, grid_shape, cavid = 1, gr
 	for i in range(0, len(subcavs)):
 		pdbdummy = []
 		for coordinates in subcavs[i]:
-			pdbdummy.append(f"HETATM    1  N   SUB {chr(cavid+96+1).upper()} {i+1:>3}	{coordinates[0]:8.3f}{coordinates[1]:8.3f}"
-				f"{coordinates[2]:8.3f}  1.00   1.00		   N\n")
+			pdbdummy.append(f"HETATM    1  N   SUB {chr(cavid+96+1).upper()} {i+1:>3}    {coordinates[0]:8.3f}{coordinates[1]:8.3f}"
+				f"{coordinates[2]:8.3f}  1.00   1.00           N\n")
 		a = open(os.path.join(outdir, pdbcode + "_subcavs.pdb"), "a")
 		a.write("".join(pdbdummy))
 		a.close()
