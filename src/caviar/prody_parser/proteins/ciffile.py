@@ -203,7 +203,7 @@ def _parseMMCIFLines(atomgroup, lines, model, chain, subset,
     i = 0
     models = []
     nModels = 0
-    fields = OrderedDict()
+    fields = dict()
     fieldCounter = -1
     foundAtomBlock = False
     doneAtomBlock = False

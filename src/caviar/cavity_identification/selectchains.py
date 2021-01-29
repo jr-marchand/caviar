@@ -245,7 +245,10 @@ def get_ligand(pdbobject, tabu_list =  "tabulist_ligand_maximal",
 				list_ligands.append(ligand)
 				# Here if the ligand has a negative number it will crash. Happened with 1NWT and 3mg9
 				if int(ligand[5:9]) > 0:
-					tmpsel = hetatm.select(f"resname {ligand[0:3]} and chain {ligand[4]} and resnum {ligand[5:9]}")
+					try:
+						tmpsel = hetatm.select(f"resname {ligand[0:3]} and chain {ligand[4]} and resnum {ligand[5:9]}")
+					except:
+						tmpsel = hetatm.select(f"resname {ligand[0:3]} and resnum {ligand[5:9]}")
 					list_lig_sel.append(tmpsel)
 					coords = tmpsel.getCoords()
 					list_lig_coords.append(coords)

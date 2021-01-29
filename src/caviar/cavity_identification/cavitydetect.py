@@ -257,7 +257,7 @@ def get_large_cavities_from_graph(G, cav, min_points = 60):
 	return array_cavs_coords
 
 def filter_cavities(array_cavs_coords, grid_decomposition, grid_min, grid_shape, gridspace = 1.0,
-	min_burial_q = 10, quantile = 0.7):
+	min_burial_q = 10, quantile = 0.8, maxsize = 3000):
 	"""
 	Scores cavities ((size cavity/100)*(median buriedness)*(7th quantile buriedness)/100)
 	Exports data (size, median buriedness, 7th quantile buriedness, score)
@@ -272,7 +272,7 @@ def filter_cavities(array_cavs_coords, grid_decomposition, grid_min, grid_shape,
 		cav_indices = get_index_of_coor_list(cavity, grid_min, grid_shape, gridspace)
 		median_bur = np.median(grid_decomposition[cav_indices])
 		q_7 = np.quantile(grid_decomposition[cav_indices], q = 0.7)
-		if np.quantile(grid_decomposition[cav_indices], q = quantile) > min_burial_q:
+		if np.quantile(grid_decomposition[cav_indices], q = quantile) > min_burial_q and size_cav < maxsize:
 			score = np.around((size_cav/100)*(median_bur)*(q_7)/100, decimals=1)
 			cavs_curated.append(cavity)
 			cavs_info[cavid] = [size_cav, median_bur, q_7, score]
@@ -292,7 +292,7 @@ def filter_cavities(array_cavs_coords, grid_decomposition, grid_min, grid_shape,
 def wrapper_early_cav_identif(grid, grid_min, grid_shape, selection_protein, selection_coords,
 	size_probe = 1.0, maxdistance = 6.0,
 	radius_cube = 4, min_burial = 8, radius_cube_enc = 3, min_burial_enc = 8, gridspace = 1.0, min_degree = 3,
-	radius = 2, trim_score = 500, min_points = 40, min_burial_q = 10, quantile = 0.8):
+	radius = 2, trim_score = 500, min_points = 40, min_burial_q = 10, quantile = 0.8, maxsize = 3000):
 	"""
 	In order to lower the overhead from importing modules in main.py
 	we combine all of the afore-coded functions as one wrapper
