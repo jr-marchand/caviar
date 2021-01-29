@@ -44,6 +44,8 @@ def get_default_parameters(preset_choice = "default"):
 	args["color_cavs_by"] = conffile["output"]["color_cavs_by"]
 	args["print_cav_info"] = conffile["output"].getboolean("print_cav_info")
 	args["detect_only"] = conffile["output"].getboolean("detect_only")
+	args["asph"] = conffile["output"].getboolean("asph")
+	args["export_descriptors"] = conffile["output"].getboolean("export_descriptors")
 	#Selection section
 	args["metal"] = conffile["selection"].getboolean("metal")
 	args["water"] = conffile["selection"].getboolean("water")
@@ -67,9 +69,11 @@ def get_default_parameters(preset_choice = "default"):
 	args["min_points"] = conffile["cavity_identification"].getint("min_points")
 	args["trim_score"] = conffile["cavity_identification"].getint("trim_score")
 	args["min_degree"] = conffile["cavity_identification"].getint("min_degree")
+	args["radius_asph"] = conffile["cavity_identification"].getint("radius_asph")
 	#Cavity_filtering section
 	args["min_burial_q"] = conffile["cavity_filtering"].getint("min_burial_q")
 	args["quantile"] = conffile["cavity_filtering"].getfloat("quantile")
+	args["maxsize"] = conffile["cavity_filtering"].getint("maxsize")
 	args["max_hydrophobicity"] = conffile["cavity_filtering"].getfloat("max_hydrophobicity")
 	args["exclude_interchain"] = conffile["cavity_filtering"].getboolean("exclude_interchain")
 	args["exclude_missing"] = conffile["cavity_filtering"].getboolean("exclude_missing")

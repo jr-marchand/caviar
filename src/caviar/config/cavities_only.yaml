@@ -22,8 +22,8 @@
   write_pml_cavs: True  # Write a pymol session file *pml 
   color_cavs_by: bychain # and color cavities by chain/buriedness/pharmacophore ("bychain", "buriedness", "pharmacophore")
   print_cav_info: True # print a report on cavity identification 
-  gen_fp: False    # Generate fingerprints for cavities
-  db_write: False   # Turns on database functionalities: name of a database to write the data in, which should already exist
+  asph: False # Investigates the local asphericity around a grid point at 'radius_asph' cubic radius /!\ Time consuming!
+  export_descriptors: False # Turns on the export of pickled descriptors (global descriptors as pd.dataframe, networkx grap and 4-channels im3d)
 
 [selection]
   metal: True      # Keep metals
@@ -73,10 +73,12 @@
                     # The maximum value of this score is 3139 (125*(10**(14/10)). The default is 500 
                     # This corresponds roughly to an environement of 50 neighbors (out of 125 maximum, half) and an avg buriedness of 10
   min_degree: 3    # Minimum node degree to keep it, ie, minimum number of  connections with other nodes
+  radius_asph: 3  # Corresponds to the parameter in asph, ie, how many cubic radius around a grid point to investigate asphericity
 
 [cavity_filtering]
   min_burial_q: 10 # Minimum buriedness value of grid points at the xth quantile (strictly greater than) [parameter -quantile]
   quantile: 0.8    # Quantile related to min_burial_q 
+  maxsize: 3000    # Maximum size of a cavity in grid points. If too big, may need too much RAM or crash for various reasons
   max_hydrophobicity: 1.0 # Maximum percentage of hydrophobic points in the cavity. 
   exclude_interchain: False # Exclude all cavities that are in between different protein chains. 
   exclude_missing: False # Exclude cavities that have missing atoms/residues. 

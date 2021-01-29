@@ -15,6 +15,11 @@ import argparse
 root = os.path.dirname(__file__)
 home = os.getcwd()
 
+import resource
+# Set max RAM usage to not over-swap on the cluster
+# 45 GB
+resource.setrlimit(resource.RLIMIT_AS, (45000000000, 45000000000))
+
 
 def arguments():
 	"""
@@ -165,6 +170,7 @@ def parse_run(arguments):
 	printv("> verbose on")
 
 	if args.cif:
+		dict_pdb_info = {}
 		try:
 			args.code = str(args.code).replace(".pdb", ".cif")
 			pdbobject = parseMMCIF(os.path.join(args.sourcedir, args.code))
@@ -200,6 +206,8 @@ def parse_run(arguments):
 					args.cif = True
 					print("PDB " + str(args.code) + " was found as mmCIF format!")
 					print("Attention! The CIF parser does not parse PDB header metadata for the time being.")
+					dict_pdb_info = {}
+					dict_pdb_info["experiment"] = "EM"
 				except:
 					print("mmCIF " + str(args.code) + " not found on RCSB PDB webservers neither.")
 					return None
@@ -278,14 +286,17 @@ def parse_run(arguments):
 			# CAV ROUTINES
 			frm_txt = "f"+str(frame)
 			# Object that will be parser to cluster pockets and determine cluster centers
-			allcavs_resids.append(run(args, conformation, selection_protein, pdbobject, dict_pdb_info, frm_txt))
+			try:
+				allcavs_resids.append(run(args, conformation, selection_protein, pdbobject, dict_pdb_info, frm_txt))
+			except MemoryError:
+				print(f"{args.code} over the memory limit")
 			frame += 1
 
 		# Cluster pockets and print centroids / occupancy
 		dict_clusters = wrapper_traj_anal(allcavs_resids, nframe = frame, agglo_function = args.agglo_function, dist_threshold = args.dist_threshold, min_occu = args.min_occu)
 		if args.print_clusters:
 			print(dict_clusters)
-			
+
 	# Exception case: NMR structures => one PDB code
 	# can hold more than one atom group.
 	# we'll run the cavity identification on all NMR models
@@ -299,12 +310,17 @@ def parse_run(arguments):
 		for conformation in ensemble._confs:
 			# CAV ROUTINES
 			frm_txt = "f"+str(frame)
-			run(args, conformation, selection_protein, pdbobject, dict_pdb_info, frm_txt)
+			try:
+				run(args, conformation, selection_protein, pdbobject, dict_pdb_info, frm_txt)
+			except MemoryError:
+				print(f"{args.code} over the memory limit")
 			frame += 1
 	# Main use case: XR structure, or mmCIF
 	else:
-		run(args, selection_coords, selection_protein, pdbobject, dict_pdb_info, frame)
-
+		try:
+			run(args, selection_coords, selection_protein, pdbobject, dict_pdb_info, frame)
+		except MemoryError:
+			print(f"{args.code} over the memory limit")
 
 
 	# ------------------------------------------------------------------------------------------- #
@@ -349,12 +365,13 @@ def run(args, selection_coords, selection_protein, pdbobject, dict_pdb_info, fra
 		radius_cube_enc = args.radius_cube_enc, min_burial_enc = args.min_burial_enc,
 		gridspace = args.gridspace, min_degree = args.min_degree, radius = 2,
 		trim_score = args.trim_score, min_points = args.min_points, min_burial_q = args.min_burial_q,
-		quantile = args.quantile)
+		quantile = args.quantile, maxsize = args.maxsize)
 	try:
 		early_cavities[0]
 	except:
 		if frame:
 			print(f"{args.code[0:-4]}_{frame} does not have a cavity")
+			return []
 		else:
 			print(f"{args.code[0:-4]} does not have a cavity")
 		return None
@@ -374,14 +391,24 @@ def run(args, selection_coords, selection_protein, pdbobject, dict_pdb_info, fra
 	b = time.time()
 	printv(f"It took {round(b-a, 3)} seconds to set the pharmacophore types of cavity points")
 
+	# Calculate asphericity in the local environement of cavity grid points
+	# Not activated by default because time consuming
+	if args.asph:
+		a = time.time()
+		list_asph = get_list_asph(early_cavities, grid, grid_min, grid_shape, radius = args.radius_asph)
+		b = time.time()
+		printv(f"It took {round(b-a, 3)} seconds to the local asphericity around of cavity points")
+	else:
+		import numpy as np
+		list_asph = np.array([np.full_like(range(np.shape(x)[0]), fill_value=np.nan, dtype=np.float16) for x in early_cavities], dtype=object) # too many dimensions, needs to specify float otherwise it converts weirdly
 	# Combine information, exclude the cavities that were filtered before + cavities that are too
 	# hydrophobic (max_hydrophobicity), find residues lining the cavities, and lots of information
 	# And ranks cavities
 	a = time.time()
-	final_cavities, final_pharma, dict_all_info = cavity_cleansing(cavities_info, early_cavities,
+	final_cavities, final_pharma, final_asph, dict_all_info = cavity_cleansing(cavities_info, early_cavities,
 		pharmacophore_types, args.max_hydrophobicity,
 		selection_coords, selection_protein, dict_pdb_info,
-		args.exclude_missing, args.exclude_interchain, args.exclude_altlocs)
+		args.exclude_missing, args.exclude_interchain, args.exclude_altlocs, list_asph)
 
 	try:
 		if not final_cavities.any():
@@ -445,7 +472,7 @@ def run(args, selection_coords, selection_protein, pdbobject, dict_pdb_info, fra
 
 	# Creates cavity object to try to put all of the information
 	cavities = fill_cavities_object(dict_all_info, final_cavities, final_pharma,
-		grid_decomposition, grid_min, grid_shape, gridspace = args.gridspace) # list_asph
+		grid_decomposition, grid_min, grid_shape, final_asph, gridspace = args.gridspace)
 
 	# store ligandability information
 	for cava in range(len(cavities)):
@@ -518,6 +545,49 @@ def run(args, selection_coords, selection_protein, pdbobject, dict_pdb_info, fra
 			f"{'Polar':^7}{'Neg':^6}{'Pos':^6}{'Other':^6}")
 		print(subcavs_table)
 
+	# ------------------------------------------------------------------------------------------- #
+	# -------------------------------- DESCRIPTORS ROUTINES ------------------------------------- #
+	# ------------------------------------------------------------------------------------------- #
+
+
+	if args.export_descriptors:
+		a = time.time()
+		global_descr, graph_local_descriptors, im3d_local_descriptors = get_descriptors(cavities, args.code[:-4], grid_min, grid_shape)
+		b = time.time()
+		printv(f"It took {round(b-a, 3)} seconds to organize all the descriptors")
+		import pickle
+		if frame:
+			# Export global descriptors: pandas dataframe
+			pickle_out = open(os.path.join(args.out, args.code[0:-4] +"_f"+str(frame) + "_globaldescriptors.pickle"),"wb")
+			pickle.dump(global_descr, pickle_out)
+			pickle_out.close()
+			# Export local descriptors as graph (list of graphs, each element of the list = graph of a cavity)
+			# Nodes have the labels (bur = buriedness, pp = pharmacophore, asph = asphericity, subcavs = subcavity identifier)
+			pickle_out = open(os.path.join(args.out, args.code[0:-4] +"_f"+str(frame) + "_localdescriptors_graph.pickle"),"wb")
+			pickle.dump(graph_local_descriptors, pickle_out)
+			pickle_out.close()
+			# Export local descriptors as im3d (list of im3d, each element of the list = im3d of a cavity)
+			# In the box, only cavity points are colored with 4 channels [buriedness, ph4, asphericity, subcavs_id]
+			# Rest is nan
+			pickle_out = open(os.path.join(args.out, args.code[0:-4] +"_f"+str(frame) + "_localdescriptors_im3d.pickle"),"wb")
+			pickle.dump(im3d_local_descriptors, pickle_out)
+			pickle_out.close()
+		else:
+			# Export global descriptors: pandas dataframe
+			pickle_out = open(os.path.join(args.out, args.code[0:-4] + "_globaldescriptors.pickle"),"wb")
+			pickle.dump(global_descr, pickle_out)
+			pickle_out.close()
+			# Export local descriptors as graph (list of graphs, each element of the list = graph of a cavity)
+			# Nodes have the labels (bur = buriedness, pp = pharmacophore, asph = asphericity, subcavs = subcavity identifier)
+			pickle_out = open(os.path.join(args.out, args.code[0:-4] + "_localdescriptors_graph.pickle"),"wb")
+			pickle.dump(graph_local_descriptors, pickle_out)
+			pickle_out.close()
+			# Export local descriptors as im3d (list of im3d, each element of the list = im3d of a cavity)
+			# In the box, only cavity points are colored with 4 channels [buriedness, ph4, asphericity, subcavs_id]
+			# Rest is nan
+			pickle_out = open(os.path.join(args.out, args.code[0:-4] + "_localdescriptors_im3d.pickle"),"wb")
+			pickle.dump(im3d_local_descriptors, pickle_out)
+			pickle_out.close()
 
 	# ------------------------------------------------------------------------------------------- #
 	# ----------------------------------- THIS IS THE END! -------------------------------------- #
@@ -528,7 +598,6 @@ def run(args, selection_coords, selection_protein, pdbobject, dict_pdb_info, fra
 		cavs_inthisframe = []
 		for cava in range(len(cavities)):
 			cavs_inthisframe.append(cavities[cava].residues)
-
 		return cavs_inthisframe
 
 	return None
@@ -568,8 +637,5 @@ def main():
 		parse_run(args)
 	sys.exit()
 
-
-
 if __name__ == "__main__":
-
 	main()

@@ -34,7 +34,7 @@ def export_hydrophobicity(pharmacophore_types, cavid):
 	return hydro
 
 
-def combine_filterhydro(cavities_info, cavities, pharmacophore_types, max_hydrophobicity = 0.8):
+def combine_filterhydro(cavities_info, cavities, pharmacophore_types, list_asph, max_hydrophobicity = 0.8):
 	"""
 	Combines information from cavities_info, calculate hydrophobicity of the cavity, filter
 	cavities with an hydrophobicity above threshold
@@ -53,11 +53,12 @@ def combine_filterhydro(cavities_info, cavities, pharmacophore_types, max_hydrop
 	try:
 		final_cav = np.delete(cavities, exclusion_list, 0)
 		final_pharma = np.delete(pharmacophore_types, exclusion_list, 0)
+		final_asph = np.delete(list_asph, exclusion_list, 0)
 	except:
 		# No exclusion
 		None
 
-	return final_cav, final_pharma, info_list
+	return final_cav, final_pharma, final_asph, info_list
 
 def check_protein_res(cavities, selection_coords, selection_protein, dict_pdb_info):
 	"""
@@ -206,7 +207,7 @@ def get_final_sorted_cavs(dict_all_info, filtered_cavities):
 
 def cavity_cleansing(cavities_info, cavities, pharmacophore_types, max_hydrophobicity,
 	selection_coords, selection_protein, dict_pdb_info,
-	exclude_missing, exclude_interchain, exclude_altlocs):
+	exclude_missing, exclude_interchain, exclude_altlocs, list_asph):
 	"""
 	Takes what was previously in main.py in the aforecoded functions and wraps them as one here
 	Combine information, exclude the cavities that were filtered before + cavities that are too
@@ -216,7 +217,7 @@ def cavity_cleansing(cavities_info, cavities, pharmacophore_types, max_hydrophob
 
 	# Combine information, exclude the cavities that were filtered before + cavities that are too
 	# hydrophobic (max_hydrophobicity)
-	filtered_cavities, filtered_pharma, info_list = combine_filterhydro(cavities_info, cavities, pharmacophore_types,
+	filtered_cavities, filtered_pharma, filtered_asph, info_list = combine_filterhydro(cavities_info, cavities, pharmacophore_types, list_asph,
 		max_hydrophobicity)
 
 	# Check if cavities are interchain cavities, miss residues/atoms, contain altloc atoms
@@ -231,9 +232,11 @@ def cavity_cleansing(cavities_info, cavities, pharmacophore_types, max_hydrophob
 	dict_info_correct_ID = {}
 	idx = 0
 	final_pharma = []
+	final_asph = []
 	for cavid in order:
 		final_pharma.append(filtered_pharma[cavid])
+		final_asph.append(filtered_asph[cavid])
 		dict_info_correct_ID[idx] = dict_all_info[cavid]
 		idx+=1
 
-	return final_cavities, final_pharma, dict_info_correct_ID
+	return final_cavities, final_pharma, final_asph, dict_info_correct_ID

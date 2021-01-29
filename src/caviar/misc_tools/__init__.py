@@ -24,3 +24,7 @@ __all__.extend(configparser_extension.__all__)
 from . import traj_analysis
 from .traj_analysis import *
 __all__.extend(traj_analysis.__all__)
+
+from . import export_descriptors
+from .export_descriptors import *
+__all__.extend(export_descriptors.__all__)

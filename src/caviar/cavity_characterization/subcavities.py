@@ -37,7 +37,8 @@ def wrapper_subcavities(final_cavities, cav_of_interest, grid_min, grid_shape, c
 		subcavs = merge_small_enclosed_subcavs(subcavs, minsize_subcavs = minsize_subcavs,
 			min_contacts = min_contacts, v = v)
 	subcavs_table = print_subcavs_pphores(cavities, subcavs, cav_of_interest, code, grid_min, grid_shape, frame)
-	
+
+
 	# Export
 	if export_subcavs:
 		try:
@@ -291,6 +292,8 @@ def print_subcavs_pphores(cavities, subcavs, cav_of_interest, pdbcode, grid_min,
 	#names = ["none", "aliphatic", "aromatic", "donor", "acceptor", "doneptor", "negative",
 	# "positive", "cys", "his", "metal"]
 	# Dictionary of pharmacophore types to print
+	import networkx as nx
+
 	names = ["shouldnotbethere", "hydrophobic", "shouldnotbethere", "polar non charged", "shouldnotbethere", "shouldnotbethere",
 	"negative", "positive", "other", "shouldnotbethere", "shouldnotbethere"]
 	subcavs_table = ""
@@ -302,7 +305,10 @@ def print_subcavs_pphores(cavities, subcavs, cav_of_interest, pdbcode, grid_min,
 			get_index_of_coor_list(np.array([x.coords for x in cavities[cav_of_interest].gp]), grid_min, grid_shape),
 			return_indices=True)[2]
 		# Update the cavity object
-		cavities[cav_of_interest].subcavities[i] = oricav_indices
+		cavities[cav_of_interest].subcavities[i+1] = oricav_indices # to not start at 0
+		# Update the graph
+		my_dict = {value: {"subcavs": i+1} for value in oricav_indices} # to not start at 0
+		nx.set_node_attributes(cavities[cav_of_interest].graph, my_dict)
 
 		# Find the pharmacophore types of the gridpoints of the subcavity
 		listouille = [cavities[cav_of_interest].gp[x].pharma[0] for x in oricav_indices]
