@@ -66,5 +66,6 @@ This package relies on external open source software and libraries:
 * scikit-image for subcavity decomposition  
 * scikit-learn for ligandability predictions  
 * PyQt5 for the GUI   
+* Pandas for storing and exporting descriptors  
 
 File parsing is based on the parsers provided by the [ProDy team](https://github.com/prody/ProDy) a huge thanks for their amazing work!
