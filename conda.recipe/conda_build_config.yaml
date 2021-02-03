@@ -1,0 +1,3 @@
+CONDA_BUILD_SYSROOT:
+  - /home/marchje7/osx/MacOSX10.15.sdk  [osx]
+  
