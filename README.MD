@@ -34,10 +34,12 @@ Detailed information on [dedicated website](https://jr-marchand.github.io/caviar
 This package is hosted on anaconda.org. To install it in a new environment, simply run:  
 ```conda create -n caviar -c jr-marchand caviar```  
 
-To install it locally from the git repository:  
-```python setup.py install```  
+To install it manually from the git repository:   
+Create a virtual environement (see the documentation on [the Python Packaging authority website](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/))  
+Install the necessary dependencies (cf conda.recipe/meta.yaml), most likely from [PyPI](https://pypi.org/), [User Guide](https://packaging.python.org/)  
+With the virtual environement activated: ```python setup.py install```   
 /!\ Check that you have the correct dependencies/libraries  
-cf conda.recipe/meta.yaml, requirements section /!\ 
+cf conda.recipe/meta.yaml, requirements section /!\  
 
 ### How to use
 
