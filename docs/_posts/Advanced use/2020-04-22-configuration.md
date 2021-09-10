@@ -74,6 +74,11 @@ Write a PyMOL session file \*.pml (boolean)
 If a PyMOL session file is written, how to color the cavities: by chain, buriedness, or pharmacophore (values: bychain, buriedness, pharmacophore)  
   - print_cav_info: True  
 Print out the table report on cavity identification (boolean)  
+  - export_descriptors: False  
+Turns on the export of Python pickled descriptors (global descriptors as pd.dataframe, networkx graph and 4-channels 3D-image) (boolean)  
+  - asph: False  
+Investigates the local asphericity around a grid point at 'radius_asph' cubic radius /!\ Time consuming! Placeholder as the 4th channel in the 3D image.  
+
 
 #### Selection of objects ####
 

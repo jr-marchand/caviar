@@ -230,16 +230,21 @@ def merge_small_enclosed_subcavs(subcavs, minsize_subcavs = 50, min_contacts = 0
 	# It's a mess because it's not easy to merge different array elements together and/or delete some...
 	if to_del:
 		dels = []
-		for index in range(0, len(subcavs)):
+		deleted = [] # keep track of deleted subcavities to not try to merge with a pre fused cavity!
+		for index in reversed(range(0, len(subcavs))): # to not mess up the indexing
 			if index in to_del.keys():
 				# original version: works generally, except in some cases in which we merge and replace 2 equally sized small arrays (memory issue?)
 				try:
 					# _tmp contains the merged subcavity 
+					if to_del[index] in deleted:
+						continue # do not try to fuse a subcav with an already fused (and deleted) subcav!
 					_tmp = np.concatenate((_subcavs[to_del[index]], _subcavs[index]), axis = 0)
 					# now we assign the merged subcavity to the index of the main subcav
 					_subcavs[to_del[index]] = _tmp
 				# dirty work around: change to lists, and play with lists, and come back to array...
 				except:
+					if to_del[index] in deleted:
+						continue # do not try to fuse a subcav with an already fused (and deleted) subcav!
 					_tmp = np.array(_subcavs[to_del[index]]).tolist() + np.array(_subcavs[index]).tolist()
 					_subcavs[to_del[index]] = np.array(_tmp)
 				dels.append(index)
