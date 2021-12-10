@@ -50,7 +50,7 @@ def arguments():
 	#Im not sure if its the smartest way to do it, probably parent_parser could be avoided
 
 	# Start by parsing which preset configuration file to use
-	init_parser.add_argument('-preset_config', required=False, help='Chose one of the three standard configuration: default, cavities_only, subcavities_only\n',
+	init_parser.add_argument('-preset_config', required=False, help='Chose one of the three standard configuration: default, more_tolerant, very_tolerant\n',
 		default = "default", choices=["default", "more_tolerant", "very_tolerant"])#,"cavities_only", "subcavities_only"])
 	# Also parse a potential custom configuration file -- in addition to the preset
 	init_parser.add_argument('-custom_config', required=False, help='Custom configuration file that can contain any custom parameters, the rest being read from the preset_config\n')
@@ -78,7 +78,7 @@ def arguments():
 		"You may write all command line parameters in a custom configuration file \n"
 		"with the -custom_config option. The default configuration file is located at \n"
 		f"{os.path.realpath(os.path.join(root, 'config/default.yaml'))}\n"
-		"alongside the two other default configurations (cavities_only, subcavities_only)\n"
+		"alongside the two other default configurations (more_tolerant, very_tolerant)\n"
 		"You may reuse any of the keywords of these configuration files for creating a -custom_config\n"
 		"You can also give simple arguments to the command line, such as the pdb code,\n"
 		"to use with automatically set default parameters\n"),
