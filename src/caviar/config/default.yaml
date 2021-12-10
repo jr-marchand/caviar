@@ -20,7 +20,7 @@
   export_cavities: True # Export PDB files with cavities 
   withprot: True   # Export it with the protein 
   write_pml_cavs: True  # Write a pymol session file *pml 
-  color_cavs_by: bychain # and color cavities by chain/buriedness/pharmacophore ("bychain", "buriedness", "pharmacophore")
+  color_cavs_by: buriedness # and color cavities by chain/buriedness/pharmacophore ("bychain", "buriedness", "pharmacophore")
   print_cav_info: True # print a report on cavity identification 
   asph: False # Investigates the local asphericity around a grid point at 'radius_asph' cubic radius /!\ Time consuming!
   export_descriptors: False # Turns on the export of pickled descriptors (global descriptors as pd.dataframe, networkx grap and 4-channels im3d)

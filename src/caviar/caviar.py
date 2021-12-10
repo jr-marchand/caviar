@@ -51,7 +51,7 @@ def arguments():
 
 	# Start by parsing which preset configuration file to use
 	init_parser.add_argument('-preset_config', required=False, help='Chose one of the three standard configuration: default, cavities_only, subcavities_only\n',
-		default = "default", choices=["default", "cavities_only", "subcavities_only"])
+		default = "default", choices=["default", "more_tolerant", "very_tolerant"])#,"cavities_only", "subcavities_only"])
 	# Also parse a potential custom configuration file -- in addition to the preset
 	init_parser.add_argument('-custom_config', required=False, help='Custom configuration file that can contain any custom parameters, the rest being read from the preset_config\n')
 
@@ -77,7 +77,7 @@ def arguments():
 
 		"You may write all command line parameters in a custom configuration file \n"
 		"with the -custom_config option. The default configuration file is located at \n"
-		f"{os.path.realpath(os.path.join(root, 'config//default_caviar.yaml'))}\n"
+		f"{os.path.realpath(os.path.join(root, 'config/default.yaml'))}\n"
 		"alongside the two other default configurations (cavities_only, subcavities_only)\n"
 		"You may reuse any of the keywords of these configuration files for creating a -custom_config\n"
 		"You can also give simple arguments to the command line, such as the pdb code,\n"
@@ -112,7 +112,7 @@ def arguments():
 	parser.add_argument("-subcavs_decomp", type = str2bool, help = ": Activates the subcavities decomposition \n(default = True)\n")
 
 	parser.add_argument("-color_cavs_by", type = str, help = ": write a session *.pml file for pymol to open the output and color cavities by chain/buriedness/pharmacophore\n"
-						"(default = bychain\n", default = "bychain", choices=["bychain", "buriedness", "pharmacophore"])
+						"(default = buriedness)\n", default = "buriedness", choices=["bychain", "buriedness", "pharmacophore"])
 
 	parser.add_argument("-out", type = str, help = ":  Path to outfolder.\n(default = ./caviar_out/)\n  ")
 

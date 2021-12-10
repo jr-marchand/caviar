@@ -56,7 +56,7 @@
   max_distance: 6.0 # Maximum distance for a solvent grid point to the protein 
   gridspace: 1.0   # Grid spacing 
   size_probe: 1.0  # Size of the probe for defining protein points. This size is added to the vdW radius from vdw_size_atoms.dat
-  radius_cube: 4   # Size of the cubic solvation shell to investigate burial of cavity points (in number of grid points)
+  radius_cube: 6   # Size of the cubic solvation shell to investigate burial of cavity points (in number of grid points)
   min_burial: 8    # Minimum number of grid-protein contacts for a grid point (within -radius_cube) to consider it as potential cavity point
                     # This number is between 0 and 14 because we scan in the  14 cubic directions
   radius_cube_enc: 3 # Same as radius_cube, but for the second passto identify buried cavity points
@@ -102,13 +102,13 @@
                     # rather than within 1A of any cavity point 
 
 [subcavity_routines]
-  subcavs_decomp: False # Activates the subcavities decomposition 
+  subcavs_decomp: True # Activates the subcavities decomposition 
   subcavs_lig_only: False # Find subcavities only for liganded cavities 
-  export_subcavs: False # Export subcavities in pdb file 
-  write_pml_subcavs: False # Export a pml pymol session file to open output
+  export_subcavs: True # Export subcavities in pdb file 
+  write_pml_subcavs: True # Export a pml pymol session file to open output
   seeds_mindist: 3 # Minimum distance between seed points in the watershed algorithm 
   merge_subcavs: True # Merge small subcavities enclosed in between other subcavities (prevent oversegmentation) 
-  print_pphores_subcavs: False # prints pharmacophore data of the subcavities.
+  print_pphores_subcavs: True # prints pharmacophore data of the subcavities.
 
 [traj]
   agglo_function: average # hierarchical clustering function: docs at https://docs.scipy.org/doc/scipy/reference/generated/scipy.cluster.hierarchy.linkage.html#scipy.cluster.hierarchy.linkage
