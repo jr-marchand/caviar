@@ -279,9 +279,9 @@ def filter_cavities(array_cavs_coords, grid_decomposition, grid_min, grid_shape,
 			#print(median_bur)
 			cavid += 1
 		if size_cav > maxsize:
-			print("A cavity has been discarded because it's bigger than 3000 grid points. Are you sure about your inputs?")
+			print(f"A cavity has been discarded because it's bigger than 3000 grid points. Are you sure about your inputs?")
 		elif np.quantile(grid_decomposition[cav_indices], q = quantile) < min_burial_q:
-			print("A cavity has been discarded because the [quantile] {quantile} of buriedness is below [min_burial_q] {min_burial_q}. Are you sure about your set of parameters?")
+			print(f"A cavity has been discarded because the [quantile] {quantile} of buriedness is below [min_burial_q] {min_burial_q}. Are you sure about your set of parameters?")
 
 
 
