@@ -278,6 +278,9 @@ def filter_cavities(array_cavs_coords, grid_decomposition, grid_min, grid_shape,
 			cavs_info[cavid] = [size_cav, median_bur, q_7, score]
 			#print(median_bur)
 			cavid += 1
+			if size_cav > maxsize:
+				print("A cavity has been discarded because it's bigger than 3000 grid points. Are you sure about your inputs?")
+
 
 	if len(cavs_curated) > 1: # deprecation with numpy 1.19
 		# https://numpy.org/doc/stable/release/1.19.0-notes.html#deprecate-automatic-dtype-object-for-ragged-input
